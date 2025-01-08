@@ -1,63 +1,54 @@
-"use client"
-
 import {
   AppBar,
   Box,
-  Button, Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
+  Button, IconButton,
   Toolbar,
-  Typography
-} from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
-import {useState} from "react";
+  Typography,
+} from '@mui/material';
+import {auth, signIn, signOut} from "@/auth";
+import Link from 'next/link';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
 
-const DrawerList = () => {
+const NavBar = async () => {
+  const session = await auth();
+  let login = <></>;
+  if (session?.user) {
+    login = (
+      <>
+        <Link href="/profile">Profile</Link>
+        <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
+          "use server"
+          await signOut();
+        }}>
+          <LogoutIcon></LogoutIcon>
+        </IconButton>
+      </>
+    )
+  } else {
+    login = (
+      <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
+        "use server"
+        await signIn("google");
+      }}>
+        <LoginIcon></LoginIcon>
+      </IconButton>
+    )
+  }
   return (
-    <>
-      <Box sx={{ width: 250 }} role="presentation">
-        <List>
-          {['Events', 'Calendar', 'Favorites', 'Host', 'Profile'].map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </>
-  )
-}
-
-const NavBar = () => {
-  const [open, setOpen] = useState(false);
-
-  const toggleDrawer = (newState: boolean) => () => {
-    setOpen(newState);
-  };
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="absolute">
+    <Box sx={{ flexGrow: 1, display: 'flex' }}>
+      <AppBar position="static" component="nav">
         <Toolbar>
-          <IconButton color="inherit" sx={{mr: 2}} onClick={toggleDrawer(true)}>
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Event Scheduler
-          </Typography>
-          <Button color='inherit' sx={{fontWeight: 500}}>
-            Login
-          </Button>
+          <Link href="/" className="mr-auto">
+            <Typography variant="h6" component="div">
+              Event Scheduler
+            </Typography>
+          </Link>
+          <Link href="/events" className="mr-2">Events</Link>
+          {login}
         </Toolbar>
       </AppBar>
-
-      <Drawer open={open} onClose={toggleDrawer(false)}>
-        <DrawerList></DrawerList>
-      </Drawer>
+      <nav></nav>
     </Box>
   )
 }
