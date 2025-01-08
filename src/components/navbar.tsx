@@ -1,7 +1,7 @@
 import {
   AppBar,
   Box,
-  Button, IconButton,
+  IconButton,
   Toolbar,
   Typography,
 } from '@mui/material';
