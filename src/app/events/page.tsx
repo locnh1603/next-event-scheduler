@@ -1,17 +1,11 @@
-"use client"
-
-import useSWR from 'swr';
-
 import {Box, Typography} from '@mui/material';
-import URLConstants from '@/app/utilities/constant';
-import fetcher from '@/app/utilities/fetcher';
-import Loading from '@/components/loading';
 
-export default function Events() {
-  const { data, error, isLoading } = useSWR(URLConstants.Events, fetcher);
-  if (isLoading) {
-    return <Loading></Loading>;
-  }
+export default async function Events() {
+  const data = await fetch(`${process.env.API_URL}/events`, {
+    method: 'GET'
+  });
+  const events = await data.json();
+  console.log(events);
   return (
     <Box>
       <Typography variant="h5">Events</Typography>
