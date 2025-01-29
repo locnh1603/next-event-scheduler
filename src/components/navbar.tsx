@@ -5,21 +5,28 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import {auth, signIn, signOut} from "@/auth";
 import Link from 'next/link';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
-
-const NavBar = async () => {
-  const session = await auth();
+import {redirect} from 'next/navigation';
+import {logout} from '@/app/utils/logout';
+class NavBarProps {
+  session?: {
+    name: string;
+    id: string;
+    email: string;
+  }
+}
+const NavBar = async (props: NavBarProps) => {
   let login = <></>;
-  if (session?.user) {
+  const {session} = props;
+  if (session) {
     login = (
       <>
         <Link href="/profile">Profile</Link>
         <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
           "use server"
-          await signOut();
+          await logout();
         }}>
           <LogoutIcon></LogoutIcon>
         </IconButton>
@@ -29,7 +36,7 @@ const NavBar = async () => {
     login = (
       <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
         "use server"
-        await signIn("google");
+        redirect('http://localhost:5000/auth/google');
       }}>
         <LoginIcon></LoginIcon>
       </IconButton>
