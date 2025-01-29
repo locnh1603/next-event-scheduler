@@ -4,8 +4,11 @@ import {AppRouterCacheProvider} from "@mui/material-nextjs/v15-appRouter";
 import './globals.css';
 import {Box} from "@mui/material";
 import NavBar from '@/components/navbar';
+import {SWRConfig} from 'swr';
+import {getSession} from '@/app/utils/session';
 
-export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
+export default async function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
+  const session = await getSession();
   return (
     <html lang="en">
       <Head>
@@ -13,12 +16,18 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
       </Head>
       <body>
         <AppRouterCacheProvider>
-          <Box sx={{ height: '100%', width: "100%" }}>
-            <NavBar></NavBar>
-            <Box component="main" sx={{ p: 3 }}>
-              {children}
+          <SWRConfig
+            value={{
+              shouldRetryOnError: false
+            }}
+          >
+            <Box sx={{ height: '100%', width: "100%" }}>
+              <NavBar session={session}></NavBar>
+              <Box component="main" sx={{ p: 3, height: "100%" }}>
+                {children}
+              </Box>
             </Box>
-          </Box>
+          </SWRConfig>
         </AppRouterCacheProvider>
       </body>
     </html>
