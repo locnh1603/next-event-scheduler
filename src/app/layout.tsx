@@ -5,6 +5,7 @@ import './globals.css';
 import {Box} from "@mui/material";
 import NavBar from '@/components/navbar';
 import {SWRConfig} from 'swr';
+import {SpeedInsights} from '@vercel/speed-insights/next';
 
 export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
   return (
@@ -26,6 +27,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
               </Box>
             </Box>
           </SWRConfig>
+          <SpeedInsights />
         </AppRouterCacheProvider>
       </body>
     </html>
