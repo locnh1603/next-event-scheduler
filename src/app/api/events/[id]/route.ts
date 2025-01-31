@@ -8,6 +8,7 @@ export const GET = auth(async (req, { params }) => {
     const {id} = param;
     await dbConnect();
     // TODO : handle get events
+    console.log(id);
     return NextResponse.json({ message : 'success'}, {status: 200});
   }
   return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
