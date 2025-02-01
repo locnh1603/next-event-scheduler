@@ -2,6 +2,8 @@ import {Box, Typography} from '@mui/material';
 import fetchWithCookie from '@/app/utilities/fetch';
 import {IResponseBody} from '@/app/models/fetch.model';
 import LinkButton from '@/app/components/button';
+import {EventModel} from '@/app/models/event.model';
+import Carousel from '@/app/components/carousel';
 const Events = async () => {
   const body = JSON.stringify({
     payload: {
@@ -13,14 +15,20 @@ const Events = async () => {
     method: 'POST',
     body,
   });
-  const response: IResponseBody<Event[]> = await data.json();
-  const payload: Event[] = response.payload;
+  const { payload }: IResponseBody<EventModel[]> = await data.json();
+  const carouselData = payload.map((item) => ({ image: item.image, name: item.name }));
   return (
     <Box>
-      <Typography variant="h5">{payload.length} Events</Typography>
+      <Typography variant="h5">Events</Typography>
       <Typography variant="h4">Hot Events</Typography>
+      <Box sx={{ height: 200 }}>
+        <Carousel loop={true} data={carouselData}></Carousel>
+      </Box>
       <Typography variant="h4">New Events</Typography>
-      <LinkButton href='/events/create'>Create Event</LinkButton>
+      <Box sx={{ height: 200 }}>
+        <Carousel loop={true} data={carouselData}></Carousel>
+      </Box>
+      <LinkButton href={`/events/${payload[0]?.id}`}>Create Event</LinkButton>
     </Box>
   );
 }
