@@ -11,7 +11,7 @@ const Events = async () => {
     },
     command: 'getEvents'
   });
-  const data = await fetchWithCookie(`${process.env.API_URL}/events`, {
+  const data = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
   });

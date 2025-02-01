@@ -13,12 +13,21 @@ export class EventModel {
   active: boolean = true;
 }
 
-export interface IEventDTO {
-  ids?: string[];
+export class EventDTO {
+  name: string = '';
+  description: string = '';
+  date: number = 0;
+  location: string = '';
+  image: string = '';
+  type: string = '';
+  tags: string[] = [];
+  constructor(data: Partial<EventDTO>) {
+    Object.assign(this, data);
+  }
 }
 
-export enum eventCommand {
-  getEvents = 'getEvents'
+export interface GetEventsDTO {
+  ids?: string[];
 }
 
 export interface IEvent extends Document {
@@ -70,6 +79,6 @@ const eventSchema: Schema = new mongoose.Schema({
   }
 });
 
-const Event = mongoose.models.events || mongoose.model<IEvent>('events', eventSchema)
+const Event = mongoose.models?.events || mongoose.model<IEvent>('events', eventSchema)
 
 export default Event;

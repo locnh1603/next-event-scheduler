@@ -41,7 +41,7 @@ const CreateEventForm = () => {
       }
     });
     const { payload }: IResponseBody<EventModel> = await data.json();
-    router.push(`/events/${payload?.id}`);
+    router.push(`/${payload?.id}`);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -1,7 +1,8 @@
 import {Box, Typography} from '@mui/material';
 import fetchWithCookie from '@/app/utilities/fetch';
 import {IResponseBody} from '@/app/models/fetch.model';
-import {eventCommand, EventModel} from '@/app/models/event.model';
+import {EventModel} from '@/app/models/event.model';
+import {EventCommands} from '@/app/enums/event.enum';
 
 const EventDetail = async({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -9,9 +10,9 @@ const EventDetail = async({ params }: { params: Promise<{ id: string }> }) => {
     payload: {
       ids: [id]
     },
-    command: eventCommand.getEvents
+    command: EventCommands.getEvents
   });
-  const data = await fetchWithCookie(`${process.env.API_URL}/events`, {
+  const data = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
   });
