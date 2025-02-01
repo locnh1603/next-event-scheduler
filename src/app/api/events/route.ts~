@@ -13,9 +13,10 @@ export const POST = async (req: NextRequest) => {
   try {
     await dbConnect();
     const {command} = await req.json();
+    console.log(command);
     const payload = await Event.find({});
     const res: IResponseBody<Event[]> = {
-      message: command,
+      message: `${payload.length}`,
       payload
     };
     return NextResponse.json(res);
