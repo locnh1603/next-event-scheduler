@@ -1,20 +1,12 @@
 import {NextRequest, NextResponse} from 'next/server';
 import dbConnect from '@/app/lib/dbConnect';
-import Event from "@/app/models/event.model";
+import Event, {eventCommand, IEventDTO} from "@/app/models/event.model";
 import {IResponseBody} from '@/app/models/fetch.model';
-
-export enum eventCommand {
-  getEvents = 'getEvents'
-}
 
 export const GET = async () => {
   await dbConnect();
   const events = await Event.find({});
   return NextResponse.json(events);
-}
-
-export interface IEventDTO {
-  ids?: string[];
 }
 
 export const POST = async (req: NextRequest) => {

@@ -1,8 +1,7 @@
 import {Box, Typography} from '@mui/material';
 import fetchWithCookie from '@/app/utilities/fetch';
-import {eventCommand} from '@/app/api/events/route';
 import {IResponseBody} from '@/app/models/fetch.model';
-import {EventModel} from '@/app/models/event.model';
+import {eventCommand, EventModel} from '@/app/models/event.model';
 
 const EventDetail = async({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;

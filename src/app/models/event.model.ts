@@ -13,15 +13,12 @@ export class EventModel {
   active: boolean = true;
 }
 
-export class EventDTO {
-  name: string = '';
-  description: string = '';
-  date: number = 0;
-  location: string = '';
-  image: string = '';
-  status: string = '';
-  type: string = '';
-  tags: string[] = [];
+export interface IEventDTO {
+  ids?: string[];
+}
+
+export enum eventCommand {
+  getEvents = 'getEvents'
 }
 
 export interface IEvent extends Document {
