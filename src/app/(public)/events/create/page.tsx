@@ -1,6 +1,5 @@
 'use client'
 import {Box, Typography} from '@mui/material';
-import {useState} from 'react';
 
 const CreateEvent = () => {
   return (
