@@ -1,55 +1,126 @@
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-} from '@mui/material';
 import {auth, signIn, signOut} from "@/auth";
 import Link from 'next/link';
-import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
+import {Button} from '@/app/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/app/components/dropdown-menu";
+import { Settings, User, LogOut, Menu } from 'lucide-react';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/app/components/navigation-menu";
+import Image from "next/image";
+import {redirect} from 'next/navigation';
 
 const NavBar = async () => {
   const session = await auth();
-  let login = <></>;
+  let user = <></>;
   if (session?.user) {
-    login = (
-      <>
-        <Link href="/profile">Profile</Link>
-        <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
-          "use server"
-          await signOut();
-        }}>
-          <LogoutIcon></LogoutIcon>
-        </IconButton>
-      </>
+    user = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <User className="h-5 w-5"/>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+          <DropdownMenuSeparator/>
+          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
+            "use server"
+            redirect('/profile')
+          }}>
+            <User className="mr-2 h-4 w-4"/>
+            Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
+            <Settings className="mr-2 h-4 w-4"/>
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuSeparator/>
+          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
+            "use server"
+            await signOut();
+          }}>
+            <LogOut className="mr-2 h-4 w-4"/>
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   } else {
-    login = (
-      <IconButton color='inherit' sx={{fontWeight: 500}} onClick={async () => {
-        "use server"
-        await signIn("google");
-      }}>
-        <LoginIcon></LoginIcon>
-      </IconButton>
+    user = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <User className="h-5 w-5"/>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel>Guest</DropdownMenuLabel>
+          <DropdownMenuSeparator/>
+          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
+            "use server"
+            await signIn("google");
+          }}>
+            <User className="mr-2 h-4 w-4"/>
+            Login
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
   return (
-    <Box sx={{ flexGrow: 1, display: 'flex' }}>
-      <AppBar position="static" component="nav">
-        <Toolbar>
-          <Link href="/" className="mr-auto">
-            <Typography variant="h6" component="div">
-              Event Scheduler
-            </Typography>
-          </Link>
-          <Link href="/events" className="mr-2">Events</Link>
-          {login}
-        </Toolbar>
-      </AppBar>
-      <nav></nav>
-    </Box>
+    <div className="w-full border-b">
+      <div className="flex h-16 items-center px-4 justify-between">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5"/>
+          </Button>
+          <span className="text-xl font-bold">
+            <Image src="/next.svg" alt="Logo" width="50" height="50"/>
+          </span>
+        </div>
+
+        {/* Right Side Actions */}
+        <div className="flex items-center space-x-4">
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Events</NavigationMenuTrigger>
+                <NavigationMenuContent className="data-[side=bottom]:animate-slideUpAndFade">
+                  <div className="grid gap-3 p-4 w-[400px]">
+                    <Link href='/events' passHref legacyBehavior>
+                      <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
+                        Event List
+                      </NavigationMenuLink>
+                    </Link>
+                    <Link href='/events/create' passHref legacyBehavior>
+                      <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
+                        Create Event
+                      </NavigationMenuLink>
+                    </Link>
+                    <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded disabled" aria-disabled={true}>
+                      My Calendar
+                    </NavigationMenuLink>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          {user}
+        </div>
+      </div>
+    </div>
   )
 }
 export default NavBar

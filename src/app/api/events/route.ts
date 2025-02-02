@@ -1,9 +1,9 @@
 import {NextRequest, NextResponse} from 'next/server';
-import dbConnect from '@/app/lib/dbConnect';
 import Event, {EventDTO, GetEventsDTO} from "@/app/models/event.model";
 import {IRequestBody, IResponseBody} from '@/app/models/fetch.model';
 import {EventCommands} from '@/app/enums/event.enum';
 import {v4} from 'uuid';
+import dbConnect from '@/app/api/database/dbConnect';
 
 export const GET = async () => {
   await dbConnect();

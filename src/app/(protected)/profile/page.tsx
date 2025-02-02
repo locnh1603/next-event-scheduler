@@ -1,18 +1,13 @@
 import {auth} from '@/auth';
-import {Box, Typography} from '@mui/material';
+import {redirect} from 'next/navigation';
 
 const Profile = async () => {
   const session = await auth();
+  if (!session?.user) {
+    redirect('/')
+  }
   return (
-    <Box>
-      <Typography variant='h5'>Profile</Typography>
-      <Typography>
-        Name: {session?.user?.name}
-      </Typography>
-      <Typography>
-        Email: {session?.user?.email}
-      </Typography>
-    </Box>
+    <div>Profile {session?.user?.name}</div>
   );
 }
 export default Profile;
