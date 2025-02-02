@@ -18,6 +18,16 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/app/components/navigation-menu";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/app/components/alert-dialog"
 import Image from "next/image";
 import {redirect} from 'next/navigation';
 
@@ -59,24 +69,48 @@ const NavBar = async () => {
     )
   } else {
     user = (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5"/>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Guest</DropdownMenuLabel>
-          <DropdownMenuSeparator/>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            await signIn("google");
-          }}>
-            <User className="mr-2 h-4 w-4"/>
-            Login
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5"/>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Guest</DropdownMenuLabel>
+              <DropdownMenuSeparator/>
+              <DropdownMenuItem className="cursor-pointer">
+                <User className="mr-2 h-4 w-4"/>
+                <AlertDialogTrigger asChild>
+                  <div>Login</div>
+                </AlertDialogTrigger>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <AlertDialogContent className="sm:max-w-[425px]">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Login</AlertDialogTitle>
+              <AlertDialogDescription>
+                Login to use any of the providers below
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-1 gap-2">
+                <Button variant="outline" className="w-full" onClick={async() => {
+                  'use server'
+                  await signIn('google');
+                }}>
+                  Google
+                </Button>
+              </div>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     )
   }
   return (

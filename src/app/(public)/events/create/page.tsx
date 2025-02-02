@@ -38,6 +38,7 @@ const CreateEventForm = () => {
           <Label>Event Start and End Date</Label>
           <p className="text-sm text-muted-foreground m-0 p-0">can be the same day will indicate an all day event</p>
           <div className="border rounded-md p-2 flex gap-2">
+            <p className="flex items-center w-1/5 ml-4">Start On</p>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -55,10 +56,13 @@ const CreateEventForm = () => {
                 <Calendar
                   mode="single"
                   selected={date}
-                  initialFocus
                 />
               </PopoverContent>
             </Popover>
+          </div>
+
+          <div className="border rounded-md p-2 flex gap-2">
+            <p className="flex items-center w-1/5 ml-4">End On</p>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -69,14 +73,13 @@ const CreateEventForm = () => {
                   )}
                 >
                   <CalendarIcon/>
-                  {date ? moment(date).format("DD-MM-yyyy") : <span>Pick a date</span>}
+                  {date ? moment(date).format("DD/MM/yyyy") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={date}
-                  initialFocus
                 />
               </PopoverContent>
             </Popover>
@@ -85,23 +88,23 @@ const CreateEventForm = () => {
 
         <div className="space-y-2">
           <Label htmlFor="location">Location</Label>
-          <Input id="location" placeholder="Enter event location" />
+          <Input id="location" placeholder="Enter event location"/>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="image">Image URL</Label>
-          <Input id="image" placeholder="Enter image URL" />
+          <Input id="image" placeholder="Enter image URL"/>
         </div>
 
         <div className="space-y-2">
           <Label>Event Type</Label>
           <RadioGroup defaultValue="public" className="flex gap-4">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="public" id="public" />
+              <RadioGroupItem value="public" id="public"/>
               <Label htmlFor="public">Public</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="invite" id="invite" />
+              <RadioGroupItem value="invite" id="invite"/>
               <Label htmlFor="invite">Invite Only</Label>
             </div>
           </RadioGroup>
