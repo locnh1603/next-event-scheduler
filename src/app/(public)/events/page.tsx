@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/app/components/select";
 const Events = async () => {
+  // TODO: integration with API endpoint
   // const body = JSON.stringify({
   //   payload: {
   //     ids: []

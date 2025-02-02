@@ -4,7 +4,8 @@ export class EventModel {
   id: string = '';
   name: string = '';
   description: string = '';
-  date: number = 0;
+  startDate: number = 0;
+  endDate: number = 0;
   location: string = '';
   image: string = '';
   status: string = '';
@@ -16,7 +17,8 @@ export class EventModel {
 export class EventDTO {
   name: string = '';
   description: string = '';
-  date: number = 0;
+  startDate: number = 0;
+  endDate: number = 0;
   location: string = '';
   image: string = '';
   type: string = '';
@@ -34,7 +36,8 @@ export interface IEvent extends Document {
   id: string;
   name: string;
   description: string;
-  date: number;
+  startDate: number;
+  endDate: number;
   location: string;
   image: string;
   status: string;
@@ -55,7 +58,11 @@ const eventSchema: Schema = new mongoose.Schema({
   description: {
     type: String
   },
-  date: {
+  startDate: {
+    type: Number,
+    required: true
+  },
+  endDate: {
     type: Number,
     required: true
   },
