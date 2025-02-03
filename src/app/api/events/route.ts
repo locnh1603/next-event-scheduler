@@ -1,9 +1,11 @@
 import {NextRequest, NextResponse} from 'next/server';
-import Event, {EventDTO, GetEventsDTO} from "@/app/models/event.model";
-import {IRequestBody, IResponseBody} from '@/app/models/fetch.model';
-import {EventCommands} from '@/app/enums/event.enum';
+import Event, {EventDTO, GetEventsDTO} from "@/models/event.model";
+import {IRequestBody, IResponseBody} from '@/models/fetch.model';
+import {EventCommands} from '@/enums/event.enum';
 import {v4} from 'uuid';
 import dbConnect from '@/app/api/database/dbConnect';
+import {auth} from '@/auth';
+import moment from 'moment';
 
 export const GET = async () => {
   await dbConnect();
@@ -24,12 +26,39 @@ const getEvents = async(data: IRequestBody<GetEventsDTO>): Promise<IResponseBody
 
 const createEvent = async(data: IRequestBody<EventDTO>): Promise<IResponseBody> => {
   try {
+    const session = await auth();
     const id = v4();
     const active = true;
     const status = 'Pending';
+    const createdBy = session?.user?.email;
     const {payload, command} = data;
-    const resPayload = await Event.create({...payload, id, active, status});
+    const resPayload = await Event.create({...payload, id, active, status, createdBy});
     return {payload: resPayload, command};
+  } catch (err) {
+    const dbError = err as Error;
+    throw new Error(`Database error: ${dbError.message}`);
+  }
+}
+
+const getDashboardEvents = async(data: IRequestBody<GetEventsDTO>) => {
+  try {
+    const session = await auth();
+    const {command} = data;
+    const createdBy = session?.user?.email;
+    const yesterdayTimestamp = moment().subtract(1, 'day').valueOf();
+    const [myEvents, hotEvents, recentEvents] = await Promise.all([
+      Event.find({createdBy}),
+      Event.find({interested: {$gt: 10}}),
+      Event.find({startDate: {$gt: yesterdayTimestamp}})
+    ]);
+    return {
+      command,
+      payload: {
+        myEvents,
+        hotEvents,
+        recentEvents
+      }
+    }
   } catch (err) {
     const dbError = err as Error;
     throw new Error(`Database error: ${dbError.message}`);
@@ -47,6 +76,9 @@ export const POST = async (req: NextRequest) => {
         break;
       case EventCommands.createEvent:
         response = await createEvent(data as IRequestBody<EventDTO>);
+        break;
+      case EventCommands.getDashboardEvents:
+        response = await getDashboardEvents(data as IRequestBody<GetEventsDTO>);
         break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});

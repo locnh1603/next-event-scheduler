@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 export default auth((request) => {
   const protectedPaths = [
-    '/dashboard',
     '/profile',
     '/settings',
+    '/events/create'
   ];
   const {pathname, origin} = request.nextUrl;
   const isProtectedPath = protectedPaths.some((path) =>
