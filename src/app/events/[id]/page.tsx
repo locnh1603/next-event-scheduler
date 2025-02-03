@@ -84,7 +84,12 @@ const EventDetail = async(
   });
   const { payload }: IResponseBody<EventModel[]> = await data.json();
   return (
-    <div className="max-w-7xl mx-auto mt-4">
+  <div>
+    <div className="max-w-2xl mx-auto mb-6">
+      <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
+      <p className="text-gray-600">Event details and additional information</p>
+    </div>
+    <div className="max-w-7xl mx-auto">
       <div className="grid grid-cols-12 gap-4">
         <div className="grid col-span-4 gap-4">
           <div className="flex items-center justify-center text-lg font-bold">
@@ -94,13 +99,12 @@ const EventDetail = async(
             <Skeleton className="w-full h-[600px]"></Skeleton>
           </div>
         </div>
-
         <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
           <Skeleton className="w-full h-[915px]"></Skeleton>
         </div>
       </div>
-
     </div>
+  </div>
   );
 };
 

@@ -234,7 +234,11 @@ const CreateEventForm = () => {
 
 const CreateEvent = () => {
   return (
-    <div className="mt-4">
+    <div>
+      <div className="max-w-2xl mx-auto mb-6">
+        <h1 className="text-4xl font-bold mb-2">Create Event</h1>
+        <p className="text-gray-600">Create new event</p>
+      </div>
       <CreateEventForm></CreateEventForm>
     </div>
   );

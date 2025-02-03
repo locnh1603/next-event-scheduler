@@ -114,7 +114,7 @@ const NavBar = async () => {
     )
   }
   return (
-    <div className="w-full border-b">
+    <div className="w-full border-b h-[5vh]">
       <div className="flex h-16 items-center px-4 justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -124,8 +124,6 @@ const NavBar = async () => {
             <Image src="/next.svg" alt="Logo" width="50" height="50"/>
           </span>
         </div>
-
-        {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
@@ -139,11 +137,13 @@ const NavBar = async () => {
                       </NavigationMenuLink>
                     </Link>
                     <Link href='/events/create' passHref legacyBehavior>
-                      <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
+                      <NavigationMenuLink className={
+                        `cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`
+                      }>
                         Create Event
                       </NavigationMenuLink>
                     </Link>
-                    <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded disabled" aria-disabled={true}>
+                    <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded disabled">
                       My Calendar
                     </NavigationMenuLink>
                   </div>

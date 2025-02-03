@@ -10,10 +10,12 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
   return (
     <html lang="en">
       <body>
-          <div className="main">
-            <NavBar></NavBar>
+        <div className="main m-0">
+          <NavBar></NavBar>
+          <div className="h-[95vh] p-4">
             {children}
           </div>
+        </div>
         <SpeedInsights />
       </body>
     </html>

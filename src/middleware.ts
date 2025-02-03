@@ -11,7 +11,7 @@ export default auth((request) => {
     pathname.startsWith(path)
   );
   if (isProtectedPath && !request.auth) {
-    return NextResponse.redirect(origin);
+    return NextResponse.redirect(`${origin}/unauthorized`)
   }
   return NextResponse.next();
 })
