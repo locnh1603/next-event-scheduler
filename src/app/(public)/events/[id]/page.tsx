@@ -16,7 +16,7 @@ const EventMainInfo = (props: {data: EventModel}) => {
     return moment(timestamp).format('DD/MM/yyyy HH:mm');
   };
   return (
-    <Card className="w-full h-[270px]">
+    <Card className="w-full h-[300px]">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-2xl font-bold">{data.name || 'Untitled'}</CardTitle>
@@ -96,7 +96,7 @@ const EventDetail = async(
         </div>
 
         <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
-          <Skeleton className="w-full h-[885px]"></Skeleton>
+          <Skeleton className="w-full h-[915px]"></Skeleton>
         </div>
       </div>
 
