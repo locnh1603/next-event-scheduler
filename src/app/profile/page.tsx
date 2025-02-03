@@ -1,6 +1,5 @@
 import {Card, CardContent, CardHeader } from '@/components/card';
 import {auth} from '@/auth';
-import {redirect} from 'next/navigation';
 import React from 'react';
 import {Button} from '@/components/button';
 import {Label} from '@/components/label';
