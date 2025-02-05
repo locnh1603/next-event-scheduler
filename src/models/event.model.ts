@@ -33,6 +33,14 @@ export interface GetEventsDTO {
   ids?: string[];
 }
 
+export interface FilterEventsDTO {
+  searchParam: string;
+  page: number;
+  limit: number;
+  sortField: string;
+  sortOrder: 'asc' | 'desc';
+}
+
 export interface IEvent extends Document {
   id: string;
   name: string;

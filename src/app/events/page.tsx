@@ -1,21 +1,15 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/card";
 import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Calendar, Clock, MapPin, Filter, ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/select";
+import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import fetchWithCookie from '@/utilities/fetch';
 import {EventModel} from '@/models/event.model';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
-const Events = async () => {
+import Link from 'next/link';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/select';
+const EventDashboard = async () => {
   const session = await auth();
   const body = JSON.stringify({
     payload: {
@@ -69,7 +63,9 @@ const Events = async () => {
           <section className="max-w-7xl mx-auto mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">My Events</h2>
-              <Button variant="outline">View All</Button>
+              <Button variant="outline" asChild>
+                <Link href='/events/all'>View All</Link>
+              </Button>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               {myEvents.map(event => eventCard(event))}
@@ -80,7 +76,6 @@ const Events = async () => {
       <section className="max-w-7xl mx-auto mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Hot Events</h2>
-          <Button variant="outline">View All</Button>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {hotEvents.map(event => eventCard(event))}
@@ -90,60 +85,11 @@ const Events = async () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Recent Events</h2>
         </div>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
-                <Input placeholder="Search events..." className="w-full"/>
-              </div>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Category"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="tech">Technology</SelectItem>
-                  <SelectItem value="music">Music</SelectItem>
-                  <SelectItem value="sports">Sports</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Location"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Locations</SelectItem>
-                  <SelectItem value="sf">San Francisco</SelectItem>
-                  <SelectItem value="ny">New York</SelectItem>
-                  <SelectItem value="la">Los Angeles</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="w-4 h-4"/>
-                More Filters
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-      <section className="max-w-7xl mx-auto mb-6">
         <div className="grid md:grid-cols-2 gap-4">
           {recentEvents.map(event => eventCard(event))}
         </div>
       </section>
-      <div className="max-w-7xl mx-auto flex justify-center gap-2">
-        <Button variant="outline" size="icon">
-          <ChevronLeft className="w-4 h-4"/>
-        </Button>
-        <Button variant="outline">1</Button>
-        <Button>2</Button>
-        <Button variant="outline">3</Button>
-        <Button variant="outline">4</Button>
-        <Button variant="outline" size="icon">
-          <ChevronRight className="w-4 h-4"/>
-        </Button>
-      </div>
     </div>
   );
 }
-export default Events;
+export default EventDashboard;

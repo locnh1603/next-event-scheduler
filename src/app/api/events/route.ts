@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import Event, {EventDTO, GetEventsDTO} from "@/models/event.model";
+import Event, {EventDTO, FilterEventsDTO, GetEventsDTO} from "@/models/event.model";
 import {IRequestBody, IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {v4} from 'uuid';
@@ -16,8 +16,37 @@ export const GET = async () => {
 const getEvents = async(data: IRequestBody<GetEventsDTO>): Promise<IResponseBody> => {
   try {
     const {payload: {ids}, command} = data;
-    const resPayload = ids?.length ? await Event.find().where('id').in(ids) : await Event.find({});
+    const active = true;
+    const resPayload = ids?.length ?
+      await Event.find({active}).where('id').in(ids) :
+      await Event.find({active});
     return {payload: resPayload, command};
+  } catch (err) {
+    const dbError = err as Error;
+    throw new Error(`Database error: ${dbError.message}`);
+  }
+}
+
+const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IResponseBody> => {
+  try {
+    const {payload: {searchParam, page, limit, sortField, sortOrder}, command} = data;
+    const skip = (page - 1) * limit;
+    const sortOptions = {
+      [sortField]: sortOrder
+    };
+    const events = await Event
+        .find({
+          name: {
+            $regex: searchParam,
+            $options: 'i' // case - insensitive
+          }
+        })
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    const totalCount = await Event.find({}).countDocuments();
+    return {payload: {events, totalCount}, command};
   } catch (err) {
     const dbError = err as Error;
     throw new Error(`Database error: ${dbError.message}`);
@@ -79,6 +108,9 @@ export const POST = async (req: NextRequest) => {
         break;
       case EventCommands.getDashboardEvents:
         response = await getDashboardEvents(data as IRequestBody<GetEventsDTO>);
+        break;
+      case EventCommands.filterEvents:
+        response = await filterEvents(data as IRequestBody<FilterEventsDTO>);
         break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});
