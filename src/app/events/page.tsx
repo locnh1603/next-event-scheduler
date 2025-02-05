@@ -1,14 +1,13 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/card";
 import { Button } from "@/components/button";
-import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import fetchWithCookie from '@/utilities/fetch';
 import {EventModel} from '@/models/event.model';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/select';
 const EventDashboard = async () => {
   const session = await auth();
   const body = JSON.stringify({
