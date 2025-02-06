@@ -46,7 +46,10 @@ const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IRespon
         .limit(limit)
         .lean();
     const totalCount = await Event.find({}).countDocuments();
-    return {payload: {events, totalCount}, command};
+    const totalPages = Math.ceil(totalCount / limit);
+    const currentPage = page;
+    const count = events.length;
+    return {payload: {events, count, totalCount, totalPages, currentPage}, command};
   } catch (err) {
     const dbError = err as Error;
     throw new Error(`Database error: ${dbError.message}`);

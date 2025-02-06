@@ -51,10 +51,12 @@ const EventFilter = () => {
   )
 }
 
-const EventList = async() => {
+const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) => {
+  const params = await searchParams;
+  const {page} = params;
   const payload: FilterEventsDTO = {
     searchParam: '',
-    page: 1,
+    page: page ? Number(page) : 1,
     limit: 10,
     sortField: 'name',
     sortOrder: 'asc'
@@ -68,7 +70,9 @@ const EventList = async() => {
     body,
   });
   const res = await data.json();
-  console.log(res);
+  const {totalCount, totalPages, currentPage, events} = res.payload;
+  console.log(totalCount, totalPages, currentPage, events.length);
+  console.log(events);
   return (
     <div className="h-full max-w-7xl mx-auto">
       <div className="w-full mb-6">
@@ -77,20 +81,24 @@ const EventList = async() => {
       {/*TODO : design and implement event list*/}
       <Skeleton className="h-[900px] w-full mb-6"></Skeleton>
 
-      <div className="w-full">
-        <Pagination>
+      <div className="w-full flex">
+        <Pagination className="justify-between">
+          <p className="text-sm flex items-center justify-center">Showing {events.length} out of {totalCount} events</p>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href="#" />
+              <PaginationPrevious href="#"/>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
+              <PaginationLink href="/events/all?page=1">1</PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationEllipsis />
+              <PaginationLink href="/events/all?page=2">2</PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationNext href="#" />
+              <PaginationEllipsis/>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#"/>
             </PaginationItem>
           </PaginationContent>
         </Pagination>
