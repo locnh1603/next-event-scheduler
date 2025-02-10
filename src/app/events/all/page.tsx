@@ -10,6 +10,7 @@ import {FilterEventsDTO} from '@/models/event.model';
 import {Pagination, PaginationContent,
   PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/pagination';
 import {Skeleton} from '@/components/skeleton';
+import {generateNumberArray} from '@/utilities/functions';
 
 const EventFilter = () => {
   return (
@@ -21,24 +22,12 @@ const EventFilter = () => {
           </div>
           <Select>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Category"/>
+              <SelectValue placeholder="Type"/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="tech">Technology</SelectItem>
-              <SelectItem value="music">Music</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Location"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Locations</SelectItem>
-              <SelectItem value="sf">San Francisco</SelectItem>
-              <SelectItem value="ny">New York</SelectItem>
-              <SelectItem value="la">Los Angeles</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="public">Public</SelectItem>
+              <SelectItem value="invite">Invite Only</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" className="flex items-center gap-2">
@@ -71,8 +60,21 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
   });
   const res = await data.json();
   const {totalCount, totalPages, currentPage, events} = res.payload;
-  console.log(totalCount, totalPages, currentPage, events.length);
-  console.log(events);
+  let pageToDisplay: number[] = [];
+  if (totalPages < currentPage) {
+    pageToDisplay = generateNumberArray(1, currentPage).slice(-5);
+  } else {
+    if (totalPages <= 5) {
+      pageToDisplay = generateNumberArray(1, totalPages);
+    } else if (currentPage <= 2 && totalPages <= 5) {
+      pageToDisplay = generateNumberArray(1, currentPage);
+    } else {
+      const isNearEnd = currentPage + 2 >= totalPages;
+      const firstPage = isNearEnd ? totalPages - 4 : ((currentPage - 2) > 0 ? currentPage - 2 : currentPage);
+      const lastPage = isNearEnd ? totalPages : ((currentPage + 2) >= 5 ? currentPage + 2 : 5);
+      pageToDisplay = generateNumberArray(firstPage, lastPage);
+    }
+  }
   return (
     <div className="h-full max-w-7xl mx-auto">
       <div className="w-full mb-6">
@@ -85,19 +87,22 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
         <Pagination className="justify-between">
           <p className="text-sm flex items-center justify-center">Showing {events.length} out of {totalCount} events</p>
           <PaginationContent>
-            <PaginationItem>
+            <PaginationItem className={ currentPage <= 1 ? 'disabled' : ''}>
               <PaginationPrevious href="#"/>
             </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="/events/all?page=1">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="/events/all?page=2">2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis/>
-            </PaginationItem>
-            <PaginationItem>
+            {pageToDisplay.map(page =>
+              (
+                <PaginationItem key={page}>
+                  <PaginationLink href={`/events/all?page=${page}`}>{page}</PaginationLink>
+                </PaginationItem>
+              ))
+            }
+            {totalPages > 5 ?
+              (<PaginationItem>
+                <PaginationEllipsis/>
+              </PaginationItem>) : null
+            }
+            <PaginationItem className={ currentPage >= totalPages ? 'disabled' : ''}>
               <PaginationNext href="#"/>
             </PaginationItem>
           </PaginationContent>
