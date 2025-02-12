@@ -2,53 +2,35 @@ import {Card, CardContent} from '@/components/card';
 import {Input} from '@/components/input';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/select';
 import {Button} from '@/components/button';
-import {Filter} from 'lucide-react';
 import React from 'react';
 import {EventCommands} from '@/enums/event.enum';
 import fetchWithCookie from '@/utilities/fetch';
 import {FilterEventsDTO} from '@/models/event.model';
-import {Pagination, PaginationContent,
-  PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/pagination';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
+} from '@/components/pagination';
 import {Skeleton} from '@/components/skeleton';
 import {generateNumberArray} from '@/utilities/functions';
-
-const EventFilter = () => {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[200px]">
-            <Input placeholder="Search events..." className="w-full"/>
-          </div>
-          <Select>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Type"/>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="public">Public</SelectItem>
-              <SelectItem value="invite">Invite Only</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" className="flex items-center gap-2">
-            <Filter className="w-4 h-4"/>
-            More Filters
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+import {redirect} from 'next/navigation';
 
 const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) => {
   const params = await searchParams;
-  const {page} = params;
+  const {page, type, search} = params;
   const payload: FilterEventsDTO = {
-    searchParam: '',
+    searchParam: search as string || '',
     page: page ? Number(page) : 1,
     limit: 10,
     sortField: 'name',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
+    filter: {
+      type: type as string || ''
+    }
   }
   const body = JSON.stringify({
     payload,
@@ -75,10 +57,42 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
       pageToDisplay = generateNumberArray(firstPage, lastPage);
     }
   }
+  const filterEvents = async(formData: FormData) => {
+    'use server'
+    const searchInput = formData.get('search');
+    const typeInput = formData.get('type');
+    const searchParam = searchInput ? `&search=${searchInput || search || ''}` : '';
+    const typeParam = `&type=${typeInput || type || 'all'}`;
+    const url = `/events/all?page=${page || 1}${searchParam}${typeParam}`
+    redirect(url);
+  }
   return (
     <div className="h-full max-w-7xl mx-auto">
       <div className="w-full mb-6">
-        <EventFilter></EventFilter>
+        <Card>
+          <CardContent className="p-4">
+            <form action={filterEvents}>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex-1 min-w-[200px]">
+                  <Input placeholder={'Search events...'} defaultValue={search} className="w-full" name="search"/>
+                </div>
+                <Select name="type" defaultValue={type as string || 'all'}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Type"/>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="public">Public</SelectItem>
+                    <SelectItem value="invite">Invite Only</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" className="flex items-center gap-2" type="submit">
+                  Apply
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
       {/*TODO : design and implement event list*/}
       <Skeleton className="h-[900px] w-full mb-6"></Skeleton>
@@ -90,12 +104,13 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
             <PaginationItem className={ currentPage <= 1 ? 'disabled' : ''}>
               <PaginationPrevious href="#"/>
             </PaginationItem>
-            {pageToDisplay.map(page =>
-              (
+            {pageToDisplay.map(page => {
+              const pageUrl = `/events/all?page=${page}&type=${type || ''}&search=${search || ''}`;
+              return ((
                 <PaginationItem key={page}>
-                  <PaginationLink href={`/events/all?page=${page}`}>{page}</PaginationLink>
+                  <PaginationLink href={pageUrl}>{page}</PaginationLink>
                 </PaginationItem>
-              ))
+              ))})
             }
             {totalPages > 5 ?
               (<PaginationItem>

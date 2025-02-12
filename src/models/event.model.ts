@@ -39,6 +39,9 @@ export interface FilterEventsDTO {
   limit: number;
   sortField: string;
   sortOrder: 'asc' | 'desc';
+  filter: {
+    type: string;
+  }
 }
 
 export interface IEvent extends Document {
