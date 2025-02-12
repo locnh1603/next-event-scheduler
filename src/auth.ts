@@ -17,7 +17,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.picture = profile.picture;
       }
       if (account) {
-        console.log(account.providerAccountId);
         token.provider = account.provider;
       }
       return token;

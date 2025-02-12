@@ -8,6 +8,7 @@ import {Calendar, Map, Tag} from 'lucide-react';
 import { Badge } from '@/components/badge';
 import moment from 'moment';
 import {Skeleton} from '@/components/skeleton';
+import {redirect} from 'next/navigation';
 
 const EventMainInfo = (props: {data: EventModel}) => {
   const {data} = props;
@@ -15,6 +16,9 @@ const EventMainInfo = (props: {data: EventModel}) => {
     if (!timestamp) return 'Not set';
     return moment(timestamp).format('DD/MM/yyyy HH:mm');
   };
+  if (!data) {
+    redirect('/events');
+  }
   return (
     <Card className="w-full h-[300px]">
       <CardHeader>
