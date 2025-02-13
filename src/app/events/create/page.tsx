@@ -53,7 +53,10 @@ const CreateEventForm = () => {
   })
   const [tags, setTags] = useState<string[]>([]);
   const onSubmit = async (data: FormData) => {
-    const Cookie = JSON.stringify(getCookies());
+    const cookies = getCookies();
+    const Cookie = cookies ? Object.entries(cookies)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
+      .join('; ') : '';
     const startDate = moment(data.startDate).valueOf();
     const endDate = moment(data.endDate).valueOf();
     const body = JSON.stringify({
@@ -189,7 +192,7 @@ const CreateEventForm = () => {
                 <>
                   <FormLabel>Event Type</FormLabel>
                   <FormControl>
-                    <RadioGroup className="flex gap-4" {...field}>
+                    <RadioGroup className="flex gap-4" {...field} onValueChange={field.onChange}>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="public" id="public"/>
                         <Label htmlFor="public">Public</Label>

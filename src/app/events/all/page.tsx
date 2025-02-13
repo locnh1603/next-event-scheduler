@@ -45,17 +45,17 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
   let pageToDisplay: number[] = [];
   if (totalPages < currentPage) {
     pageToDisplay = generateNumberArray(1, currentPage).slice(-5);
+  } else if (totalPages <= 5) {
+    pageToDisplay = generateNumberArray(1, totalPages);
+  } else if (currentPage <= 2) {
+    pageToDisplay = generateNumberArray(1, 5);
+  } else if (currentPage + 2 >= totalPages) {
+    const firstPage = totalPages - 4;
+    pageToDisplay = generateNumberArray(firstPage, totalPages);
   } else {
-    if (totalPages <= 5) {
-      pageToDisplay = generateNumberArray(1, totalPages);
-    } else if (currentPage <= 2 && totalPages <= 5) {
-      pageToDisplay = generateNumberArray(1, currentPage);
-    } else {
-      const isNearEnd = currentPage + 2 >= totalPages;
-      const firstPage = isNearEnd ? totalPages - 4 : ((currentPage - 2) > 0 ? currentPage - 2 : currentPage);
-      const lastPage = isNearEnd ? totalPages : ((currentPage + 2) >= 5 ? currentPage + 2 : 5);
-      pageToDisplay = generateNumberArray(firstPage, lastPage);
-    }
+    const firstPage = currentPage - 2;
+    const lastPage = currentPage + 2;
+    pageToDisplay = generateNumberArray(firstPage, lastPage);
   }
   const filterEvents = async(formData: FormData) => {
     'use server'

@@ -52,8 +52,8 @@ const EventMainInfo = (props: {data: EventModel}) => {
           </div>
 
           <div className="flex items-center gap-2">
-            {data.type && <Badge variant="outline">{data.type}</Badge>}
-            {data.status && <Badge variant="outline" className="capitalize">{data.status}</Badge>}
+            {data.type && <Badge variant="outline" className="lowercase">{data.type}</Badge>}
+            {data.status && <Badge variant="outline" className="lowercase">{data.status}</Badge>}
           </div>
 
           {data.tags && data.tags.length > 0 && (
@@ -89,7 +89,7 @@ const EventDetail = async(
   const { payload }: IResponseBody<EventModel[]> = await data.json();
   return (
   <div>
-    <div className="max-w-2xl mx-auto mb-6">
+    <div className="max-w-7xl mx-auto mb-6">
       <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
       <p className="text-gray-600">Event details and additional information</p>
     </div>

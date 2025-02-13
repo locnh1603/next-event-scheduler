@@ -44,7 +44,18 @@ const EventDashboard = async () => {
                 <span>{event.location}</span>
               </div>
             </div>
-            <Button>Manage</Button>
+            <span>
+              <Button variant="outline" asChild>
+                <Link href={`/events/${event.id}`}>View</Link>
+              </Button>
+              {
+                event.type === 'public' ? (
+                  <Button className="ml-2" asChild>
+                    <Link href='/events'>Join</Link>
+                  </Button>
+                ) : (<></>)
+              }
+            </span>
           </div>
         </CardContent>
       </Card>
