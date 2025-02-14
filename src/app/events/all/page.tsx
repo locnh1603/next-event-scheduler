@@ -15,7 +15,6 @@ import {
   PaginationNext,
   PaginationPrevious
 } from '@/components/pagination';
-import {Skeleton} from '@/components/skeleton';
 import {generateNumberArray} from '@/utilities/functions';
 import {redirect} from 'next/navigation';
 import EventCard from '@/app/events/event-card';
