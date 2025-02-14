@@ -29,7 +29,9 @@ const getEvents = async(data: IRequestBody<GetEventsDTO>): Promise<IResponseBody
 
 const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IResponseBody> => {
   try {
-    const {payload: {searchParam, page, limit, sortField, sortOrder}, command} = data;
+    const session = await auth();
+    const createdBy = session?.user?.email;
+    const {payload: {searchParam, page, limit, sortField, sortOrder, filter: {type}}, command} = data;
     const skip = (page - 1) * limit;
     const sortOptions = {
       [sortField]: sortOrder
@@ -39,7 +41,12 @@ const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IRespon
           name:  {
             $regex: searchParam || '',
             $options: 'i'
-          }
+          },
+          type:  {
+            $regex: type ? type === 'all' ? '' : type : '',
+            $options: 'i'
+          },
+          createdBy
         })
         .sort(sortOptions)
         .skip(skip)

@@ -5,7 +5,7 @@ import {Button} from '@/components/button';
 import React from 'react';
 import {EventCommands} from '@/enums/event.enum';
 import fetchWithCookie from '@/utilities/fetch';
-import {FilterEventsDTO} from '@/models/event.model';
+import {EventModel, FilterEventsDTO} from '@/models/event.model';
 import {
   Pagination,
   PaginationContent,
@@ -18,6 +18,7 @@ import {
 import {Skeleton} from '@/components/skeleton';
 import {generateNumberArray} from '@/utilities/functions';
 import {redirect} from 'next/navigation';
+import EventCard from '@/app/events/event-card';
 
 const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) => {
   const params = await searchParams;
@@ -95,7 +96,9 @@ const EventList = async({searchParams}: {searchParams: Promise<{ [key: string]: 
         </Card>
       </div>
       {/*TODO : design and implement event list*/}
-      <Skeleton className="h-[900px] w-full mb-6"></Skeleton>
+      <div className="w-full">
+        {events.map((event: EventModel, index: number) => (<EventCard event={event} key={index}></EventCard>))}
+      </div>
 
       <div className="w-full flex">
         <Pagination className="justify-between">

@@ -9,6 +9,8 @@ import { Badge } from '@/components/badge';
 import moment from 'moment';
 import {Skeleton} from '@/components/skeleton';
 import {redirect} from 'next/navigation';
+import {Button} from '@/components/button';
+import Link from 'next/link';
 
 const EventMainInfo = (props: {data: EventModel}) => {
   const {data} = props;
@@ -92,6 +94,12 @@ const EventDetail = async(
     <div className="max-w-7xl mx-auto mb-6">
       <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
       <p className="text-gray-600">Event details and additional information</p>
+      <Button variant="outline" asChild>
+        <Link href={`/events/${id}/edit`}>Manage</Link>
+      </Button>
+      <Button variant="outline" asChild>
+        <Link href={`/events`}>Back</Link>
+      </Button>
     </div>
     <div className="max-w-7xl mx-auto">
       <div className="grid grid-cols-12 gap-4">

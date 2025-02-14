@@ -1,13 +1,12 @@
 import React from 'react';
-import { Card, CardContent } from "@/components/card";
 import { Button } from "@/components/button";
-import { Calendar, Clock, MapPin } from "lucide-react";
 import fetchWithCookie from '@/utilities/fetch';
 import {EventModel} from '@/models/event.model';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
+import EventCard from '@/app/events/event-card';
 const EventDashboard = async () => {
   const session = await auth();
   const body = JSON.stringify({
@@ -26,42 +25,6 @@ const EventDashboard = async () => {
     recentEvents: EventModel[];
   }> = await data.json();
   const { myEvents, hotEvents, recentEvents } = payload;
-  const eventCard = (event: EventModel) => {
-    return (
-      <Card key={event.id}>
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="font-semibold text-lg">{event.name}</h3>
-              <div className="flex items-center gap-2 text-gray-600 mt-2">
-                <Calendar className="w-4 h-4"/>
-                <span>{event.name}</span>
-                <Clock className="w-4 h-4 ml-2"/>
-                <span>{event.name}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600 mt-1">
-                <MapPin className="w-4 h-4"/>
-                <span>{event.location}</span>
-              </div>
-            </div>
-            <span>
-              <Button variant="outline" asChild>
-                <Link href={`/events/${event.id}`}>View</Link>
-              </Button>
-              {
-                event.type === 'public' ? (
-                  <Button className="ml-2" asChild>
-                    <Link href='/events'>Join</Link>
-                  </Button>
-                ) : (<></>)
-              }
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
     <div className="h-full">
       <div className="max-w-7xl mx-auto mb-6">
@@ -78,7 +41,7 @@ const EventDashboard = async () => {
               </Button>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              {myEvents.map(event => eventCard(event))}
+              {myEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
             </div>
           </section>
         ) : <></>
@@ -88,7 +51,7 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Hot Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {hotEvents.map(event => eventCard(event))}
+          {hotEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
         </div>
       </section>
       <section className="max-w-7xl mx-auto mb-6">
@@ -96,7 +59,7 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Recent Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {recentEvents.map(event => eventCard(event))}
+          {recentEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
         </div>
       </section>
     </div>
