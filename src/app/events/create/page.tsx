@@ -13,7 +13,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Form, FormControl, FormField, FormLabel, FormMessage} from '@/components/form';
 import {useCookiesNext} from 'cookies-next';
 import {EventCommands} from '@/enums/event.enum';
-import moment from 'moment';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventModel} from '@/models/event.model';
 import {useRouter} from 'next/navigation';
@@ -52,13 +51,15 @@ const CreateEventForm = () => {
     },
   })
   const [tags, setTags] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const onSubmit = async (data: FormData) => {
+    setLoading(true);
     const cookies = getCookies();
     const Cookie = cookies ? Object.entries(cookies)
       .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
       .join('; ') : '';
-    const startDate = moment(data.startDate).valueOf();
-    const endDate = moment(data.endDate).valueOf();
+    const startDate = new Date(data.startDate).getTime();
+    const endDate = new Date(data.endDate).getTime();
     const body = JSON.stringify({
       payload: {
         ...data,
@@ -68,6 +69,7 @@ const CreateEventForm = () => {
       },
       command: EventCommands.createEvent
     });
+    console.log(body);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
         method: 'POST',
@@ -88,6 +90,8 @@ const CreateEventForm = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -228,7 +232,7 @@ const CreateEventForm = () => {
         </CardContent>
         <CardFooter className="flex justify-end space-x-4">
           <Button variant="outline">Cancel</Button>
-          <Button type="submit">Create Event</Button>
+          <Button type="submit" disabled={loading}>Create Event</Button>
         </CardFooter>
       </form>
     </Form>

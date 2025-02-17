@@ -45,7 +45,6 @@ const EventList = () => {
   const search = searchParams.get('search') || '';
 
   const fetchEvents = useCallback(async () => {
-    console.log('fetch');
     const payload: FilterEventsDTO = {
       searchParam: search,
       page: Number(page),

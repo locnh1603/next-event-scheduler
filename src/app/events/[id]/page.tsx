@@ -6,18 +6,14 @@ import {Card, CardContent, CardHeader, CardTitle} from '@/components/card';
 import React from 'react';
 import {Calendar, Map, Tag} from 'lucide-react';
 import { Badge } from '@/components/badge';
-import moment from 'moment';
 import {Skeleton} from '@/components/skeleton';
 import {redirect} from 'next/navigation';
 import {Button} from '@/components/button';
 import Link from 'next/link';
+import {formatDate} from '@/utilities/date';
 
 const EventMainInfo = (props: {data: EventModel}) => {
   const {data} = props;
-  const formatDate = (timestamp: number) => {
-    if (!timestamp) return 'Not set';
-    return moment(timestamp).format('DD/MM/yyyy HH:mm');
-  };
   if (!data) {
     redirect('/events');
   }

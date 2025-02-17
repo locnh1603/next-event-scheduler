@@ -5,7 +5,7 @@ import {EventCommands} from '@/enums/event.enum';
 import {v4} from 'uuid';
 import dbConnect from '@/app/api/database/dbConnect';
 import {auth} from '@/auth';
-import moment from 'moment';
+import { subDays } from 'date-fns';
 
 export const GET = async () => {
   await dbConnect();
@@ -85,7 +85,7 @@ const getDashboardEvents = async(data: IRequestBody<GetEventsDTO>) => {
     const session = await auth();
     const {command} = data;
     const createdBy = session?.user?.email;
-    const yesterdayTimestamp = moment().subtract(1, 'day').valueOf();
+    const yesterdayTimestamp = subDays(new Date(), 1).getTime();
     const [myEvents, hotEvents, recentEvents] = await Promise.all([
       Event.find({createdBy}),
       Event.find({interested: {$gt: 10}}),

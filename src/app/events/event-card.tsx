@@ -4,6 +4,7 @@ import {Calendar, Clock, MapPin} from 'lucide-react';
 import {Button} from '@/components/button';
 import Link from 'next/link';
 import React from 'react';
+import {formatDate} from '@/utilities/date';
 
 const EventCard = (props: { event: EventModel }) => {
   const {event} = props;
@@ -17,7 +18,7 @@ const EventCard = (props: { event: EventModel }) => {
               <Calendar className="w-4 h-4"/>
               <span>{event.name}</span>
               <Clock className="w-4 h-4 ml-2"/>
-              <span>{event.name}</span>
+              <span>{formatDate(event.startDate)}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600 mt-1">
               <MapPin className="w-4 h-4"/>
