@@ -11,20 +11,24 @@ import {redirect} from 'next/navigation';
 import {Button} from '@/components/button';
 import Link from 'next/link';
 import {formatDate} from '@/utilities/date';
+import {EditDetailForm} from '@/app/events/[id]/edit-event-form';
 
-const EventMainInfo = (props: {data: EventModel}) => {
-  const {data} = props;
-  if (!data) {
+const EventMainInfo = (props: {event: EventModel}) => {
+  const {event} = props;
+  if (!event) {
     redirect('/events');
   }
   return (
     <Card className="w-full h-[300px]">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle className="text-2xl font-bold">{data.name || 'Untitled'}</CardTitle>
-          <Badge variant={data.active ? "default" : "secondary"} className="pointer-events-none">
-            {data.active ? "Active" : "Inactive"}
-          </Badge>
+          <div className="flex">
+            <CardTitle className="text-2xl font-bold">{event.name || 'Untitled'}</CardTitle>
+            <Badge variant={event.active ? "default" : "secondary"} className="pointer-events-none ml-2">
+              {event.active ? "Active" : "Inactive"}
+            </Badge>
+          </div>
+          <EditDetailForm event={event}></EditDetailForm>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -37,26 +41,26 @@ const EventMainInfo = (props: {data: EventModel}) => {
         {/*)}*/}
 
         <div className="space-y-4">
-          <p className="text-gray-600">{data.description || 'No description available'}</p>
+          <p className="text-gray-600">{event.description || 'No description available'}</p>
 
           <div className="flex items-center gap-2 text-gray-600">
             <Calendar size={20} />
-            <span>{formatDate(data.startDate)} - {formatDate(data.endDate)}</span>
+            <span>{formatDate(event.startDate)} - {formatDate(event.endDate)}</span>
           </div>
 
           <div className="flex items-center gap-2 text-gray-600">
             <Map size={20} />
-            <span>{data.location || 'Location not specified'}</span>
+            <span>{event.location || 'Location not specified'}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            {data.type && <Badge variant="outline" className="lowercase">{data.type}</Badge>}
-            {data.status && <Badge variant="outline" className="lowercase">{data.status}</Badge>}
+            {event.type && <Badge variant="outline" className="lowercase">{event.type}</Badge>}
+            {event.status && <Badge variant="outline" className="lowercase">{event.status}</Badge>}
           </div>
 
-          {data.tags && data.tags.length > 0 && (
+          {event.tags && event.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {data.tags.map((tag, index) => (
+              {event.tags.map((tag, index) => (
                 <div key={index} className="flex items-center gap-1">
                   <Tag size={16} className="text-gray-400" />
                   <span className="text-sm text-gray-600">{tag}</span>
@@ -91,9 +95,6 @@ const EventDetail = async(
       <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
       <p className="text-gray-600">Event details and additional information</p>
       <Button variant="outline" asChild>
-        <Link href={`/events/${id}/edit`}>Manage</Link>
-      </Button>
-      <Button variant="outline" asChild>
         <Link href={`/events`}>Back</Link>
       </Button>
     </div>
@@ -101,7 +102,7 @@ const EventDetail = async(
       <div className="grid grid-cols-12 gap-4">
         <div className="grid col-span-4 gap-4">
           <div className="flex items-center justify-center text-lg font-bold">
-            <EventMainInfo data={payload[0]}></EventMainInfo>
+            <EventMainInfo event={payload[0]}></EventMainInfo>
           </div>
           <div className="flex items-center justify-center text-lg font-bold">
             <Skeleton className="w-full h-[600px]"></Skeleton>

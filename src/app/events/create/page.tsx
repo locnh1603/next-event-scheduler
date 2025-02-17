@@ -69,7 +69,6 @@ const CreateEventForm = () => {
       },
       command: EventCommands.createEvent
     });
-    console.log(body);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
         method: 'POST',
