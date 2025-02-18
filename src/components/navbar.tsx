@@ -114,7 +114,7 @@ const NavBar = async () => {
     )
   }
   return (
-    <div className="w-full border-b h-[5vh]">
+    <div className="w-full border-b min-h-[5vh]">
       <div className="flex h-16 items-center px-4 justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" className="md:hidden">
