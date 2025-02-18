@@ -3,7 +3,7 @@ import fetchWithCookie from '@/utilities/fetch';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventModel} from '@/models/event.model';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/card';
-import React from 'react';
+import React, {Suspense} from 'react';
 import {Calendar, Map, Tag} from 'lucide-react';
 import { Badge } from '@/components/badge';
 import {Skeleton} from '@/components/skeleton';
@@ -11,7 +11,7 @@ import {redirect} from 'next/navigation';
 import {Button} from '@/components/button';
 import Link from 'next/link';
 import {formatDate} from '@/utilities/date';
-import {EditDetailForm} from '@/app/events/[id]/edit-event-form';
+import {EditDetailDialog} from '@/app/events/[id]/edit-event-dialog';
 
 const EventMainInfo = (props: {event: EventModel}) => {
   const {event} = props;
@@ -28,7 +28,7 @@ const EventMainInfo = (props: {event: EventModel}) => {
               {event.active ? "Active" : "Inactive"}
             </Badge>
           </div>
-          <EditDetailForm event={event}></EditDetailForm>
+          <EditDetailDialog event={event}></EditDetailDialog>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -102,7 +102,9 @@ const EventDetail = async(
       <div className="grid grid-cols-12 gap-4">
         <div className="grid col-span-4 gap-4">
           <div className="flex items-center justify-center text-lg font-bold">
-            <EventMainInfo event={payload[0]}></EventMainInfo>
+            <Suspense fallback={<Skeleton className="w-full h-full"></Skeleton>}>
+              <EventMainInfo event={payload[0]}></EventMainInfo>
+            </Suspense>
           </div>
           <div className="flex items-center justify-center text-lg font-bold">
             <Skeleton className="w-full h-[600px]"></Skeleton>

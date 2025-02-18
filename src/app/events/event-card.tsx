@@ -5,6 +5,7 @@ import {Button} from '@/components/button';
 import Link from 'next/link';
 import React from 'react';
 import {formatDate} from '@/utilities/date';
+import {JoinEventDialog} from '@/app/events/join-event-dialog';
 
 const EventCard = (props: { event: EventModel }) => {
   const {event} = props;
@@ -31,9 +32,7 @@ const EventCard = (props: { event: EventModel }) => {
               </Button>
             {
               event.type === 'public' ? (
-                <Button className="ml-2" asChild>
-                  <Link href='/events'>Join</Link>
-                </Button>
+                <JoinEventDialog event={event}></JoinEventDialog>
               ) : (<></>)
             }
             </span>

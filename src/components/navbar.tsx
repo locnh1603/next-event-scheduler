@@ -47,12 +47,15 @@ const NavBar = async () => {
           <DropdownMenuSeparator/>
           <DropdownMenuItem className="cursor-pointer" onClick={async () => {
             "use server"
-            redirect('/profile')
+            redirect('/profile');
           }}>
             <User className="mr-2 h-4 w-4"/>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
+            "use server"
+            redirect('/settings');
+          }}>
             <Settings className="mr-2 h-4 w-4"/>
             Settings
           </DropdownMenuItem>
@@ -143,9 +146,11 @@ const NavBar = async () => {
                         Create Event
                       </NavigationMenuLink>
                     </Link>
-                    <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded disabled">
-                      My Calendar
-                    </NavigationMenuLink>
+                    <Link href='/calendar' passHref legacyBehavior>
+                      <NavigationMenuLink className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`}>
+                        My Calendar
+                      </NavigationMenuLink>
+                    </Link>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
