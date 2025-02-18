@@ -117,7 +117,6 @@ const CreateEventForm = () => {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <FormField control={form.control} render={({field}) => (
-
                 <>
                   <FormLabel htmlFor="name">Name</FormLabel>
                   <FormControl>
