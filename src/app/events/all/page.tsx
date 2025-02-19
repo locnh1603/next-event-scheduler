@@ -156,9 +156,11 @@ const EventList = () => {
       {isLoading ? (<Loading></Loading>) :
         (
           <section>
-            <div className="w-full">
+            <div className="w-full grid grid-cols-2 gap-2">
               {events.map((event: EventModel, index: number) => (
-                <EventCard event={event} key={index}/>
+                <div className="my-2" key={index}>
+                  <EventCard event={event}/>
+                </div>
               ))}
             </div>
 

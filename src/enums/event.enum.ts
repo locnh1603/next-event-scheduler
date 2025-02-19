@@ -2,5 +2,6 @@ export enum EventCommands {
   getEvents = 'getEvents',
   createEvent = 'createEvent',
   getDashboardEvents = 'getDashboardEvents',
-  filterEvents = 'filterEvents'
+  filterEvents = 'filterEvents',
+  updateEventDetails = 'updateEventDetails',
 }

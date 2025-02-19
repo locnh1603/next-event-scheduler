@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import Event, {EventDTO, FilterEventsDTO, GetEventsDTO} from "@/models/event.model";
+import Event, {EventDTO, FilterEventsDTO, GetEventsDTO, EditEventDetailsDTO} from "@/models/event.model";
 import {IRequestBody, IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {v4} from 'uuid';
@@ -87,9 +87,9 @@ const getDashboardEvents = async(data: IRequestBody<GetEventsDTO>) => {
     const createdBy = session?.user?.email;
     const yesterdayTimestamp = subDays(new Date(), 1).getTime();
     const [myEvents, hotEvents, recentEvents] = await Promise.all([
-      Event.find({createdBy}),
-      Event.find({interested: {$gt: 10}}),
-      Event.find({startDate: {$gt: yesterdayTimestamp}})
+      Event.find({createdBy}).limit(6),
+      Event.find({interested: {$gt: 10}}).limit(6),
+      Event.find({startDate: {$gt: yesterdayTimestamp}}).limit(6)
     ]);
     return {
       command,
@@ -97,6 +97,29 @@ const getDashboardEvents = async(data: IRequestBody<GetEventsDTO>) => {
         myEvents,
         hotEvents,
         recentEvents
+      }
+    }
+  } catch (err) {
+    const dbError = err as Error;
+    throw new Error(`Database error: ${dbError.message}`);
+  }
+}
+
+const updateEventDetails = async(data: IRequestBody<EditEventDetailsDTO>) => {
+  try {
+    const {
+      payload: { id, name, description },
+      command,
+    } = data;
+    console.log(data, this)
+    const event = await Event.findOneAndUpdate({ id }, {
+      name,
+      description
+    }, {new: true})
+    return {
+      command,
+      payload: {
+        event
       }
     }
   } catch (err) {
@@ -122,6 +145,9 @@ export const POST = async (req: NextRequest) => {
         break;
       case EventCommands.filterEvents:
         response = await filterEvents(data as IRequestBody<FilterEventsDTO>);
+        break;
+      case EventCommands.updateEventDetails:
+        response = await updateEventDetails(data as IRequestBody<EditEventDetailsDTO>);
         break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});

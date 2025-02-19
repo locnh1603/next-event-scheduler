@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/button";
-import fetchWithCookie from '@/utilities/fetch';
+import fetchWithCookie from '@/utilities/fetch-server-action';
 import {EventModel} from '@/models/event.model';
 import {IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';

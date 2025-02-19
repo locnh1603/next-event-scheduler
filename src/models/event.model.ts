@@ -33,6 +33,12 @@ export interface GetEventsDTO {
   ids?: string[];
 }
 
+export interface EditEventDetailsDTO {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface FilterEventsDTO {
   searchParam: string;
   page: number;
