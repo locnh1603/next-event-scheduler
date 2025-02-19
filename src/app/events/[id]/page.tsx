@@ -12,9 +12,11 @@ import {Button} from '@/components/button';
 import Link from 'next/link';
 import {formatDate} from '@/utilities/date';
 import {EditDetailDialog} from '@/app/events/[id]/edit-event-dialog';
+import {auth} from '@/auth';
 
-const EventMainInfo = (props: {event: EventModel}) => {
+const EventMainInfo = async (props: {event: EventModel}) => {
   const {event} = props;
+  const session = await auth();
   if (!event) {
     redirect('/events');
   }
@@ -28,18 +30,14 @@ const EventMainInfo = (props: {event: EventModel}) => {
               {event.active ? "Active" : "Inactive"}
             </Badge>
           </div>
-          <EditDetailDialog event={event}></EditDetailDialog>
+          {
+            // TODO : Check For current user match event creator
+            session?.user ?
+              (<EditDetailDialog event={event}></EditDetailDialog>) : (<></>)
+          }
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/*{data.image && (*/}
-        {/*  <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">*/}
-        {/*    <div className="flex items-center justify-center h-full text-gray-400">*/}
-        {/*      <Image src={data.image} height={48} width={48}  alt="event image"/>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*)}*/}
-
         <div className="space-y-4">
           <p className="text-gray-600">{event.description || 'No description available'}</p>
 

@@ -3,13 +3,12 @@ import {auth} from '@/auth';
 import React from 'react';
 import {Button} from '@/components/button';
 import {Label} from '@/components/label';
+import {redirect} from 'next/navigation';
 
 const Profile = async () => {
-  const session = await auth();
+  const session = await auth()
   if (!session?.user) {
-    return (
-      <></>
-    )
+    redirect('/unauthorized')
   }
   const { user } = session;
   return (

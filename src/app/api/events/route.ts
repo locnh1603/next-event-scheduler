@@ -59,7 +59,6 @@ const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IRespon
     return {payload: {events, count, totalCount, totalPages, currentPage}, command};
   } catch (err) {
     const dbError = err as Error;
-    console.log(dbError);
     throw new Error(`Database error: ${dbError.message}`);
   }
 }
@@ -111,7 +110,6 @@ const updateEventDetails = async(data: IRequestBody<EditEventDetailsDTO>) => {
       payload: { id, name, description },
       command,
     } = data;
-    console.log(data, this)
     const event = await Event.findOneAndUpdate({ id }, {
       name,
       description

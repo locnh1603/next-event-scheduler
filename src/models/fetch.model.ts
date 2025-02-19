@@ -10,11 +10,10 @@ export interface IResponseBody<T = unknown> {
 
 export class ApiError extends Error {
   constructor(
-    message: string,
     public status?: number,
     public data?: unknown
   ) {
-    super(message);
+    super();
     this.name = 'ApiError';
   }
 }

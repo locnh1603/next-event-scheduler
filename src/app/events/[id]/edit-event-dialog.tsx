@@ -20,8 +20,8 @@ import {Textarea} from '@/components/textarea';
 import {DialogBody} from 'next/dist/client/components/react-dev-overlay/internal/components/Dialog';
 import { getCookies } from 'cookies-next';
 import { EventCommands } from '@/enums/event.enum';
-import { ApiError, IRequestBody, IResponseBody } from '@/models/fetch.model';
 import { useRouter } from 'next/navigation';
+import {sendEventRequest} from '@/app/events/event.service';
 const eventDetailFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters."
@@ -29,42 +29,6 @@ const eventDetailFormSchema = z.object({
   description: z.string()
 })
 type EventDetailFormData = z.infer<typeof eventDetailFormSchema>;
-
-const updateEventDetails = async(body: IRequestBody, cookie?: string): Promise<EventModel> => {
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error('API URL not configured');
-  }
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookie && { Cookie: cookie })
-      },
-      body: JSON.stringify(body)
-    });
-    if (!response.ok) {
-      throw new ApiError(
-        'Failed to create event',
-        response.status,
-        await response.json().catch(() => null)
-      );
-    }
-    const data: IResponseBody<EventModel> = await response.json();
-    if (!data.payload) {
-      throw new ApiError('Failed to create event', 400, data);
-    }
-    return data.payload;
-  } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    throw new ApiError(
-      error instanceof Error ? error.message : 'An unexpected error occurred'
-    );
-  }
-}
-
 const EditDetailDialog = (props: {event: EventModel}) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -94,8 +58,7 @@ const EditDetailDialog = (props: {event: EventModel}) => {
     };
 
     try {
-      const event = await updateEventDetails(body, Cookie)
-      console.log(event);
+      await sendEventRequest(body, Cookie)
       setLoading(false);
       setOpen(false);
       router.refresh();
