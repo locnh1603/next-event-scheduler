@@ -10,7 +10,7 @@ import {DateTimePicker} from '@/components/date-time-picker';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Form, FormControl, FormField, FormLabel, FormMessage} from '@/components/form';
+import {Form, FormControl, FormDescription, FormField, FormLabel, FormMessage} from '@/components/form';
 import {useCookiesNext} from 'cookies-next';
 import {EventCommands} from '@/enums/event.enum';
 import {IResponseBody} from '@/models/fetch.model';
@@ -30,7 +30,10 @@ const formSchema = z.object({
   image: z.string(),
   type: z.string().min(1, {
     message: "Type is required."
-  })
+  }),
+  limit: z.number().min(0, {
+    message: "Limit must be greater than or equal to 0."
+  }),
 })
 
 type FormData = z.infer<typeof formSchema>;
@@ -47,6 +50,7 @@ const CreateEventForm = () => {
       endDate: new Date(),
       location: '',
       image: '',
+      limit: 0,
       type: 'public'
     },
   })
@@ -189,25 +193,44 @@ const CreateEventForm = () => {
                 </>
               )} name="image"/>
             </div>
-            <div className="space-y-2">
-              <FormField control={form.control} render={({field}) => (
-                <>
-                  <FormLabel>Event Type</FormLabel>
-                  <FormControl>
-                    <RadioGroup className="flex gap-4" {...field} onValueChange={field.onChange}>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="public" id="public"/>
-                        <Label htmlFor="public">Public</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="invite" id="invite"/>
-                        <Label htmlFor="invite">Invite Only</Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                </>
-              )} name="type"/>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <FormField control={form.control} render={({field}) => (
+                  <>
+                    <FormLabel>Event Type</FormLabel>
+                    <FormDescription>
+                      Invite is sent through emails and permalink
+                    </FormDescription>
+                    <FormControl>
+                      <RadioGroup className="flex gap-4 mt-2" {...field} onValueChange={field.onChange}>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="public" id="public"/>
+                          <Label htmlFor="public">Public</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="invite" id="invite"/>
+                          <Label htmlFor="invite">Invite Only</Label>
+                        </div>
+                      </RadioGroup>
+                    </FormControl>
+                  </>
+                )} name="type"/>
+              </div>
+              <div>
+                <FormField control={form.control} render={({field}) => (
+                  <>
+                    <FormLabel>Participation Limit</FormLabel>
+                    <FormDescription>
+                      Set to 0 for unlimited
+                    </FormDescription>
+                    <FormControl>
+                      <Input type="number" {...field}></Input>
+                    </FormControl>
+                  </>
+                )} name="limit"/>
+              </div>
             </div>
+
 
             <div className="space-y-2">
               <Label>Tags</Label>
@@ -216,21 +239,22 @@ const CreateEventForm = () => {
                 onKeyDown={handleTagInput}
                 maxLength={10}
               />
-            <div className="flex flex-wrap gap-2 mt-2">
-              {tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-primary/10 text-primary px-2 py-1 rounded-md text-sm flex items-center gap-1"
-                >
-                  {tag}<button onClick={() => removeTag(index)} className="text-primary hover:text-primary/80">×</button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="bg-primary/10 text-primary px-2 py-1 rounded-md text-sm flex items-center gap-1"
+                  >
+                  {tag}
+                    <button onClick={() => removeTag(index)} className="text-primary hover:text-primary/80">×</button>
                 </span>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end space-x-4">
-          <Button variant="outline">Cancel</Button>
-          <Button type="submit" disabled={loading}>Create Event</Button>
+          </CardContent>
+          <CardFooter className="flex justify-end space-x-4">
+            <Button variant="outline">Cancel</Button>
+            <Button type="submit" disabled={loading}>Create Event</Button>
         </CardFooter>
       </form>
     </Form>

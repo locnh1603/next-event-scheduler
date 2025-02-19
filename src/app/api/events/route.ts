@@ -3,7 +3,7 @@ import Event, {EventDTO, FilterEventsDTO, GetEventsDTO, EditEventDetailsDTO} fro
 import {IRequestBody, IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {v4} from 'uuid';
-import dbConnect from '@/app/api/database/dbConnect';
+import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
 import { subDays } from 'date-fns';
 

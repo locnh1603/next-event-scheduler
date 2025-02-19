@@ -1,31 +1,19 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import "next-auth/jwt"
+import {MongooseAdapter} from '@/lib/mongoose.adapter';
+import dbConnect from '@/lib/dbConnect';
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: MongooseAdapter(),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      async profile(profile) {
-        return { ...profile }
-      }
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
     }),
   ],
-  callbacks: {
-    jwt({ token, profile, account }) {
-      if (profile) {
-        token.picture = profile.picture;
-      }
-      if (account) {
-        token.provider = account.provider;
-      }
-      return token;
-    },
-    async session({session, token}) {
-      session.user.id = token.sub as string;
-      // @ts-expect-error: next auth does types allows extension but does not respect the typing
-      session.user.provider = token.provider as string;
-      return session;
+  events: {
+    async signIn() {
+      await dbConnect(); // Ensure database is connected
     },
   },
   session: {

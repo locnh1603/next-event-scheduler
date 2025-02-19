@@ -12,6 +12,7 @@ export class EventModel {
   type: string = '';
   tags: string[] = [];
   createdBy: string = '';
+  limit: number = 0;
   active: boolean = true;
 }
 
@@ -23,6 +24,7 @@ export class EventDTO {
   location: string = '';
   image: string = '';
   type: string = '';
+  limit: number = 0;
   tags: string[] = [];
   constructor(data: Partial<EventDTO>) {
     Object.assign(this, data);
@@ -63,6 +65,7 @@ export interface IEvent extends Document {
   tags: string[];
   active: boolean;
   createdBy: string;
+  limit: number;
 }
 
 const eventSchema: Schema = new mongoose.Schema({
@@ -107,6 +110,11 @@ const eventSchema: Schema = new mongoose.Schema({
     type: String
   },
   interested: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  limit: {
     type: Number,
     required: true,
     default: 0

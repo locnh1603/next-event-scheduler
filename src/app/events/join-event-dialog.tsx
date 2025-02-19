@@ -20,7 +20,7 @@ const JoinEventDialog = (props: {event: EventModel}) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Join</Button>
+        <Button variant="outline" className="ml-2">Join</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
