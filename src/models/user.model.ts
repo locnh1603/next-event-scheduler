@@ -1,6 +1,14 @@
 import mongoose, { Schema, Types } from "mongoose";
 
-interface User {
+export interface UserModel {
+  name: string;
+  email: string;
+  emailVerified: Date;
+  image: string;
+  id: string;
+}
+
+interface IUser {
   _id: Types.ObjectId;
   __v: string;
   name: string | null;
@@ -9,7 +17,7 @@ interface User {
   image: string | null;
 }
 
-interface Account {
+interface IAccount {
   _id: Types.ObjectId;
   __v: string;
   id: string;
@@ -28,7 +36,7 @@ interface Account {
   session_state: string;
 }
 
-interface Session {
+interface ISession {
   _id: Types.ObjectId;
   __v: string;
   id: string;
@@ -37,7 +45,7 @@ interface Session {
   expires: Date;
 }
 
-interface VerificationToken {
+interface IVerificationToken {
   _id: Types.ObjectId;
   __v: string;
   id: string;
@@ -46,15 +54,15 @@ interface VerificationToken {
   expires: Date;
 }
 
-export const userSchema = new Schema<User>({
+export const userSchema = new Schema<IUser>({
   name: { type: String },
   email: { type: String, unique: true },
   emailVerified: { type: Boolean },
   image: { type: String },
 });
 
-export const accountSchema = new Schema<Account>({
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+export const accountSchema = new Schema<IAccount>({
+  userId: { type: Schema.Types.ObjectId, ref: "users" },
   type: { type: String },
   provider: { type: String },
   providerAccountId: { type: String },
@@ -69,22 +77,22 @@ export const accountSchema = new Schema<Account>({
   session_state: { type: String },
 });
 
-export const sessionSchema = new Schema<Session>({
+export const sessionSchema = new Schema<ISession>({
   sessionToken: { type: String, unique: true },
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  userId: { type: Schema.Types.ObjectId, ref: "users" },
   expires: { type: Date },
 });
 
-export const verificationTokenSchema = new Schema<VerificationToken>({
+export const verificationTokenSchema = new Schema<IVerificationToken>({
   token: { type: String },
   identifier: { type: String },
   expires: { type: Date },
 });
 
-export const UserModel = mongoose.models?.users || mongoose.model("users", userSchema);
-export const AccountModel = mongoose.models?.accounts || mongoose.model("accounts", accountSchema);
-export const SessionModel = mongoose.models?.sessions || mongoose.model("sessions", sessionSchema);
-export const VerificationTokenModel = mongoose.models?.tokens || mongoose.model(
+export const User = mongoose.models?.users || mongoose.model("users", userSchema);
+export const Account = mongoose.models?.accounts || mongoose.model("accounts", accountSchema);
+export const Session = mongoose.models?.sessions || mongoose.model("sessions", sessionSchema);
+export const VerificationToken = mongoose.models?.tokens || mongoose.model(
   "tokens",
   verificationTokenSchema
 );

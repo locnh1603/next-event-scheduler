@@ -1,30 +1,40 @@
 import React from 'react';
 import { Button } from "@/components/button";
-import fetchWithCookie from '@/utilities/fetch-server-action';
+import fetchWithCookie, {IResponseBody} from '@/utilities/fetch-util';
 import {EventModel} from '@/models/event.model';
-import {IResponseBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
 import EventCard from '@/app/events/event-card';
+import {generateUniqueArray} from '@/utilities/util';
+import {UserModel} from '@/models/user.model';
 const EventDashboard = async () => {
   const session = await auth();
   const body = JSON.stringify({
-    payload: {
-      ids: []
-    },
+    payload: {},
     command: EventCommands.getDashboardEvents
   });
-  const data = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const eventResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
   });
-  const { payload }: IResponseBody<{
+  const eventData: IResponseBody<{
     myEvents: EventModel[];
     hotEvents: EventModel[];
     recentEvents: EventModel[];
-  }> = await data.json();
-  const { myEvents, hotEvents, recentEvents } = payload;
+  }> = await eventResponse.json();
+  const { myEvents, hotEvents, recentEvents } = eventData.payload;
+  const userIds = generateUniqueArray([
+    myEvents.map((event: EventModel) => event.createdBy.toString()),
+    hotEvents.map((event: EventModel) => event.createdBy.toString()),
+    recentEvents.map((event: EventModel) => event.createdBy.toString()),
+  ]);
+  const userResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+    method: 'POST',
+    body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
+  })
+  const usersData: IResponseBody<UserModel[]> = await userResponse.json();
+  const users: UserModel[] = usersData.payload;
   return (
     <div className="h-full">
       <div className="max-w-7xl mx-auto mb-6">
@@ -41,7 +51,13 @@ const EventDashboard = async () => {
               </Button>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              {myEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
+              {
+                myEvents.map((event: EventModel, index: number) => (
+                  <EventCard key={index} event={event}
+                             user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
+                  </EventCard>
+                ))
+              }
             </div>
           </section>
         ) : <></>
@@ -51,7 +67,11 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Hot Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {hotEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
+          {hotEvents.map((event: EventModel, index: number) => (
+            <EventCard key={index} event={event}
+                       user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
+            </EventCard>
+          ))}
         </div>
       </section>
       <section className="max-w-7xl mx-auto mb-6">
@@ -59,7 +79,12 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Recent Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {recentEvents.map((event: EventModel, index: number) => (<EventCard key={index} event={event}></EventCard>))}
+          {recentEvents.map((event: EventModel, index: number) => (
+            <EventCard key={index} event={event}
+                       user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}
+            >
+            </EventCard>
+          ))}
         </div>
       </section>
     </div>

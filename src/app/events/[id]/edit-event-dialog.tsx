@@ -22,6 +22,7 @@ import { getCookies } from 'cookies-next';
 import { EventCommands } from '@/enums/event.enum';
 import { useRouter } from 'next/navigation';
 import {sendEventRequest} from '@/app/events/event.service';
+import {AppError} from '@/utilities/error-handler';
 const eventDetailFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters."
@@ -63,7 +64,7 @@ const EditDetailDialog = (props: {event: EventModel}) => {
       setOpen(false);
       router.refresh();
     } catch (error) {
-      console.error('Event creation failed:', error);
+      throw new AppError(500, error);
     } finally {
       setLoading(false);
     }

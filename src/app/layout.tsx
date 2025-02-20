@@ -3,6 +3,7 @@ import './globals.css';
 import {SpeedInsights} from '@vercel/speed-insights/next';
 import {Metadata} from 'next';
 import NavBar from '@/components/navbar';
+import {Toaster} from 'sonner';
 export const metadata: Metadata = {
   title: 'Event Scheduler',
 }
@@ -16,6 +17,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
             {children}
           </div>
         </div>
+        <Toaster />
         <SpeedInsights />
       </body>
     </html>

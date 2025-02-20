@@ -5,3 +5,7 @@ export enum EventCommands {
   filterEvents = 'filterEvents',
   updateEventDetails = 'updateEventDetails',
 }
+
+export enum UserCommands {
+  getUsers = 'getUsers',
+}

@@ -8,7 +8,7 @@ import {
   PaginationPrevious
 } from '@/components/pagination';
 import React from 'react';
-import {generateNumberArray} from '@/utilities/functions';
+import {generateNumberArray} from '@/utilities/util';
 import {EventModel} from '@/models/event.model';
 
 interface EventPaginationProps {
