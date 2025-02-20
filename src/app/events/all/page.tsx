@@ -2,10 +2,11 @@ import React from 'react';
 import {EventModel, FilterEventsDTO} from '@/models/event.model';
 import EventCard from '@/app/events/event-card';
 import EventPagination from '@/app/events/all/event-pagination';
-import {IRequestBody} from '@/models/fetch.model';
 import {EventCommands} from '@/enums/event.enum';
-import fetchWithCookie from '@/utilities/fetch-server-action';
+import fetchWithCookie, {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
 import EventFilter from '@/app/events/all/event-filter';
+import {UserModel} from '@/models/user.model';
+import {generateUniqueArray} from '@/utilities/util';
 
 const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]: string | undefined }>}) => {
   const {page, search, type} = await searchParams;
@@ -26,6 +27,13 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
     body: JSON.stringify(body)
   });
   const {payload: {events, totalCount, totalPages, currentPage}} = await data.json();
+  const userIds = generateUniqueArray(events.map((event: EventModel) => event.createdBy.toString()));
+  const userResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+    method: 'POST',
+    body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
+  })
+  const usersData: IResponseBody<UserModel[]> = await userResponse.json();
+  const users: UserModel[] = usersData.payload;
   return (
     <div className="h-full max-w-7xl mx-auto">
       <div className="w-full mb-6">
@@ -35,12 +43,16 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
         <div className="w-full grid grid-cols-2 gap-2">
           {events.map((event: EventModel, index: number) => (
             <div className="my-2" key={index}>
-              <EventCard event={event}/>
+              <EventCard event={event}
+                         user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}/>
             </div>
           ))}
         </div>
         <div className="w-full flex mt-2">
-          <EventPagination currentPage={currentPage} totalPages={totalPages} totalCount={totalCount} searchParams={params} events={events}></EventPagination>
+          <EventPagination currentPage={currentPage} totalPages={totalPages}
+                           totalCount={totalCount} searchParams={params} events={events}>
+
+          </EventPagination>
         </div>
       </section>
     </div>

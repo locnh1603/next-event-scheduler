@@ -9,7 +9,7 @@ import {Skeleton} from '@/components/skeleton';
 import {redirect} from 'next/navigation';
 import {Button} from '@/components/button';
 import Link from 'next/link';
-import {formatDate} from '@/utilities/date-util';
+import {formatDate} from '@/utilities/date';
 import {EditDetailDialog} from '@/app/events/[id]/edit-event-dialog';
 import {auth} from '@/auth';
 

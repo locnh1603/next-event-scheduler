@@ -12,11 +12,12 @@ import {EventModel} from '@/models/event.model';
 import {Button} from '@/components/button';
 import {Card, CardContent} from '@/components/card';
 import {Skeleton} from '@/components/skeleton';
-import {formatDate} from '@/utilities/date';
+import {formatDate} from '@/utilities/date-util';
 import React from 'react';
+import {UserModel} from '@/models/user.model';
 
-const JoinEventDialog = (props: {event: EventModel}) => {
-  const {event} = props;
+const JoinEventDialog = (props: {event: EventModel, user: UserModel}) => {
+  const {event, user} = props;
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -36,7 +37,9 @@ const JoinEventDialog = (props: {event: EventModel}) => {
                   <p>{event.description}</p>
                   <p>From: {formatDate(event.startDate)}</p>
                   <p>To: {formatDate(event.endDate)}</p>
-                  <p>Created By: {event.createdBy}</p>
+                  {
+                    user?.name ? (<p>Created By: {user.name}</p>) : (<></>)
+                  }
                 </div>
                 <Skeleton className="w-full h-[300px]"></Skeleton>
               </div>

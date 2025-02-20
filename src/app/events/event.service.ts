@@ -1,9 +1,10 @@
-import {ApiError, IRequestBody, IResponseBody} from '@/models/fetch.model';
+import {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
 import {EventModel} from '@/models/event.model';
+import {AppError} from '@/utilities/error-handler';
 
 const sendEventRequest = async(body: IRequestBody, cookie?: string): Promise<EventModel> => {
   if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error('API URL not configured');
+    throw new AppError(500, {}, 'API URL not configured');
   }
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
@@ -15,16 +16,16 @@ const sendEventRequest = async(body: IRequestBody, cookie?: string): Promise<Eve
       body: JSON.stringify(body)
     });
     if (!response.ok) {
-      throw new ApiError(response.status, await response.json().catch(() => null));
+      throw new AppError(response.status, await response.json().catch(() => null));
     }
     const data: IResponseBody<EventModel> = await response.json();
-    if (!data.payload) {throw new ApiError(400, data);}
+    if (!data.payload) {throw new AppError(400, data);}
     return data.payload;
   } catch (error) {
-    if (error instanceof ApiError) {
+    if (error instanceof AppError) {
       throw error;
     }
-    throw new ApiError(500 , error);
+    throw new AppError(500 , error);
   }
 }
 

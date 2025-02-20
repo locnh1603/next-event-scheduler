@@ -18,11 +18,11 @@ export interface EventModel {
 
 export class EventDTO {
   name: string = '';
-  description: string = '';
+  description?: string = '';
   startDate: number = 0;
   endDate: number = 0;
-  location: string = '';
-  image: string = '';
+  location?: string = '';
+  image?: string = '';
   type: string = '';
   limit: number = 0;
   tags: string[] = [];
@@ -37,8 +37,8 @@ export interface GetEventsDTO {
 
 export interface EditEventDetailsDTO {
   id: string;
-  name: string;
-  description: string;
+  name?: string;
+  description?: string;
 }
 
 export interface FilterEventsDTO {
@@ -108,7 +108,7 @@ const eventSchema: Schema = new mongoose.Schema({
   },
   createdBy: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'users',
     required: true
   },
   interested: {

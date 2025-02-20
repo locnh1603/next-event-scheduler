@@ -1,14 +1,14 @@
 import type {Adapter} from "@auth/core/adapters";
-import {AccountModel, SessionModel, UserModel} from "@/models/user.model";
+import {Account, Session, User} from "@/models/user.model";
 
 export function MongooseAdapter(): Adapter {
   return {
     createUser: async (data) => {
-      return await UserModel.create(data)
+      return await User.create(data)
     },
     getUser: async (id) => {
       try {
-        const user = await UserModel.findById(id);
+        const user = await User.findById(id);
         if (!user) return null;
         return user
       } catch {
@@ -16,37 +16,37 @@ export function MongooseAdapter(): Adapter {
       }
     },
     getUserByEmail: async (email) => {
-      const user = await UserModel.findOne({ email });
+      const user = await User.findOne({ email });
       if (!user) return null;
       return user
     },
     getUserByAccount: async (provider_providerAccountId) => {
-      const account = await AccountModel.findOne(
+      const account = await Account.findOne(
         provider_providerAccountId
       );
       if (!account) return null;
-      const user = await UserModel.findById(account.userId);
+      const user = await User.findById(account.userId);
       if (!user) return null;
       return user
     },
     updateUser: async (data) => {
-      const user = await UserModel.findByIdAndUpdate(data.id, data, {
+      const user = await User.findByIdAndUpdate(data.id, data, {
         new: true,
       });
       return user!;
     },
     deleteUser: async (id) => {
       await Promise.all([
-        AccountModel.deleteMany({ userId: id }),
-        SessionModel.deleteMany({ userId: id }),
-        UserModel.findByIdAndDelete(id),
+        Account.deleteMany({ userId: id }),
+        Session.deleteMany({ userId: id }),
+        User.findByIdAndDelete(id),
       ]);
     },
     linkAccount: async (data) => {
-      return await AccountModel.create(data);
+      return await Account.create(data);
     },
     unlinkAccount: async (provider_providerAccountId) => {
-      await AccountModel.findOneAndDelete(provider_providerAccountId);
+      await Account.findOneAndDelete(provider_providerAccountId);
     }
   };
 }
