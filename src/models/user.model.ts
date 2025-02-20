@@ -3,7 +3,6 @@ import mongoose, { Schema, Types } from "mongoose";
 interface User {
   _id: Types.ObjectId;
   __v: string;
-  id: string;
   name: string | null;
   email: string | null;
   emailVerified: Date | null;

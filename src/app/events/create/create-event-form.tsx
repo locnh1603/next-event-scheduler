@@ -30,9 +30,7 @@ const formSchema = z.object({
   type: z.string().min(1, {
     message: "Type is required."
   }),
-  limit: z.number().min(0, {
-    message: "Limit must be greater than or equal to 0."
-  }),
+  limit: z.string(),
 })
 
 type FormData = z.infer<typeof formSchema>;
@@ -49,7 +47,7 @@ const CreateEventForm = () => {
       endDate: new Date(),
       location: '',
       image: '',
-      limit: 0,
+      limit: '0',
       type: 'public'
     },
   })
@@ -63,12 +61,14 @@ const CreateEventForm = () => {
       .join('; ') : '';
     const startDate = new Date(data.startDate).getTime();
     const endDate = new Date(data.endDate).getTime();
+    const limit = parseInt(data.limit, 10);
     const body = {
       payload: {
         ...data,
         tags,
         startDate,
-        endDate
+        endDate,
+        limit
       },
       command: EventCommands.createEvent
     };

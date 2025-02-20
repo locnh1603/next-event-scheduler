@@ -6,11 +6,26 @@ import {v4} from 'uuid';
 import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
 import { subDays } from 'date-fns';
+import {UserModel} from '@/models/user.model';
+import { Types } from 'mongoose';
 
 export const GET = async () => {
   await dbConnect();
   const events = await Event.find({});
   return NextResponse.json(events);
+}
+
+const getUserId = async() => {
+  const session = await auth();
+  if (!session?.user?.email) {
+    throw new Error('User not authenticated');
+  }
+  const {user: {email}} = session;
+  const user = await UserModel.findOne({email});
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+  return new Types.ObjectId(user._id);
 }
 
 const getEvents = async(data: IRequestBody<GetEventsDTO>): Promise<IResponseBody> => {
@@ -65,12 +80,11 @@ const filterEvents = async(data: IRequestBody<FilterEventsDTO>): Promise<IRespon
 
 const createEvent = async(data: IRequestBody<EventDTO>): Promise<IResponseBody> => {
   try {
-    const session = await auth();
+    const createdBy = await getUserId();
+    const {payload, command} = data;
     const id = v4();
     const active = true;
     const status = 'Pending';
-    const createdBy = session?.user?.email;
-    const {payload, command} = data;
     const resPayload = await Event.create({...payload, id, active, status, createdBy});
     return {payload: resPayload, command};
   } catch (err) {
@@ -81,9 +95,8 @@ const createEvent = async(data: IRequestBody<EventDTO>): Promise<IResponseBody> 
 
 const getDashboardEvents = async(data: IRequestBody<GetEventsDTO>) => {
   try {
-    const session = await auth();
     const {command} = data;
-    const createdBy = session?.user?.email;
+    const createdBy = await getUserId();
     const yesterdayTimestamp = subDays(new Date(), 1).getTime();
     const [myEvents, hotEvents, recentEvents] = await Promise.all([
       Event.find({createdBy}).limit(6),

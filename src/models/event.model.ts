@@ -1,19 +1,19 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
-export class EventModel {
-  id: string = '';
-  name: string = '';
-  description: string = '';
-  startDate: number = 0;
-  endDate: number = 0;
-  location: string = '';
-  image: string = '';
-  status: string = '';
-  type: string = '';
-  tags: string[] = [];
-  createdBy: string = '';
-  limit: number = 0;
-  active: boolean = true;
+export interface EventModel {
+  id: string;
+  name: string;
+  description: string;
+  startDate: number;
+  endDate: number;
+  location: string;
+  image: string;
+  status: string;
+  type: string;
+  tags: string[];
+  createdBy: Types.ObjectId;
+  limit: number;
+  active: boolean;
 }
 
 export class EventDTO {
@@ -64,7 +64,7 @@ export interface IEvent extends Document {
   type: string;
   tags: string[];
   active: boolean;
-  createdBy: string;
+  createdBy: Types.ObjectId;
   limit: number;
 }
 
@@ -107,7 +107,9 @@ const eventSchema: Schema = new mongoose.Schema({
     type: Boolean
   },
   createdBy: {
-    type: String
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
   interested: {
     type: Number,
