@@ -152,7 +152,7 @@ describe('EventList', () => {
       expect(eventCards[1]).toHaveTextContent('2-102');
       const pagination = await screen.findByTestId('event-pagination');
       expect(pagination).toHaveTextContent('Page 1 of 1 (2 total)');
-    }).then(r => {})
+    }).then(() => {})
   });
 
   it('should call fetch function', async () => {
