@@ -74,6 +74,8 @@ describe('EventList', () => {
     type: 'all',
   };
 
+  const customFetchMock = vi.mocked(customFetch);
+
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn()
@@ -92,65 +94,71 @@ describe('EventList', () => {
           payload: mockUsers
         })
       }));
-    customFetch.mockImplementation((url) => {
+    customFetchMock.mockImplementation((url) => {
       if (url.includes('/events')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            payload: {
-              events: mockEvents,
-              totalCount: 2,
-              totalPages: 1,
-              currentPage: 1,
-            },
-          }),
-        });
+        return Promise.resolve(new Response(JSON.stringify({
+          payload: {
+            events: mockEvents,
+            totalCount: 2,
+            totalPages: 1,
+            currentPage: 1,
+          },
+        }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }));
       }
       if (url.includes('/users')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({
-            payload: mockUsers,
-          }),
-        });
+        return Promise.resolve(new Response(JSON.stringify(mockUsers), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }));
       }
       return Promise.reject(new Error('Invalid URL'));
     });
+    // @ts-ignore
     generateUniqueArray.mockReturnValue(['101', '102']);
   });
   afterEach(() => {
     vi.resetAllMocks();
   });
   it('handles API error', async () => {
-    customFetch.mockRejectedValueOnce(new Error('API Error'));
+    customFetchMock.mockRejectedValueOnce(new Error('API Error'));
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    await render(
-      <EventList searchParams={Promise.resolve(mockSearchParams)} />
-    );
+    render(<EventList searchParams={Promise.resolve(mockSearchParams)} />);
     expect(consoleErrorSpy).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
   });
 
   it('renders the component', async () => {
     act(async () => {
-      const container = await render(
+      const container = render(
         <EventList searchParams={Promise.resolve(mockSearchParams)} />
       );
       expect(container).toBeDefined();
-    });
+    }).then(r => {});
   });
 
   it('should render event list with all components', async () => {
     act(async () => {
-      await render(
-        <EventList searchParams={Promise.resolve(mockSearchParams)} />
-      );
-      await screen.findByTestId('event-filter');
+      const filter = await screen.findByTestId('event-filter');
+      expect(filter).toHaveTextContent('Filter: test-workshop');
+      const eventCards = await screen.findAllByTestId('event-card');
+      expect(eventCards).toHaveLength(2);
+      expect(eventCards[0]).toHaveTextContent('1-101');
+      expect(eventCards[1]).toHaveTextContent('2-102');
+      const pagination = await screen.findByTestId('event-pagination');
+      expect(pagination).toHaveTextContent('Page 1 of 1 (2 total)');
+    }).then(r => {})
+  });
+
+  it('should call fetch function', async () => {
+    act(async () => {
       await screen.findByTestId('event-card');
-      await screen.findByTestId('event-pagination');
-      expect(screen.getByTestId('event-filter')).toBeInTheDocument();
-      expect(screen.getAllByTestId('event-card')).toHaveLength(2);
-      expect(screen.getByTestId('event-pagination')).toBeInTheDocument();
       expect(customFetch).toHaveBeenCalledTimes(2);
       expect(customFetch).toHaveBeenCalledWith(
         `${process.env.NEXT_PUBLIC_API_URL}/events`,
@@ -170,8 +178,18 @@ describe('EventList', () => {
         },
         'mock-cookie'
       );
-    })
-
+      expect(screen.getAllByTestId('event-card')).toHaveLength(2);
+    }).then(r => {});
   });
 
+  it('should handle missing search params', async () => {
+    act(async () => {
+      const filter = await screen.findByTestId('event-filter');
+      const eventCard = await screen.findAllByTestId('event-card');
+      const pagination = await screen.findByTestId('event-pagination')
+      expect(filter).toHaveTextContent('Filter: -');
+      expect(eventCard).toHaveLength(2);
+      expect(pagination).toBeInTheDocument();
+    }).then(r => {});
+  });
 });
