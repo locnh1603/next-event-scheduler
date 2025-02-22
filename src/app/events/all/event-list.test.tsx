@@ -139,7 +139,7 @@ describe('EventList', () => {
         <EventList searchParams={Promise.resolve(mockSearchParams)} />
       );
       expect(container).toBeDefined();
-    }).then(r => {});
+    }).then(() => {});
   });
 
   it('should render event list with all components', async () => {
@@ -178,7 +178,7 @@ describe('EventList', () => {
         'mock-cookie'
       );
       expect(screen.getAllByTestId('event-card')).toHaveLength(2);
-    }).then(r => {});
+    }).then(() => {});
   });
 
   it('should handle missing search params', async () => {
@@ -189,6 +189,6 @@ describe('EventList', () => {
       expect(filter).toHaveTextContent('Filter: -');
       expect(eventCard).toHaveLength(2);
       expect(pagination).toBeInTheDocument();
-    }).then(r => {});
+    }).then(() => {});
   });
 });
