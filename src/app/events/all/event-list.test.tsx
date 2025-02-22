@@ -75,7 +75,7 @@ describe('EventList', () => {
   };
 
   const customFetchMock = vi.mocked(customFetch);
-
+  const generateUniqueArrayMock = vi.mocked(generateUniqueArray);
   beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn()
@@ -120,8 +120,7 @@ describe('EventList', () => {
       }
       return Promise.reject(new Error('Invalid URL'));
     });
-    // @ts-ignore
-    generateUniqueArray.mockReturnValue(['101', '102']);
+    generateUniqueArrayMock.mockReturnValue(['101', '102']);
   });
   afterEach(() => {
     vi.resetAllMocks();
