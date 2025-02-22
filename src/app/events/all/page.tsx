@@ -3,11 +3,10 @@ import {EventModel, FilterEventsDTO} from '@/models/event.model';
 import EventCard from '@/app/events/event-card';
 import EventPagination from '@/app/events/all/event-pagination';
 import {EventCommands} from '@/enums/event.enum';
-import fetchWithCookie, {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
+import customFetch, {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
 import EventFilter from '@/app/events/all/event-filter';
 import {UserModel} from '@/models/user.model';
-import {generateUniqueArray} from '@/utilities/util';
-import { cookies } from 'next/headers';
+import {generateUniqueArray} from '@/utilities/array-util';
 
 const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]: string | undefined }>}) => {
   const {page, search, type} = await searchParams;
@@ -23,18 +22,13 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
       filter: {type: type || 'all'},
     }
   }
-  const cookieStore = await cookies();
-  const Cookie = cookieStore.toString();
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const data = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      Cookie
-    }
+    body: JSON.stringify(body)
   });
   const {payload: {events, totalCount, totalPages, currentPage}} = await data.json();
   const userIds = generateUniqueArray(events.map((event: EventModel) => event.createdBy.toString()));
-  const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+  const userResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
     method: 'POST',
     body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
   })

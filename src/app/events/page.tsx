@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from "@/components/button";
-import fetchWithCookie, {IResponseBody} from '@/utilities/fetch-util';
+import customFetch, {IResponseBody} from '@/utilities/fetch-util';
 import {EventModel} from '@/models/event.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
 import EventCard from '@/app/events/event-card';
-import {generateUniqueArray} from '@/utilities/util';
+import {generateUniqueArray} from '@/utilities/array-util';
 import {UserModel} from '@/models/user.model';
 const EventDashboard = async () => {
   const session = await auth();
@@ -14,7 +14,7 @@ const EventDashboard = async () => {
     payload: {},
     command: EventCommands.getDashboardEvents
   });
-  const eventResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const eventResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
   });
@@ -29,10 +29,10 @@ const EventDashboard = async () => {
     hotEvents.map((event: EventModel) => event.createdBy.toString()),
     recentEvents.map((event: EventModel) => event.createdBy.toString()),
   ]);
-  const userResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+  const userResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
     method: 'POST',
     body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
-  })
+  }, )
   const usersData: IResponseBody<UserModel[]> = await userResponse.json();
   const users: UserModel[] = usersData.payload;
   return (

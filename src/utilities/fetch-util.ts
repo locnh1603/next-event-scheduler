@@ -2,6 +2,7 @@
 import {redirect} from 'next/navigation';
 import {toast} from 'sonner';
 import {AppError} from '@/utilities/error-handler';
+import { cookies } from 'next/headers';
 export interface IRequestBody<T = unknown> {
   payload: T;
   command: string;
@@ -11,9 +12,15 @@ export interface IResponseBody<T = unknown> {
   payload: T;
   command: string;
 }
-const fetchWithCookie = async (url: string, options = {}) => {
+const customFetch = async (url: string, options = {}) => {
+  const cookieStore = await cookies();
+  const Cookie = cookieStore.toString();
   const response = await fetch(url, {
-    ...options
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(Cookie && { Cookie })
+    }
   });
   if (response.status === 200) {
     return response;
@@ -28,4 +35,4 @@ const fetchWithCookie = async (url: string, options = {}) => {
     throw new AppError(response.status)
   }
 }
-export default fetchWithCookie;
+export default customFetch;
