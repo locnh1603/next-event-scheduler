@@ -1,5 +1,5 @@
 import {EventCommands} from '@/enums/event.enum';
-import fetchWithCookie, {IResponseBody} from '@/utilities/fetch-util';
+import customFetch, {IResponseBody} from '@/utilities/fetch-util';
 import {EventModel} from '@/models/event.model';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/card';
 import React, {Suspense} from 'react';
@@ -81,7 +81,7 @@ const EventDetail = async(
     },
     command: EventCommands.getEvents
   });
-  const data = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const data = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
     cache: 'no-store'

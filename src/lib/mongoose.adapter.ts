@@ -1,5 +1,6 @@
-import type {Adapter} from "@auth/core/adapters";
+
 import {Account, Session, User} from "@/models/user.model";
+import { Adapter } from '@auth/core/adapters';
 
 export function MongooseAdapter(): Adapter {
   return {
