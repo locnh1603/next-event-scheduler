@@ -7,6 +7,7 @@ import fetchWithCookie, {IRequestBody, IResponseBody} from '@/utilities/fetch-ut
 import EventFilter from '@/app/events/all/event-filter';
 import {UserModel} from '@/models/user.model';
 import {generateUniqueArray} from '@/utilities/util';
+import { cookies } from 'next/headers';
 
 const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]: string | undefined }>}) => {
   const {page, search, type} = await searchParams;
@@ -22,13 +23,18 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
       filter: {type: type || 'all'},
     }
   }
-  const data = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const cookieStore = await cookies();
+  const Cookie = cookieStore.toString();
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    headers: {
+      Cookie
+    }
   });
   const {payload: {events, totalCount, totalPages, currentPage}} = await data.json();
   const userIds = generateUniqueArray(events.map((event: EventModel) => event.createdBy.toString()));
-  const userResponse = await fetchWithCookie(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+  const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
     method: 'POST',
     body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
   })

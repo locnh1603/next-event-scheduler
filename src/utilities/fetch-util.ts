@@ -1,4 +1,4 @@
-import {cookies} from 'next/headers';
+'use server';
 import {redirect} from 'next/navigation';
 import {toast} from 'sonner';
 import {AppError} from '@/utilities/error-handler';
@@ -12,13 +12,8 @@ export interface IResponseBody<T = unknown> {
   command: string;
 }
 const fetchWithCookie = async (url: string, options = {}) => {
-  const cookieStore = await cookies();
-  const Cookie = cookieStore.toString();
   const response = await fetch(url, {
-    ...options,
-    headers: {
-      Cookie
-    },
+    ...options
   });
   if (response.status === 200) {
     return response;
