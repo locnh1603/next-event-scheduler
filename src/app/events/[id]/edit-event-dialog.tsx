@@ -18,11 +18,11 @@ import {Form, FormControl, FormField, FormLabel, FormMessage} from '@/components
 import {Input} from '@/components/input';
 import {Textarea} from '@/components/textarea';
 import {DialogBody} from 'next/dist/client/components/react-dev-overlay/internal/components/Dialog';
-import { getCookies } from 'cookies-next';
 import { EventCommands } from '@/enums/event.enum';
 import { useRouter } from 'next/navigation';
-import {sendEventRequest} from '@/app/events/event.service';
 import {AppError} from '@/utilities/error-handler';
+import { customFetch } from '@/utilities/client-fetch';
+import { env } from '@env';
 const eventDetailFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters."
@@ -45,10 +45,6 @@ const EditDetailDialog = (props: {event: EventModel}) => {
   const onSubmit = async(data: EventDetailFormData) => {
     setLoading(true);
     const {name, description} = data;
-    const cookies = getCookies();
-    const Cookie = cookies ? Object.entries(cookies)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
-      .join('; ') : '';
     const body ={
       payload: {
         name,
@@ -59,7 +55,11 @@ const EditDetailDialog = (props: {event: EventModel}) => {
     };
 
     try {
-      await sendEventRequest(body, Cookie)
+      const url = `${env.NEXT_PUBLIC_API_URL}/events`;
+      await customFetch(url, {
+        body: JSON.stringify(body),
+        method: 'POST'
+      });
       setLoading(false);
       setOpen(false);
       router.refresh();

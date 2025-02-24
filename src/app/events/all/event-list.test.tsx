@@ -3,10 +3,10 @@ import { act, render, screen } from '@testing-library/react';
 import EventList from './page';
 import { EventModel } from '@/models/event.model';
 import { UserModel } from '@/models/user.model';
-import customFetch from '@/utilities/fetch-util';
+import customFetch from '@/utilities/server-fetch';
 import { generateUniqueArray } from '@/utilities/array-util';
 
-vi.mock('@/utilities/fetch-util', () => ({
+vi.mock('@/utilities/server-fetch', () => ({
   default: vi.fn(),
 }));
 
@@ -35,6 +35,12 @@ vi.mock('@/app/events/all/event-pagination', () => ({
 vi.mock('@/app/events/all/event-filter', () => ({
   default: () => <div data-testid="event-filter">Filter</div>
 }));
+
+vi.mock('@env', () => ({
+  default: () => {
+
+  }
+}))
 
 describe('EventList', () => {
   const mockEvents = [

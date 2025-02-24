@@ -1,5 +1,5 @@
 import {EventCommands} from '@/enums/event.enum';
-import customFetch, {IResponseBody} from '@/utilities/fetch-util';
+import customFetch, {IResponseBody} from '@/utilities/server-fetch';
 import {EventModel} from '@/models/event.model';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/card';
 import React, {Suspense} from 'react';

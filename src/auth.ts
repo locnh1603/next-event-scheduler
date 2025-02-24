@@ -3,12 +3,13 @@ import Google from "next-auth/providers/google"
 import "next-auth/jwt"
 import {MongooseAdapter} from '@/lib/mongoose.adapter';
 import dbConnect from '@/lib/dbConnect';
+import { env } from '@env';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: MongooseAdapter(),
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+      clientId: env.AUTH_GOOGLE_ID,
+      clientSecret: env.AUTH_GOOGLE_SECRET
     }),
   ],
   events: {

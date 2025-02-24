@@ -71,7 +71,7 @@ export class EventService {
       Event.find({ interested: { $gt: 10 } }).limit(6),
       Event.find({ startDate: { $gt: yesterdayTimestamp } }).limit(6),
     ]);
-    const myEvents = createdBy ? await Event.find({ createdBy }) : [];
+    const myEvents = createdBy ? await Event.find({ createdBy }).limit(6) : [];
     return { myEvents, hotEvents, recentEvents };
   }
 
