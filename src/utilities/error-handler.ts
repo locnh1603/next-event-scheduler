@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { env } from '@env';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -28,7 +29,7 @@ class ErrorLogger {
       level,
       message,
       ...context,
-      environment: process.env.NODE_ENV,
+      environment: env.NODE_ENV,
       requestId: crypto.randomUUID(),
     };
 

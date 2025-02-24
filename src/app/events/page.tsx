@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/button";
-import customFetch, {IResponseBody} from '@/utilities/fetch-util';
+import customFetch, {IResponseBody} from '@/utilities/server-fetch';
 import {EventModel} from '@/models/event.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';
@@ -8,13 +8,14 @@ import Link from 'next/link';
 import EventCard from '@/app/events/event-card';
 import {generateUniqueArray} from '@/utilities/array-util';
 import {UserModel} from '@/models/user.model';
+import { env } from '@env';
 const EventDashboard = async () => {
   const session = await auth();
   const body = JSON.stringify({
     payload: {},
     command: EventCommands.getDashboardEvents
   });
-  const eventResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+  const eventResponse = await customFetch(`${env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
   });

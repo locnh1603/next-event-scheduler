@@ -7,7 +7,6 @@ import customFetch, {IRequestBody, IResponseBody} from '@/utilities/server-fetch
 import EventFilter from '@/app/events/all/event-filter';
 import {UserModel} from '@/models/user.model';
 import {generateUniqueArray} from '@/utilities/array-util';
-import { env } from '@env';
 
 const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]: string | undefined }>}) => {
   const {page, search, type} = await searchParams;
@@ -23,13 +22,13 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
       filter: {type: type || 'all'},
     }
   }
-  const data = await customFetch(`${env.NEXT_PUBLIC_API_URL}/events`, {
+  const data = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body: JSON.stringify(body)
   });
   const {payload: {events, totalCount, totalPages, currentPage}} = await data.json();
   const userIds = generateUniqueArray(events.map((event: EventModel) => event.createdBy.toString()));
-  const userResponse = await customFetch(`${env.NEXT_PUBLIC_API_URL}/users`, {
+  const userResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
     method: 'POST',
     body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
   })

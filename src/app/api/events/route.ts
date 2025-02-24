@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import Event from "@/models/event.model";
-import {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
+import {IRequestBody, IResponseBody} from '@/utilities/server-fetch';
 import {EventCommands} from '@/enums/event.enum';
 import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
@@ -21,7 +21,6 @@ const getUserId = async() => {
   try {
     const session = await auth();
     if (!session?.user?.email) throw AUTH_ERROR;
-
     const user = await User.findOne({ email: session.user.email });
     if (!user) throw AUTH_ERROR;
     return new Types.ObjectId(user._id);

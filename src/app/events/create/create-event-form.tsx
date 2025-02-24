@@ -1,6 +1,5 @@
 'use client'
 import {z} from 'zod';
-import {useCookiesNext} from 'cookies-next';
 import {useRouter} from 'next/navigation';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -14,7 +13,8 @@ import {Label} from '@/components/label';
 import {DateTimePicker} from '@/components/date-time-picker';
 import {RadioGroup, RadioGroupItem} from '@/components/radio-group';
 import {Button} from '@/components/button';
-import {sendEventRequest} from '@/app/events/event.service';
+import { customFetch } from '@/utilities/client-fetch';
+import { env } from '@env';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -36,7 +36,6 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const CreateEventForm = () => {
-  const { getCookies } = useCookiesNext();
   const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -55,10 +54,6 @@ const CreateEventForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const onSubmit = async (data: FormData) => {
     setLoading(true);
-    const cookies = getCookies();
-    const Cookie = cookies ? Object.entries(cookies)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)
-      .join('; ') : '';
     const startDate = new Date(data.startDate).getTime();
     const endDate = new Date(data.endDate).getTime();
     const limit = parseInt(data.limit, 10);
@@ -73,9 +68,14 @@ const CreateEventForm = () => {
       command: EventCommands.createEvent
     };
     try {
-      const event = await sendEventRequest(body, Cookie);
+      const url = `${env.NEXT_PUBLIC_API_URL}/events`;
+      const eventResponse = await customFetch(url, {
+        body: JSON.stringify(body),
+        method: 'POST'
+      });
+      const { payload } = await (eventResponse as Response).json();
       setLoading(false);
-      router.push(`/events/${event.id}`);
+      router.push(`/events/${payload.id}`);
     } catch (error) {
       setLoading(false);
       console.log(error);

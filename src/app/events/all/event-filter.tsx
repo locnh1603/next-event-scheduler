@@ -26,7 +26,7 @@ const EventFilter = (props: EventFilterProps) => {
     if (searchInput) params.set('search', searchInput.toString());
     if (typeInput) params.set('type', typeInput.toString());
     router.push(`/events/all?${params.toString()}`);
-    setLoading(false);
+    setTimeout(() => setLoading(false), 1000);
   };
   return (
     <Card>
@@ -51,7 +51,7 @@ const EventFilter = (props: EventFilterProps) => {
                 <SelectItem value="invite">Invite Only</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className={`flex items-center gap-2 ${loading ? 'disabled' : ''}`} type="submit">
+            <Button variant="outline" className={`flex items-center gap-2 ${loading ? 'disabled' : ''}`} disabled={loading} type="submit">
               Apply
             </Button>
           </div>

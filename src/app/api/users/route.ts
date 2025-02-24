@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import dbConnect from '@/lib/dbConnect';
-import {IRequestBody, IResponseBody} from '@/utilities/fetch-util';
+import {IRequestBody, IResponseBody} from '@/utilities/server-fetch';
 import {UserCommands} from '@/enums/event.enum';
 import {handleError} from '@/app/api/api-error-handler';
 import {userValidator} from '@/app/api/users/user.validator';
