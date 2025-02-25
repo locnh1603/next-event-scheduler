@@ -68,7 +68,6 @@
 }
 
 .disabled {
-  tab-index: -1;
   pointer-events: none;
   opacity: 50%;
 }

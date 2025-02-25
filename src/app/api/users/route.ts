@@ -4,7 +4,7 @@ import {IRequestBody, IResponseBody} from '@/utilities/server-fetch';
 import {UserCommands} from '@/enums/event.enum';
 import {handleError} from '@/app/api/api-error-handler';
 import {userValidator} from '@/app/api/users/user.validator';
-import {userService} from '@/app/api/users/user.service';
+import { userService } from '@/services/user.service';
 
 export const POST = async (req: NextRequest) => {
   await dbConnect();

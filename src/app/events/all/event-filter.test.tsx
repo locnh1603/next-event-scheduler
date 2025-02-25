@@ -37,7 +37,7 @@ vi.mock('@/components/select', () => ({
     <option value={value}>{children}</option>
   ),
   SelectTrigger: ({ children }: { children: React.ReactNode }) => <option data-testid="select-trigger">{children}</option>,
-  SelectValue: ({ placeholder }: { placeholder: string }) => <option>{placeholder}</option>,
+  SelectValue: ({ placeholder }: { placeholder: string }) => <>{placeholder}</>,
 }));
 
 vi.mock('@/components/button', () => ({

@@ -10,8 +10,12 @@ import {generateUniqueArray} from '@/utilities/array-util';
 import { env } from '@env';
 
 const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]: string | undefined }>}) => {
-  const {page, search, type} = await searchParams;
-  const params = `${page ? `page=${page}` : ''}${search ? `&search=${search}` : ''}${type ? `&type=${type}` : ''}`;
+  const { page, search, type } = await searchParams;
+  const paramsArray = [];
+  if (page) paramsArray.push(`page=${page}`);
+  if (search) paramsArray.push(`search=${search}`);
+  if (type) paramsArray.push(`type=${type}`);
+  const params = paramsArray.join("&");
   const body: IRequestBody<FilterEventsDTO> = {
     command: EventCommands.filterEvents,
     payload: {

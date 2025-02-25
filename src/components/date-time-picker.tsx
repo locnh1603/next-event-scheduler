@@ -32,21 +32,75 @@ function isValidMinuteOrSecond(value: string) {
 
 type GetValidNumberConfig = { max: number; min?: number; loop?: boolean };
 
-function getValidNumber(value: string, { max, min = 0, loop = false }: GetValidNumberConfig) {
+/**
+ * Parses and validates a numeric string value within a specified range.
+ * @param value - The input string to validate.
+ * @param config - Configuration for range, looping, and formatting.
+ * @returns A two-digit formatted string.
+ */
+function getValidNumber(value: string, config: GetValidNumberConfig): string {
+  const { max, min = 0, loop = false } = config; // Default min to 0 and loop to false
+
   let numericValue = parseInt(value, 10);
 
-  if (!Number.isNaN(numericValue)) {
-    if (!loop) {
-      if (numericValue > max) numericValue = max;
-      if (numericValue < min) numericValue = min;
-    } else {
-      if (numericValue > max) numericValue = min;
-      if (numericValue < min) numericValue = max;
-    }
-    return numericValue.toString().padStart(2, '0');
+  if (Number.isNaN(numericValue)) {
+    return '00';
   }
 
-  return '00';
+  numericValue = adjustValueWithinRange(numericValue, { max, min, loop });
+
+  return formatNumber(numericValue);
+}
+
+/**
+ * Adjusts a numeric value within the specified range, either clamping or looping.
+ * @param value - The numeric value to adjust.
+ * @param config - Configuration for range and looping behavior.
+ * @returns The adjusted numeric value.
+ */
+function adjustValueWithinRange(
+  value: number,
+  { max, min = 0, loop = false }: GetValidNumberConfig
+): number {
+  if (!loop) {
+    return clampValue(value, min, max); // min is guaranteed to be a number here
+  }
+  return loopValue(value, min, max); // min is guaranteed to be a number here
+}
+
+/**
+ * Clamps a numeric value within the specified range.
+ * @param value - The numeric value to clamp.
+ * @param min - The minimum allowable value.
+ * @param max - The maximum allowable value.
+ * @returns The clamped numeric value.
+ */
+function clampValue(value: number, min: number, max: number): number {
+  if (value > max) return max;
+  if (value < min) return min;
+  return value;
+}
+
+/**
+ * Loops a numeric value within the specified range.
+ * @param value - The numeric value to loop.
+ * @param min - The minimum allowable value.
+ * @param max - The maximum allowable value.
+ * @returns The looped numeric value.
+ */
+function loopValue(value: number, min: number, max: number): number {
+  if (value > max) return min;
+  if (value < min) return max;
+  return value;
+}
+
+/**
+ * Formats a number to a two-digit string.
+ * @param value - The numeric value to format.
+ * @returns A string padded to two digits.
+ */
+function formatNumber(value: number): string {
+  return value.toString().padStart(2, '0');
 }
 
 function getValidHour(value: string) {
@@ -318,7 +372,7 @@ function Calendar({
                   props.onMonthChange?.(newDate);
                 }}
               >
-                <SelectTrigger className="w-fit gap-1 border-none p-0 focus:bg-accent focus:text-accent-foreground">
+                <SelectTrigger className="w-fit gap-2 border-none pl-2 focus:bg-accent focus:text-accent-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -337,7 +391,7 @@ function Calendar({
                   props.onMonthChange?.(newDate);
                 }}
               >
-                <SelectTrigger className="w-fit gap-1 border-none p-0 focus:bg-accent focus:text-accent-foreground">
+                <SelectTrigger className="w-fit gap-1 border-none pl-2 focus:bg-accent focus:text-accent-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -477,24 +531,49 @@ const TimePickerInput = React.forwardRef<HTMLInputElement, TimePickerInputProps>
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Tab') return;
       e.preventDefault();
-      if (e.key === 'ArrowRight') onRightFocus?.();
-      if (e.key === 'ArrowLeft') onLeftFocus?.();
-      if (['ArrowUp', 'ArrowDown'].includes(e.key)) {
-        const step = e.key === 'ArrowUp' ? 1 : -1;
+      if (isArrowKey(e.key)) {
+        handleArrowKey(e.key);
+        return;
+      }
+      if (isNumberKey(e.key)) {
+        handleNumberKey(e.key);
+        return;
+      }
+    };
+
+    const isArrowKey = (key: string): boolean => {
+      return ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(key);
+    };
+
+    const isNumberKey = (key: string): boolean => {
+      return key >= '0' && key <= '9';
+    };
+
+    const handleArrowKey = (key: string) => {
+      if (key === 'ArrowRight') {
+        onRightFocus?.();
+      } else if (key === 'ArrowLeft') {
+        onLeftFocus?.();
+      } else if (key === 'ArrowUp' || key === 'ArrowDown') {
+        const step = key === 'ArrowUp' ? 1 : -1;
         const newValue = getArrowByType(calculatedValue, step, picker);
         if (flag) setFlag(false);
         const tempDate = date ? new Date(date) : new Date();
         onDateChange?.(setDateByType(tempDate, newValue, picker, period));
       }
-      if (e.key >= '0' && e.key <= '9') {
-        if (picker === '12hours') setPrevIntKey(e.key);
+    };
 
-        const newValue = calculateNewValue(e.key);
-        if (flag) onRightFocus?.();
-        setFlag((prev) => !prev);
-        const tempDate = date ? new Date(date) : new Date();
-        onDateChange?.(setDateByType(tempDate, newValue, picker, period));
+    const handleNumberKey = (key: string) => {
+      if (picker === '12hours') {
+        setPrevIntKey(key);
       }
+      const newValue = calculateNewValue(key);
+      if (flag) {
+        onRightFocus?.();
+      }
+      setFlag((prev) => !prev);
+      const tempDate = date ? new Date(date) : new Date();
+      onDateChange?.(setDateByType(tempDate, newValue, picker, period));
     };
 
     return (

@@ -6,9 +6,9 @@ import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
 import {User} from '@/models/user.model';
 import { Types } from 'mongoose';
-import { eventService } from '@/app/api/events/event.service';
 import {eventValidators} from '@/app/api/events/event.validator';
 import {ApiError, handleError} from '@/app/api/api-error-handler';
+import { eventService } from '@/services/event.service';
 
 export const GET = async () => {
   await dbConnect();
