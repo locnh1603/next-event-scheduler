@@ -4,6 +4,8 @@ export enum EventCommands {
   getDashboardEvents = 'getDashboardEvents',
   filterEvents = 'filterEvents',
   updateEventDetails = 'updateEventDetails',
+  getParticipants = 'getParticipants',
+  joinEvent = 'joinEvent',
 }
 
 export enum UserCommands {

@@ -45,4 +45,19 @@ export const eventValidators = {
       description: z.string().optional(),
     }),
   }),
-};
+
+  joinEvent: z.object({
+    command: z.literal('joinEvent'),
+    payload: z.object({
+      eventId: z.string().min(1),
+    }),
+  }),
+
+  getParticipants: z.object({
+    command: z.literal('getParticipants'),
+    payload: z.object({
+      eventId: z.string()
+    }),
+  }),
+}
+

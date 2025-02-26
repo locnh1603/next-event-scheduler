@@ -53,8 +53,8 @@ const EventDashboard = async () => {
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               {
-                myEvents.map((event: EventModel, index: number) => (
-                  <EventCard key={index} event={event}
+                myEvents.map((event: EventModel) => (
+                  <EventCard key={event.id} event={event}
                              user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
                   </EventCard>
                 ))
@@ -68,8 +68,8 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Hot Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {hotEvents.map((event: EventModel, index: number) => (
-            <EventCard key={index} event={event}
+          {hotEvents.map((event: EventModel) => (
+            <EventCard key={event.id} event={event}
                        user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
             </EventCard>
           ))}
@@ -80,8 +80,8 @@ const EventDashboard = async () => {
           <h2 className="text-2xl font-semibold">Recent Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {recentEvents.map((event: EventModel, index: number) => (
-            <EventCard key={index} event={event}
+          {recentEvents.map((event: EventModel) => (
+            <EventCard key={event.id} event={event}
                        user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}
             >
             </EventCard>

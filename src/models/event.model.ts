@@ -14,6 +14,7 @@ export interface EventModel {
   createdBy: Types.ObjectId;
   limit: number;
   active: boolean;
+  participants: Types.ObjectId[];
 }
 
 export class EventDTO {
@@ -66,6 +67,7 @@ export interface IEvent extends Document {
   active: boolean;
   createdBy: Types.ObjectId;
   limit: number;
+  participants: Types.ObjectId[];
 }
 
 const eventSchema: Schema = new mongoose.Schema({
@@ -111,10 +113,11 @@ const eventSchema: Schema = new mongoose.Schema({
     ref: 'users',
     required: true
   },
-  interested: {
-    type: Number,
+  participants: {
+    type: [Schema.Types.ObjectId],
+    ref: 'users',
     required: true,
-    default: 0
+    default: []
   },
   limit: {
     type: Number,

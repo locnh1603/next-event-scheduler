@@ -46,8 +46,8 @@ const EventList = async ({searchParams}: {searchParams: Promise<{ [key: string]:
       </div>
       <section>
         <div className="w-full grid grid-cols-2 gap-2">
-          {events.map((event: EventModel, index: number) => (
-            <div className="my-2" key={index}>
+          {events.map((event: EventModel) => (
+            <div className="my-2" key={event.id}>
               <EventCard event={event}
                          user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}/>
             </div>

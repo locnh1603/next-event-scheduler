@@ -8,6 +8,7 @@ import type {
   EditEventDetailsDTO,
 } from '@/models/event.model';
 import {AppError} from '@/utilities/error-handler';
+import { ApiError } from '@/app/api/api-error-handler';
 
 export class EventService {
   async getEvents(ids?: string[]) {
@@ -81,12 +82,30 @@ export class EventService {
       { name, description },
       { new: true }
     );
-
     if (!event) {
-      throw new AppError(404, {} ,'Event not found');
+      throw new ApiError(404,'Event not found');
     }
-
     return event;
+  }
+
+  async joinEvent(id: string, userId: Types.ObjectId) {
+    const event = await Event.findOneAndUpdate(
+      { id },
+      { $addToSet: { participants: userId } },
+      { new: true }
+    );
+    if (!event) {
+      throw new ApiError(404,'Event not found');
+    }
+    return event;
+  }
+
+  async getParticipants(id: string) {
+    const event = await Event.findOne({ id });
+    if (!event) {
+      throw new ApiError(404,'Event not found');
+    }
+    return event.participants;
   }
 }
 
