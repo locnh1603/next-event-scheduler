@@ -183,7 +183,7 @@ const CreateEventForm = () => {
                   <>
                     <FormLabel>Event Type</FormLabel>
                     <FormDescription>
-                      Invite is sent through emails and permalink
+                      Invite is sent through emails.
                     </FormDescription>
                     <FormControl>
                       <RadioGroup className="flex gap-4 mt-2" {...field} onValueChange={field.onChange}>

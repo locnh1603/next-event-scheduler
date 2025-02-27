@@ -10,7 +10,7 @@ import type {
 import {AppError} from '@/utilities/error-handler';
 import { ApiError } from '@/app/api/api-error-handler';
 
-export class EventService {
+class EventService {
   async getEvents(ids?: string[]) {
     const query = { active: true };
     if (ids?.length) {
