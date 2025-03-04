@@ -10,4 +10,6 @@ export enum EventCommands {
 
 export enum UserCommands {
   getUsers = 'getUsers',
+  inviteUsers = 'inviteUsers',
+  inviteEmails = 'inviteEmails',
 }

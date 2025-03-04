@@ -19,6 +19,10 @@ class UserService {
       }
     });
   }
+
+  async inviteUsers(ids?: string[]) {}
+
+  async inviteEmails(emails?: string[]) {}
 }
 
 export const userService = new UserService()
