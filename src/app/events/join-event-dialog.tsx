@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/dialog';
-import {DialogBody} from 'next/dist/client/components/react-dev-overlay/internal/components/Dialog';
 import {EventModel} from '@/models/event.model';
 import {Button} from '@/components/button';
 import {Card, CardContent} from '@/components/card';
@@ -28,7 +27,7 @@ const JoinEventDialog = (props: {event: EventModel, user: UserModel}) => {
           <DialogTitle>Join Event {event.name}</DialogTitle>
           <DialogDescription>Join an eligible event!</DialogDescription>
         </DialogHeader>
-        <DialogBody>
+        <DialogContent>
           <p className="mb-4">Are you sure you want to join this event ?</p>
           <Card>
             <CardContent className="p-4">
@@ -45,7 +44,7 @@ const JoinEventDialog = (props: {event: EventModel, user: UserModel}) => {
               </div>
             </CardContent>
           </Card>
-        </DialogBody>
+        </DialogContent>
         <DialogFooter>
           <Button>Join</Button>
           <DialogClose asChild>

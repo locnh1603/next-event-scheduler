@@ -10,7 +10,7 @@ export const env = createEnv({
     BLOB_READ_WRITE_TOKEN: z.string(),
     NODE_ENV: z.enum(["development", "test", "production"]),
     API_URL: z.string().url(),
-    MAIL_API_KEY: z.string(),
+    RESEND_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_API_URL: z.string().url(),
@@ -24,7 +24,7 @@ export const env = createEnv({
     API_URL: process.env.NEXT_PUBLIC_API_URL,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
-    MAIL_API_KEY: process.env.MAIL_API_KEY
+    RESEND_API_KEY: process.env.RESEND_API_KEY
   },
 });
 

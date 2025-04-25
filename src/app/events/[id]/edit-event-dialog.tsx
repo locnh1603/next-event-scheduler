@@ -17,7 +17,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Form, FormControl, FormField, FormLabel, FormMessage} from '@/components/form';
 import {Input} from '@/components/input';
 import {Textarea} from '@/components/textarea';
-import {DialogBody} from 'next/dist/client/components/react-dev-overlay/internal/components/Dialog';
 import { EventCommands } from '@/enums/event.enum';
 import { useRouter } from 'next/navigation';
 import {AppError} from '@/utilities/error-handler';
@@ -82,7 +81,7 @@ const EditDetailDialog = (props: {event: EventModel}) => {
             Change Event minor details.
           </DialogDescription>
         </DialogHeader>
-        <DialogBody>
+        <DialogContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="space-y-2">
@@ -123,7 +122,7 @@ const EditDetailDialog = (props: {event: EventModel}) => {
               </DialogFooter>
             </form>
           </Form>
-        </DialogBody>
+        </DialogContent>
       </DialogContent>
     </Dialog>
   )

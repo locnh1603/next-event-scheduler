@@ -7,7 +7,6 @@ import type {
   FilterEventsDTO,
   EditEventDetailsDTO,
 } from '@/models/event.model';
-import {AppError} from '@/utilities/error-handler';
 import { ApiError } from '@/app/api/api-error-handler';
 
 class EventService {
@@ -106,6 +105,14 @@ class EventService {
       throw new ApiError(404,'Event not found');
     }
     return event.participants;
+  }
+
+  async inviteUsers(userIds: string[], eventId: string) {
+
+  }
+
+  async inviteEmails(emails: string[], eventId: string) {
+
   }
 }
 

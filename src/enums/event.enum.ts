@@ -6,6 +6,8 @@ export enum EventCommands {
   updateEventDetails = 'updateEventDetails',
   getParticipants = 'getParticipants',
   joinEvent = 'joinEvent',
+  inviteEmails = 'inviteEmail',
+  inviteUsers = 'inviteUser',
 }
 
 export enum UserCommands {

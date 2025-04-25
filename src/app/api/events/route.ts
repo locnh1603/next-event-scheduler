@@ -80,6 +80,14 @@ export const POST = async (req: NextRequest) => {
         userId = await getUserId();
         response.payload = await eventService.joinEvent(validatedData.payload.eventId, userId);
         break;
+      case EventCommands.inviteUsers:
+        validatedData = eventValidators.inviteUsers.parse(data);
+        response.payload = await eventService.inviteUsers(validatedData.payload.userIds, validatedData.payload.eventId);
+        break;
+      case EventCommands.inviteEmails:
+        validatedData = eventValidators.inviteEmails.parse(data);
+        response.payload = await eventService.inviteEmails(validatedData.payload.emails, validatedData.payload.eventId);
+        break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});
     }
