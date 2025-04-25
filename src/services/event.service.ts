@@ -108,11 +108,11 @@ class EventService {
   }
 
   async inviteUsers(userIds: string[], eventId: string) {
-
+    console.log(userIds, eventId);
   }
 
   async inviteEmails(emails: string[], eventId: string) {
-
+    console.log(emails, eventId);
   }
 }
 
