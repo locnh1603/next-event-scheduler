@@ -22,6 +22,14 @@ export const POST = async (req: NextRequest) => {
         validatedData = userValidator.getUsers.parse(data);
         response.payload = await userService.getUsers(validatedData.payload.ids);
         break;
+      case UserCommands.inviteEmails:
+        validatedData = userValidator.inviteEmails.parse(data);
+        response.payload = await userService.inviteEmails(validatedData.payload.emails);
+        break;
+      case UserCommands.inviteUsers:
+        validatedData = userValidator.inviteUsers.parse(data);
+        response.payload = await userService.inviteUsers(validatedData.payload.ids);
+        break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});
     }
