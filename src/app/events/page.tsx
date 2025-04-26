@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/button";
-import customFetch, {IResponseBody} from '@/utilities/server-fetch';
+import customFetch, {IResponseBody} from '@/services/app/server/server-fetch';
 import {EventModel} from '@/models/event.model';
 import {EventCommands} from '@/enums/event.enum';
 import {auth} from '@/auth';

@@ -1,10 +1,10 @@
 import {NextRequest, NextResponse} from 'next/server';
 import dbConnect from '@/lib/dbConnect';
-import {IRequestBody, IResponseBody} from '@/utilities/server-fetch';
+import {IRequestBody, IResponseBody} from '@/services/app/server/server-fetch';
 import {UserCommands} from '@/enums/event.enum';
 import {handleError} from '@/app/api/api-error-handler';
 import {userValidator} from '@/app/api/users/user.validator';
-import { userService } from '@/services/user.service';
+import { userService } from '@/services/api/user.service';
 
 export const POST = async (req: NextRequest) => {
   await dbConnect();

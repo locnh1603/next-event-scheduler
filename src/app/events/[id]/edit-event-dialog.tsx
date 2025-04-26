@@ -20,7 +20,7 @@ import {Textarea} from '@/components/textarea';
 import { EventCommands } from '@/enums/event.enum';
 import { useRouter } from 'next/navigation';
 import {AppError} from '@/utilities/error-handler';
-import { customFetch } from '@/utilities/client-fetch';
+import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 const eventDetailFormSchema = z.object({
   name: z.string().min(2, {

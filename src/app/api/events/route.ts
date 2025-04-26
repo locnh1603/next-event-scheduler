@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import Event from "@/models/event.model";
-import {IRequestBody, IResponseBody} from '@/utilities/server-fetch';
+import {IRequestBody, IResponseBody} from '@/services/app/server/server-fetch';
 import {EventCommands} from '@/enums/event.enum';
 import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
@@ -8,7 +8,7 @@ import {User} from '@/models/user.model';
 import { Types } from 'mongoose';
 import {eventValidators} from '@/app/api/events/event.validator';
 import {ApiError, handleError} from '@/app/api/api-error-handler';
-import { eventService } from '@/services/event.service';
+import { eventService } from '@/services/api/event.service';
 
 export const GET = async () => {
   await dbConnect();

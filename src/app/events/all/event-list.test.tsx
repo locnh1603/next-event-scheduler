@@ -3,10 +3,10 @@ import { act, render, screen } from '@testing-library/react';
 import EventList from './page';
 import { EventModel } from '@/models/event.model';
 import { UserModel } from '@/models/user.model';
-import customFetch from '@/utilities/server-fetch';
+import customFetch from '@/services/app/server/server-fetch';
 import { generateUniqueArray } from '@/utilities/array-util';
 
-vi.mock('@/utilities/server-fetch', () => ({
+vi.mock('@/services/app/server/server-fetch', () => ({
   default: vi.fn(),
 }));
 

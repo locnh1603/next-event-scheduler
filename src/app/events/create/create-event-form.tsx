@@ -13,7 +13,7 @@ import {Label} from '@/components/label';
 import {DateTimePicker} from '@/components/date-time-picker';
 import {RadioGroup, RadioGroupItem} from '@/components/radio-group';
 import {Button} from '@/components/button';
-import { customFetch } from '@/utilities/client-fetch';
+import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 
 const formSchema = z.object({
