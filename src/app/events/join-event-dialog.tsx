@@ -40,9 +40,9 @@ const JoinEventDialog = (props: {event: EventModel, user: UserModel}) => {
     }
   }
   return (
-    <Dialog open={dialogOpen}>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="ml-2" onClick={() => setDialogOpen(true)}>Join</Button>
+        <Button variant="outline" className="ml-2">Join</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -67,7 +67,7 @@ const JoinEventDialog = (props: {event: EventModel, user: UserModel}) => {
         <DialogFooter>
           <Button onClick={joinEvent}>Join</Button>
           <DialogClose asChild>
-            <Button type="button" variant="secondary" onClick={() => setDialogOpen(false)}>
+            <Button type="button" variant="secondary">
               Close
             </Button>
           </DialogClose>

@@ -10,6 +10,7 @@ import {UserModel} from '@/models/user.model';
 
 const EventCard = (props: { event: EventModel, user: UserModel }) => {
   const {event, user} = props;
+  const isParticipant = event.participants && event.participants.map(oid => oid.toString()).includes(user.id);
   return (
     <Card key={event.id}>
       <CardContent className="p-4">
@@ -32,7 +33,7 @@ const EventCard = (props: { event: EventModel, user: UserModel }) => {
                 <Link href={`/events/${event.id}`}>View</Link>
               </Button>
             {
-              event.type === 'public' ? (
+              event.type === 'public' && !isParticipant ? (
                 <JoinEventDialog event={event} user={user}></JoinEventDialog>
               ) : (<></>)
             }
