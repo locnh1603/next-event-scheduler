@@ -1,6 +1,5 @@
 'use client'
 import { toast } from 'sonner';
-import { env } from '@env';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 type ToastType = 'success' | 'error' | 'info' | 'warning';
