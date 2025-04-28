@@ -1,3 +1,4 @@
+'use client'
 import { toast } from 'sonner';
 import { env } from '@env';
 
@@ -29,7 +30,6 @@ class ErrorLogger {
       level,
       message,
       ...context,
-      environment: env.NODE_ENV,
       requestId: crypto.randomUUID(),
     };
 

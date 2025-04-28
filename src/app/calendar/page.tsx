@@ -1,12 +1,16 @@
-import {redirect} from 'next/navigation';
-import {auth} from '@/auth';
+'use client'
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
-const EventCalendar = async () => {
-  const session = await auth()
-  if (!session?.user) {
-    redirect('/unauthorized')
-  }
-  return <div>Event Calendar</div>
+const EventCalendar = () => {
+  return (
+    <div>
+      <FullCalendar
+        plugins={[ dayGridPlugin ]}
+        initialView="dayGridMonth"
+      />
+    </div>
+  );
 };
 
 export default EventCalendar;
