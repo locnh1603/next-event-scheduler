@@ -11,7 +11,13 @@ class MailService {
   async inviteEmails(to: string[], eventId: string, recipient: string, userId: Types.ObjectId, subject: string = 'Event Invitation') {
     try {
       const event = await Event.findOne({ id: eventId });
+      if (!event) {
+        throw new Error(`Event with ID ${eventId} not found.`);
+      }
       const user = await User.findOne({ _id: userId });
+      if (!user) {
+        throw new Error(`User with ID ${userId} not found.`);
+      }
       const from = `${user.name} (${user.email})`;
       const eventDate = formatDate(new Date(event.startDate));
       const { data } = await this.resend.emails.send({
