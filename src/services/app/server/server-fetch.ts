@@ -24,7 +24,7 @@ const customFetch = async (url: string, options = {}) => {
   if (response.status === 200) {
     return response;
   } else if (response.status === 401) {
-    toast.error('You dont have permission for this action', {
+    toast.error("You don't have permission for this action", {
       duration: 5000,
       position: 'top-right',
       dismissible: true
