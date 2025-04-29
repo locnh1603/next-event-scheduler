@@ -19,14 +19,6 @@ class UserService {
       }
     });
   }
-
-  async inviteUsers(ids?: string[]) {
-    console.log(ids);
-  }
-
-  async inviteEmails(emails?: string[]) {
-    console.log(emails);
-  }
 }
 
 export const userService = new UserService()

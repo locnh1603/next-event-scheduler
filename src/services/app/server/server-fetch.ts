@@ -1,8 +1,7 @@
 'use server';
 import {redirect} from 'next/navigation';
-import {AppError} from '@/utilities/error-handler';
 import { cookies } from 'next/headers';
-import { showError } from '@/services/app/client/toaster.service';
+import { toast } from 'sonner';
 export interface IRequestBody<T = unknown> {
   payload: T;
   command: string;
@@ -25,10 +24,16 @@ const customFetch = async (url: string, options = {}) => {
   if (response.status === 200) {
     return response;
   } else if (response.status === 401) {
-    showError('You dont have permission for this action');
+    toast.error("You don't have permission for this action", {
+      duration: 5000,
+      position: 'top-right',
+      dismissible: true
+    });
     redirect('/events');
   } else {
-    throw new AppError(response.status)
+    const { status, statusText } = response;
+    const errorMessage = `API error: ${status} ${statusText || ''}`.trim();
+    throw new Error(errorMessage);
   }
 }
 export default customFetch;

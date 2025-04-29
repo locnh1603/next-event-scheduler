@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from "@/components/button";
 import customFetch, {IResponseBody} from '@/services/app/server/server-fetch';
 import {EventModel} from '@/models/event.model';
-import {EventCommands} from '@/enums/event.enum';
+import { EventCommands } from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
 import EventCard from '@/app/events/event-card';

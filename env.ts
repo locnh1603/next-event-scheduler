@@ -11,9 +11,11 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     API_URL: z.string().url(),
     RESEND_API_KEY: z.string(),
+    APP_URL: z.string().url(),
   },
   client: {
     NEXT_PUBLIC_API_URL: z.string().url(),
+    NEXT_PUBLIC_APP_URL: z.string().url(),
   },
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
@@ -21,7 +23,9 @@ export const env = createEnv({
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     MONGODB_URI: process.env.MONGODB_URI,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     API_URL: process.env.NEXT_PUBLIC_API_URL,
+    APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
     RESEND_API_KEY: process.env.RESEND_API_KEY

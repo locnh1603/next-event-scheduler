@@ -4,7 +4,7 @@ import {IRequestBody, IResponseBody} from '@/services/app/server/server-fetch';
 import {UserCommands} from '@/enums/event.enum';
 import {handleError} from '@/app/api/api-error-handler';
 import {userValidator} from '@/app/api/users/user.validator';
-import { userService } from '@/services/api/user.service';
+import {userService} from '@/services/api/user.service';
 
 export const POST = async (req: NextRequest) => {
   await dbConnect();
@@ -21,14 +21,6 @@ export const POST = async (req: NextRequest) => {
       case UserCommands.getUsers:
         validatedData = userValidator.getUsers.parse(data);
         response.payload = await userService.getUsers(validatedData.payload.ids);
-        break;
-      case UserCommands.inviteEmails:
-        validatedData = userValidator.inviteEmails.parse(data);
-        response.payload = await userService.inviteEmails(validatedData.payload.emails);
-        break;
-      case UserCommands.inviteUsers:
-        validatedData = userValidator.inviteUsers.parse(data);
-        response.payload = await userService.inviteUsers(validatedData.payload.ids);
         break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});
