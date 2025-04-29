@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
 import Event from "@/models/event.model";
 import {IRequestBody, IResponseBody} from '@/services/app/server/server-fetch';
-import {EventCommands} from '@/enums/event.enum';
+import { EventCommands } from '@/enums/event.enum';
 import dbConnect from '@/lib/dbConnect';
 import {auth} from '@/auth';
 import {User} from '@/models/user.model';
@@ -9,6 +9,7 @@ import { Types } from 'mongoose';
 import {eventValidators} from '@/app/api/events/event.validator';
 import {ApiError, handleError} from '@/app/api/api-error-handler';
 import { eventService } from '@/services/api/event.service';
+import { mailService } from '@/services/api/mail.service';
 
 export const GET = async () => {
   await dbConnect();
@@ -86,7 +87,13 @@ export const POST = async (req: NextRequest) => {
         break;
       case EventCommands.inviteEmails:
         validatedData = eventValidators.inviteEmails.parse(data);
-        response.payload = await eventService.inviteEmails(validatedData.payload.emails, validatedData.payload.eventId);
+        userId = await getUserId();
+        response.payload = await mailService.inviteEmails(
+          validatedData.payload.emails,
+          validatedData.payload.eventId,
+          validatedData.payload.recipient,
+          userId
+        );
         break;
       default:
         return NextResponse.json({message: 'Invalid command'}, {status: 400});

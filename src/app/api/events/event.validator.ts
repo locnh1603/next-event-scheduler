@@ -73,6 +73,7 @@ export const eventValidators = {
     payload: z.object({
       eventId: z.string().min(1),
       emails: z.array(z.string()),
+      recipient: z.string()
     }),
   }),
 }
