@@ -1,14 +1,43 @@
-import {Card, CardContent, CardHeader, CardTitle} from '@/components/card';
-import {auth} from '@/auth';
-import React from 'react';
-import {Button} from '@/components/button';
-import {Label} from '@/components/label';
-import {redirect} from 'next/navigation';
+import React, { Suspense } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { Button } from '@/components/button';
+import { Label } from '@/components/label';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
-const Profile = async () => {
-  const session = await auth()
+const ProfileSkeleton = () => (
+  <div>
+    <div className="max-w-2xl mx-auto mb-6">
+      <div className="animate-pulse">
+        <div className="h-10 w-2/3 bg-gray-200 rounded mb-2" />
+        <div className="h-4 w-1/3 bg-gray-200 rounded" />
+      </div>
+    </div>
+    <Card className="w-full max-w-2xl mx-auto">
+      <CardHeader>
+        <div className="h-6 w-40 bg-gray-200 rounded animate-pulse" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
+              <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
+            </div>
+          ))}
+          <div className="flex gap-2 mt-6">
+            <div className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ProfileContent = async () => {
+  const session = await auth();
   if (!session?.user) {
-    redirect('/unauthorized')
+    redirect('/unauthorized');
   }
   const { user } = session;
   return (
@@ -47,5 +76,12 @@ const Profile = async () => {
       </Card>
     </div>
   );
-}
+};
+
+const Profile = () => (
+  <Suspense fallback={<ProfileSkeleton />}>
+    <ProfileContent />
+  </Suspense>
+);
+
 export default Profile;

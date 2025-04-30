@@ -143,7 +143,7 @@ const NavBar = async () => {
                       <NavigationMenuLink className={
                         `cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`
                       }>
-                        Create Event
+                      Create Event
                       </NavigationMenuLink>
                     </Link>
                     <Link href='/calendar' passHref legacyBehavior>
@@ -153,6 +153,13 @@ const NavBar = async () => {
                     </Link>
                   </div>
                 </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="/about" passHref legacyBehavior>
+                  <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
+                    About
+                  </NavigationMenuLink>
+                </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
