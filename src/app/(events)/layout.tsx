@@ -12,7 +12,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
     <html lang="en">
       <body>
         <div className="main m-0">
-          <NavBar></NavBar>
+          <NavBar />
           <div className="min-h-[95vh] p-4">
             {children}
           </div>
