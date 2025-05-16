@@ -20,7 +20,7 @@ vi.mock('next/headers', () => ({
   })),
 }));
 
-vi.mock('@/app/events/event-card', () => ({
+vi.mock('@/app/(events)/events/event-card', () => ({
   default: ({ event, user }: { event: EventModel; user: UserModel }) => (
     <div data-testid="event-card">
       Event: {event.name}, User: {user.name}
@@ -28,11 +28,11 @@ vi.mock('@/app/events/event-card', () => ({
   ),
 }));
 
-vi.mock('@/app/events/all/event-pagination', () => ({
+vi.mock('@/app/(events)/events/all/event-pagination', () => ({
   default: () => <div data-testid="event-pagination">Pagination</div>,
 }));
 
-vi.mock('@/app/events/all/event-filter', () => ({
+vi.mock('@/app/(events)/events/all/event-filter', () => ({
   default: () => <div data-testid="event-filter">Filter</div>
 }));
 

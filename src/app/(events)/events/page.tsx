@@ -5,7 +5,7 @@ import {EventModel} from '@/models/event.model';
 import { EventCommands } from '@/enums/event.enum';
 import {auth} from '@/auth';
 import Link from 'next/link';
-import EventCard from '@/app/events/event-card';
+import EventCard from '@/app/(events)/events/event-card';
 import {generateUniqueArray} from '@/utilities/array-util';
 import {UserModel} from '@/models/user.model';
 import { env } from '@env';
