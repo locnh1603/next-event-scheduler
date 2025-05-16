@@ -1,13 +1,96 @@
-"use client";
-import React, { useState } from "react";
-import { Input } from "@/components/input";
-import { Button } from "@/components/button";
+'use client';
+import React, { useState } from 'react';
+import { Input } from '@/components/input';
+import { Button } from '@/components/button';
+
+function optimizeProduction(
+  A: number,
+  B: number,
+  C: number,
+  E: number,
+  F: number,
+  G: number
+): {
+  D: number;
+  A_left: number;
+  B_left: number;
+  C_left: number;
+  A_converted: number;
+  B_converted: number;
+} {
+  // Strategy 1: No conversion (baseline)
+  const strategy1Batches = Math.min(
+    Math.floor(A / E),
+    Math.floor(B / F),
+    Math.floor(C / G)
+  );
+  const strategy1D = strategy1Batches * 10;
+  const strategy1ALeft = A - strategy1Batches * E;
+  const strategy1BLeft = B - strategy1Batches * F;
+  const strategy1CLeft = C - strategy1Batches * G;
+
+  // Initialize best solution with the baseline
+  let bestD = strategy1D;
+  let bestAConverted = 0;
+  let bestBConverted = 0;
+  let bestALeft = strategy1ALeft;
+  let bestBLeft = strategy1BLeft;
+  let bestCLeft = strategy1CLeft;
+
+  // Try different conversion percentages of A and B
+  for (let aPercent = 0; aPercent <= 100; aPercent += 5) {
+    for (let bPercent = 0; bPercent <= 100; bPercent += 5) {
+      // Calculate how much A and B to convert
+      const aToConvert =
+        Math.floor(Math.floor((A * aPercent) / 100) / 100) * 100; // Round down to multiple of 100
+      const bToConvert = Math.floor(Math.floor((B * bPercent) / 100) / 50) * 50; // Round down to multiple of 50
+
+      // Calculate Z and C produced
+      const zProduced =
+        Math.floor(aToConvert / 100) * 80 + Math.floor(bToConvert / 50) * 80;
+      const cProduced = Math.floor(zProduced / 100) * 10;
+
+      // Calculate remaining resources
+      const aRemain = A - aToConvert;
+      const bRemain = B - bToConvert;
+      const cRemain = C + cProduced;
+
+      // Calculate max batches with remaining resources
+      const batches = Math.min(
+        E > 0 ? Math.floor(aRemain / E) : Number.POSITIVE_INFINITY,
+        F > 0 ? Math.floor(bRemain / F) : Number.POSITIVE_INFINITY,
+        G > 0 ? Math.floor(cRemain / G) : Number.POSITIVE_INFINITY
+      );
+
+      // Calculate D produced
+      const dProduced = batches * 10;
+
+      // Update best if this is better
+      if (dProduced > bestD) {
+        bestD = dProduced;
+        bestAConverted = aToConvert;
+        bestBConverted = bToConvert;
+        bestALeft = aRemain - batches * E;
+        bestBLeft = bRemain - batches * F;
+        bestCLeft = cRemain - batches * G;
+      }
+    }
+  }
+
+  // Return the best solution found
+  return {
+    D: bestD,
+    A_left: bestALeft,
+    B_left: bestBLeft,
+    C_left: bestCLeft,
+    A_converted: bestAConverted,
+    B_converted: bestBConverted,
+  };
+}
 
 export default function ToolsClient() {
   const [result, setResult] = useState<{
     D: number;
-    batches: number;
-    additionalBatches: number;
     A_left: number;
     B_left: number;
     C_left: number;
@@ -21,83 +104,14 @@ export default function ToolsClient() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
-    const A = Number((form.elements.namedItem("A") as HTMLInputElement).value);
-    const B = Number((form.elements.namedItem("B") as HTMLInputElement).value);
-    const C = Number((form.elements.namedItem("C") as HTMLInputElement).value);
-    const E = Number((form.elements.namedItem("E") as HTMLInputElement).value);
-    const F = Number((form.elements.namedItem("F") as HTMLInputElement).value);
-    const G = Number((form.elements.namedItem("G") as HTMLInputElement).value);
-
-    if (E <= 0 || F <= 0 || G <= 0) {
-      setResult(null);
-      return;
-    }
-
-    const batches = Math.min(
-      Math.floor(A / E),
-      Math.floor(B / F),
-      Math.floor(C / G)
-    );
-
-    const D_initial = batches * 10;
-    const A_consumed = batches * E;
-    const B_consumed = batches * F;
-    const C_consumed = batches * G;
-
-    let A_left = A - A_consumed;
-    let B_left = B - B_consumed;
-    let C_left = C - C_consumed;
-
-    const max_batches_possible = Math.min(
-      Math.floor(A_left / E),
-      Math.floor(B_left / F)
-    );
-    const required_C = max_batches_possible * G;
-
-    const Z_from_A = Math.floor((A_left / 100) * 80);
-    const Z_from_B = Math.floor((B_left / 50) * 80);
-    const total_Z = Z_from_A + Z_from_B;
-
-    const C_producible_from_Z = Math.floor(total_Z / 100) * 10;
-    const C_produced = Math.min(C_producible_from_Z, required_C - C_left);
-
-    const Z_needed = Math.ceil(C_produced / 10) * 100;
-    const A_converted = Z_needed > 0 ? Math.min(A_left, Math.floor(Z_needed / 2)) : 0;
-    const B_converted = Z_needed > 0 ? Math.min(B_left, Math.floor(Z_needed / 2.5)) : 0;
-
-    A_left -= A_converted;
-    B_left -= B_converted;
-    C_left += C_produced;
-
-    const additionalBatches = Math.min(
-      Math.floor(A_left / E),
-      Math.floor(B_left / F),
-      Math.floor(C_left / G)
-    );
-
-    const A_additional_consumed = additionalBatches * E;
-    const B_additional_consumed = additionalBatches * F;
-    const C_additional_consumed = additionalBatches * G;
-
-    A_left -= A_additional_consumed;
-    B_left -= B_additional_consumed;
-    C_left -= C_additional_consumed;
-
-    const D = D_initial + additionalBatches;
-
-    setResult({
-      D,
-      batches,
-      additionalBatches,
-      A_left,
-      B_left,
-      C_left,
-      A_converted,
-      B_converted,
-      E,
-      F,
-      G,
-    });
+    const A = Number((form.elements.namedItem('A') as HTMLInputElement).value);
+    const B = Number((form.elements.namedItem('B') as HTMLInputElement).value);
+    const C = Number((form.elements.namedItem('C') as HTMLInputElement).value);
+    const E = Number((form.elements.namedItem('E') as HTMLInputElement).value);
+    const F = Number((form.elements.namedItem('F') as HTMLInputElement).value);
+    const G = Number((form.elements.namedItem('G') as HTMLInputElement).value);
+    const { D, A_left, B_left, C_left, A_converted, B_converted } = optimizeProduction(A, B, C, E, F, G);
+    setResult({ D, A_left, B_left, C_left, A_converted, B_converted, E, F, G });
   }
 
   return (
@@ -176,13 +190,6 @@ export default function ToolsClient() {
           <div className="space-y-1">
             <div>
               <b>Total final batches made:</b> {result.D}
-            </div>
-            <div>
-              <b>Initial batches made:</b> {result.batches}
-            </div>
-            <div>
-              <b>Additional batches made from conversion:</b>{" "}
-              {result.additionalBatches}
             </div>
             <div>
               <b>White converted:</b> {result.A_converted}

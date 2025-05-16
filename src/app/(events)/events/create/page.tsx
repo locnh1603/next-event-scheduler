@@ -1,4 +1,4 @@
-import CreateEventForm from '@/app/events/create/create-event-form';
+import CreateEventForm from '@/app/(events)/events/create/create-event-form';
 import {redirect} from 'next/navigation';
 import {auth} from '@/auth';
 import { Suspense } from 'react';

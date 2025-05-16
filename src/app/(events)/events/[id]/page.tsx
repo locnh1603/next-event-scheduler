@@ -10,7 +10,7 @@ import {redirect} from 'next/navigation';
 import {Button} from '@/components/button';
 import Link from 'next/link';
 import {formatDate} from '@/utilities/date-util';
-import {EditDetailDialog} from '@/app/events/[id]/edit-event-dialog';
+import {EditDetailDialog} from '@/app/(events)/events/[id]/edit-event-dialog';
 import {auth} from '@/auth';
 
 const EventMainInfo = async (props: {event: EventModel}) => {

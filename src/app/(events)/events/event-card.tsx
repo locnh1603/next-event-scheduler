@@ -5,7 +5,7 @@ import {Button} from '@/components/button';
 import Link from 'next/link';
 import React from 'react';
 import {formatDate} from '@/utilities/date-util';
-import {JoinEventDialog} from '@/app/events/join-event-dialog';
+import {JoinEventDialog} from '@/app/(events)/events/join-event-dialog';
 import {UserModel} from '@/models/user.model';
 
 const EventCard = (props: { event: EventModel, user: UserModel }) => {
