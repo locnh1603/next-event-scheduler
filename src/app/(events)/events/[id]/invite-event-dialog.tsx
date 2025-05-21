@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from '@/components/form';
 import { customFetch } from '@/services/app/client/client-fetch';
-import { AppError } from '@/utilities/error-handler';
 import { env } from '@env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogDescription } from '@radix-ui/react-dialog';
