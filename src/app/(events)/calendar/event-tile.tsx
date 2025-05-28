@@ -1,13 +1,15 @@
+import { EventContentArg } from '@fullcalendar/core/index.js';
+import EventViewDialog from './event-dialog';
+
 interface EventTileProps {
-  eventInfo: any;
+  eventInfo: EventContentArg;
 }
-const EventTile = ({eventInfo}: EventTileProps) => {
-  console.log(eventInfo);
+const EventTile = ({ eventInfo }: EventTileProps) => {
   return (
-    <>
-      {eventInfo.event.title}
-    </>
-  )
-}
+    <EventViewDialog eventId={eventInfo.event.id}>
+      <div>{eventInfo.event.title}</div>
+    </EventViewDialog>
+  );
+};
 
 export default EventTile;
