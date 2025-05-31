@@ -110,7 +110,8 @@ export default function ToolsClient() {
     const E = Number((form.elements.namedItem('E') as HTMLInputElement).value);
     const F = Number((form.elements.namedItem('F') as HTMLInputElement).value);
     const G = Number((form.elements.namedItem('G') as HTMLInputElement).value);
-    const { D, A_left, B_left, C_left, A_converted, B_converted } = optimizeProduction(A, B, C, E, F, G);
+    const { D, A_left, B_left, C_left, A_converted, B_converted } =
+      optimizeProduction(A, B, C, E, F, G);
     setResult({ D, A_left, B_left, C_left, A_converted, B_converted, E, F, G });
   }
 
@@ -149,7 +150,7 @@ export default function ToolsClient() {
                 type="number"
                 min={1}
                 required
-                defaultValue={100}
+                defaultValue={86}
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -159,7 +160,7 @@ export default function ToolsClient() {
                 type="number"
                 min={1}
                 required
-                defaultValue={50}
+                defaultValue={45}
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -169,7 +170,7 @@ export default function ToolsClient() {
                 type="number"
                 min={1}
                 required
-                defaultValue={10}
+                defaultValue={33}
               />
             </label>
           </div>
@@ -192,10 +193,10 @@ export default function ToolsClient() {
               <b>Total final batches made:</b> {result.D}
             </div>
             <div>
-              <b>White converted:</b> {result.A_converted}
+              <b>White converted times:</b> {result.A_converted / 100}
             </div>
             <div>
-              <b>Green converted:</b> {result.B_converted}
+              <b>Green converted times:</b> {result.B_converted / 50}
             </div>
             <div>
               <b>Leftover White:</b> {result.A_left}
