@@ -1,0 +1,243 @@
+'use client';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormLabel,
+  FormMessage,
+} from '@/components/form';
+import { customFetch } from '@/services/app/client/client-fetch';
+import { env } from '@env';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { DialogDescription } from '@radix-ui/react-dialog';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Input } from '@/components/input';
+import { Button } from '@/components/button';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/table';
+import { showError } from '@/services/app/client/toaster.service';
+import { EventCommands } from '@/enums/event.enum';
+const eventInviteFormSchema = z.object({
+  email: z.string().min(1, {
+    message: 'Email is required.',
+  }),
+});
+type EventInviteFormData = z.infer<typeof eventInviteFormSchema>;
+
+type UserInviteDisplayData = {
+  email: string;
+};
+
+const InviteEventDialog = (props: {
+  eventId: string;
+  children: React.ReactNode;
+}) => {
+  const { eventId, children } = props;
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Array<UserInviteDisplayData>>([]);
+  const [open, setOpen] = useState(false);
+  const form = useForm<EventInviteFormData>({
+    resolver: zodResolver(eventInviteFormSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
+  const columnHelper = createColumnHelper<UserInviteDisplayData>();
+  const onSendInvite = async () => {
+    setLoading(true);
+    const body = JSON.stringify({
+      payload: {
+        eventId,
+        emails: data.map((item) => item.email),
+      },
+      command: EventCommands.inviteEmails,
+    });
+    console.log(body);
+    try {
+      const url = `${env.NEXT_PUBLIC_API_URL}/events`;
+      await customFetch(url, {
+        body,
+        method: 'POST',
+      });
+      setLoading(false);
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = (data: EventInviteFormData) => {
+    const { email } = data;
+    addEmail(email);
+  };
+
+  const removeEmailByIndex = (index: number) => {
+    const newEmails = [...data];
+    newEmails.splice(index, 1);
+    setData(newEmails);
+  };
+
+  const addEmail = (email: string) => {
+    const isDuplicate = data.some((item) => item.email === email);
+
+    if (!isDuplicate) {
+      const emails = [...data, { email }];
+      setData(emails);
+      form.reset();
+    } else {
+      showError('Email already exists');
+    }
+  };
+
+  const columns = [
+    columnHelper.display({
+      id: 'No.',
+      cell: (info) => info.row.index + 1,
+    }),
+    columnHelper.accessor('email', {
+      id: 'email',
+      header: 'Email',
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.display({
+      id: 'action',
+      cell: (info) => (
+        <button onClick={() => removeEmailByIndex(info.row.index)}>
+          Remove
+        </button>
+      ),
+    }),
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Invite Participants</DialogTitle>
+          <DialogDescription>Invite users by their emails.</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            {loading ? (
+              <div>Loading</div>
+            ) : (
+              <div>
+                <div>
+                  Invitation List
+                  <Table>
+                    <TableCaption>
+                      List of email to send Invitation
+                    </TableCaption>
+                    <TableHeader>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => {
+                            return (
+                              <TableHead key={header.id}>
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext()
+                                    )}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                          <TableRow
+                            key={row.id}
+                            data-state={row.getIsSelected() && 'selected'}
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <TableCell key={cell.id}>
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            colSpan={columns.length}
+                            className="h-24 text-center"
+                          >
+                            No data.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    render={({ field }) => (
+                      <>
+                        <FormLabel htmlFor="email">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="Enter user email"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </>
+                    )}
+                    name="email"
+                  />
+                </div>
+                <Button type="submit">Add Email</Button>
+              </div>
+            )}
+          </form>
+        </Form>
+        <DialogFooter>
+          <Button onClick={onSendInvite}>Send Invite</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default InviteEventDialog;

@@ -8,7 +8,7 @@ import { User } from '@/models/user.model';
 
 class MailService {
   private resend = new Resend(env.RESEND_API_KEY);
-  async inviteEmails(to: string[], eventId: string, recipient: string, userId: Types.ObjectId, subject: string = 'Event Invitation') {
+  async inviteEmails(to: string[], eventId: string, userId: Types.ObjectId, subject: string = 'Event Invitation') {
     try {
       const event = await Event.findOne({ id: eventId });
       if (!event) {
@@ -18,14 +18,15 @@ class MailService {
       if (!user) {
         throw new Error(`User with ID ${userId} not found.`);
       }
-      const from = `${user.name} (${user.email})`;
+      console.log(event, user, to);
+      const from = `${user.name} <events@mail.locnh.io.vn>`;
       const eventDate = formatDate(new Date(event.startDate));
       const { data } = await this.resend.emails.send({
         from,
         to,
         subject,
         react: EmailTemplate(
-          { recipient, senderName: from, eventName: event.name, eventDate, eventLocation: event.location, eventId: event.id }
+          { senderName: from, eventName: event.name, eventDate, eventLocation: event.location, eventId: event.id }
         ),
       });
       return data;

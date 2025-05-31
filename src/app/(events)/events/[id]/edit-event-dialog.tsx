@@ -27,13 +27,13 @@ const eventDetailFormSchema = z.object({
     message: "Name must be at least 2 characters."
   }),
   description: z.string()
-})
+});
 type EventDetailFormData = z.infer<typeof eventDetailFormSchema>;
-const EditDetailDialog = (props: {event: EventModel}) => {
+const EditDetailDialog = (props: {event: EventModel, children: React.ReactNode}) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const {event} = props;
+  const {event, children} = props;
   const form = useForm<EventDetailFormData>({
     resolver: zodResolver(eventDetailFormSchema),
     defaultValues: {
@@ -72,7 +72,7 @@ const EditDetailDialog = (props: {event: EventModel}) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Edit</Button>
+        {children}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -81,48 +81,46 @@ const EditDetailDialog = (props: {event: EventModel}) => {
             Change Event minor details.
           </DialogDescription>
         </DialogHeader>
-        <DialogContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="space-y-2">
-                <FormField control={form.control} render={({field}) => (
-                  <>
-                    <FormLabel htmlFor="name">Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter event name" {...field}/>
-                    </FormControl>
-                    <FormMessage/>
-                  </>
-                )} name="name"/>
-              </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="space-y-2">
+              <FormField control={form.control} render={({field}) => (
+                <>
+                  <FormLabel htmlFor="name">Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter event name" {...field}/>
+                  </FormControl>
+                  <FormMessage/>
+                </>
+              )} name="name"/>
+            </div>
 
-              <div className="space-y-2 mt-2">
-                <FormField control={form.control} render={({field}) => (
-                  <>
-                    <FormLabel htmlFor="description">Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        id="description"
-                        placeholder="Enter event description"
-                        className="min-h-[100px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage/>
-                  </>
-                )} name="description"/>
-              </div>
-              <DialogFooter className="mt-4">
-                <Button type="submit" className={`${loading ? 'disabled' : ''}`}>Save Changes</Button>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
+            <div className="space-y-2 mt-2">
+              <FormField control={form.control} render={({field}) => (
+                <>
+                  <FormLabel htmlFor="description">Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      id="description"
+                      placeholder="Enter event description"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage/>
+                </>
+              )} name="description"/>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button type="submit" className={`${loading ? 'disabled' : ''}`}>Save Changes</Button>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

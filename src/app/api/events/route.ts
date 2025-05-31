@@ -91,7 +91,6 @@ export const POST = async (req: NextRequest) => {
         response.payload = await mailService.inviteEmails(
           validatedData.payload.emails,
           validatedData.payload.eventId,
-          validatedData.payload.recipient,
           userId
         );
         break;

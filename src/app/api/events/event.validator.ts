@@ -69,11 +69,10 @@ export const eventValidators = {
   }),
 
   inviteEmails: z.object({
-    command: z.literal('inviteEmails'),
+    command: z.literal('inviteEmail'),
     payload: z.object({
       eventId: z.string().min(1),
       emails: z.array(z.string()),
-      recipient: z.string()
     }),
   }),
 }
