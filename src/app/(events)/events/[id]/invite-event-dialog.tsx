@@ -6,14 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/dialog';
+} from '@/components/shadcn-ui/dialog';
 import {
   Form,
   FormControl,
   FormField,
   FormLabel,
   FormMessage,
-} from '@/components/form';
+} from '@/components/shadcn-ui/form';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,8 +27,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Input } from '@/components/input';
-import { Button } from '@/components/button';
+import { Input } from '@/components/shadcn-ui/input';
+import { Button } from '@/components/shadcn-ui/button';
 import {
   Table,
   TableBody,
@@ -37,7 +37,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/table';
+} from '@/components/shadcn-ui/table';
 import { showError } from '@/services/app/client/toaster.service';
 import { EventCommands } from '@/enums/event.enum';
 const eventInviteFormSchema = z.object({

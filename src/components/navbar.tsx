@@ -1,6 +1,5 @@
-import {auth, signIn, signOut} from "@/auth";
 import Link from 'next/link';
-import {Button} from '@/components/button';
+import { Button } from '@/components/shadcn-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/dropdown-menu";
+} from '@/components/shadcn-ui/dropdown-menu';
 import { Settings, User, LogOut, Menu } from 'lucide-react';
 import {
   NavigationMenu,
@@ -17,7 +16,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/navigation-menu";
+} from '@/components/shadcn-ui/navigation-menu';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -27,49 +26,52 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alert-dialog"
-import Image from "next/image";
-import {redirect} from 'next/navigation';
+} from '@/components/shadcn-ui/alert-dialog';
+import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
 const NavBar = async () => {
-  const session = await auth();
+  const session = false;
   let user = <></>;
   if (session?.user) {
     user = (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <User className="h-5 w-5"/>
+            <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
-          <DropdownMenuSeparator/>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            redirect('/profile');
-          }}>
-            <User className="mr-2 h-4 w-4"/>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={async () => {
+              'use server';
+              redirect('/profile');
+            }}
+          >
+            <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            redirect('/settings');
-          }}>
-            <Settings className="mr-2 h-4 w-4"/>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={async () => {
+              'use server';
+              redirect('/settings');
+            }}
+          >
+            <Settings className="mr-2 h-4 w-4" />
             Settings
           </DropdownMenuItem>
-          <DropdownMenuSeparator/>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            await signOut();
-          }}>
-            <LogOut className="mr-2 h-4 w-4"/>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
             Log out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
+    );
   } else {
     user = (
       <div>
@@ -77,14 +79,14 @@ const NavBar = async () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                <User className="h-5 w-5"/>
+                <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Guest</DropdownMenuLabel>
-              <DropdownMenuSeparator/>
+              <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4"/>
+                <User className="mr-2 h-4 w-4" />
                 <AlertDialogTrigger asChild>
                   <div>Login</div>
                 </AlertDialogTrigger>
@@ -100,10 +102,7 @@ const NavBar = async () => {
             </AlertDialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-1 gap-2">
-                <Button variant="outline" className="w-full" onClick={async() => {
-                  'use server'
-                  await signIn('google');
-                }}>
+                <Button variant="outline" className="w-full">
                   Google
                 </Button>
               </div>
@@ -114,17 +113,17 @@ const NavBar = async () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    )
+    );
   }
   return (
     <div className="w-full border-b min-h-[5vh]">
       <div className="flex h-16 items-center px-4 justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5"/>
+            <Menu className="h-5 w-5" />
           </Button>
           <span className="text-xl font-bold">
-            <Image src="/next.svg" alt="Logo" width="50" height="50"/>
+            <Image src="/next.svg" alt="Logo" width="50" height="50" />
           </span>
         </div>
         <div className="flex items-center space-x-4">
@@ -134,20 +133,22 @@ const NavBar = async () => {
                 <NavigationMenuTrigger>Events</NavigationMenuTrigger>
                 <NavigationMenuContent className="data-[side=bottom]:animate-slideUpAndFade">
                   <div className="grid gap-3 p-4 w-[400px]">
-                    <Link href='/events' passHref legacyBehavior>
+                    <Link href="/events" passHref legacyBehavior>
                       <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
                         Event List
                       </NavigationMenuLink>
                     </Link>
-                    <Link href='/events/create' passHref legacyBehavior>
-                      <NavigationMenuLink className={
-                        `cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`
-                      }>
-                      Create Event
+                    <Link href="/events/create" passHref legacyBehavior>
+                      <NavigationMenuLink
+                        className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`}
+                      >
+                        Create Event
                       </NavigationMenuLink>
                     </Link>
-                    <Link href='/calendar' passHref legacyBehavior>
-                      <NavigationMenuLink className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`}>
+                    <Link href="/calendar" passHref legacyBehavior>
+                      <NavigationMenuLink
+                        className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`}
+                      >
                         My Calendar
                       </NavigationMenuLink>
                     </Link>
@@ -167,6 +168,6 @@ const NavBar = async () => {
         </div>
       </div>
     </div>
-  )
-}
-export default NavBar
+  );
+};
+export default NavBar;

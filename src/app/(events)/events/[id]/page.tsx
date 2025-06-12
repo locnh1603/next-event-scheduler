@@ -1,13 +1,18 @@
 import { EventCommands } from '@/enums/event.enum';
 import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
 import { EventModel } from '@/models/event.model';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn-ui/card';
 import React, { Suspense } from 'react';
 import { Calendar, Map, Tag } from 'lucide-react';
-import { Badge } from '@/components/badge';
-import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/components/shadcn-ui/badge';
+import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { redirect } from 'next/navigation';
-import { Button } from '@/components/button';
+import { Button } from '@/components/shadcn-ui/button';
 import Link from 'next/link';
 import { formatDate } from '@/utilities/date-util';
 import { EditDetailDialog } from '@/app/(events)/events/[id]/edit-event-dialog';

@@ -1,13 +1,13 @@
 import React, { Suspense } from 'react';
-import { Button } from "@/components/button";
-import customFetch, {IResponseBody} from '@/services/app/server/server-fetch';
-import {EventModel} from '@/models/event.model';
+import { Button } from '@/components/shadcn-ui/button';
+import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
+import { EventModel } from '@/models/event.model';
 import { EventCommands } from '@/enums/event.enum';
-import {auth} from '@/auth';
+import { auth } from '@/auth';
 import Link from 'next/link';
 import EventCard from '@/app/(events)/events/event-card';
-import {generateUniqueArray} from '@/utilities/array-util';
-import {UserModel} from '@/models/user.model';
+import { generateUniqueArray } from '@/utilities/array-util';
+import { UserModel } from '@/models/user.model';
 import { env } from '@env';
 
 const DashboardSkeleton = () => {
@@ -43,7 +43,7 @@ const DashboardContent = async () => {
   const session = await auth();
   const body = JSON.stringify({
     payload: {},
-    command: EventCommands.getDashboardEvents
+    command: EventCommands.getDashboardEvents,
   });
   const eventResponse = await customFetch(`${env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
@@ -60,10 +60,13 @@ const DashboardContent = async () => {
     hotEvents.map((event: EventModel) => event.createdBy.toString()),
     recentEvents.map((event: EventModel) => event.createdBy.toString()),
   ]);
-  const userResponse = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-    method: 'POST',
-    body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
-  });
+  const userResponse = await customFetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/users`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
+    }
+  );
   const usersData: IResponseBody<UserModel[]> = await userResponse.json();
   const users: UserModel[] = usersData.payload;
   return (
@@ -77,14 +80,20 @@ const DashboardContent = async () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">My Events</h2>
             <Button variant="outline" asChild>
-              <Link href='/events/all'>View All</Link>
+              <Link href="/events/all">View All</Link>
             </Button>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {myEvents.map((event: EventModel) => (
-              <EventCard key={event.id} event={event}
-                         user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
-              </EventCard>
+              <EventCard
+                key={event.id}
+                event={event}
+                user={
+                  users.find(
+                    (user: UserModel) => user.id === event.createdBy.toString()
+                  ) ?? ({} as UserModel)
+                }
+              ></EventCard>
             ))}
           </div>
         </section>
@@ -95,9 +104,15 @@ const DashboardContent = async () => {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {hotEvents.map((event: EventModel) => (
-            <EventCard key={event.id} event={event}
-                       user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}>
-            </EventCard>
+            <EventCard
+              key={event.id}
+              event={event}
+              user={
+                users.find(
+                  (user: UserModel) => user.id === event.createdBy.toString()
+                ) ?? ({} as UserModel)
+              }
+            ></EventCard>
           ))}
         </div>
       </section>
@@ -107,10 +122,15 @@ const DashboardContent = async () => {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {recentEvents.map((event: EventModel) => (
-            <EventCard key={event.id} event={event}
-                       user={users.find((user: UserModel) => user.id === event.createdBy.toString()) ?? {} as UserModel}
-            >
-            </EventCard>
+            <EventCard
+              key={event.id}
+              event={event}
+              user={
+                users.find(
+                  (user: UserModel) => user.id === event.createdBy.toString()
+                ) ?? ({} as UserModel)
+              }
+            ></EventCard>
           ))}
         </div>
       </section>

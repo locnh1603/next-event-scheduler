@@ -1,5 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
-import { Badge } from "@/components/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn-ui/card';
+import { Badge } from '@/components/shadcn-ui/badge';
 
 interface AboutProps {
   creator: string;
@@ -8,8 +13,8 @@ interface AboutProps {
 
 export default async function AboutPage() {
   const aboutData: AboutProps = {
-    creator: "Loc Nguyen Huu",
-    email: "nghloc1603@gmail.com",
+    creator: 'Loc Nguyen Huu',
+    email: 'nghloc1603@gmail.com',
   };
 
   return (
@@ -22,7 +27,9 @@ export default async function AboutPage() {
           <section className="mb-4">
             <h2 className="text-lg font-semibold">Overview</h2>
             <p>
-              This web application is designed to showcase modern web development practices using popular open-source technologies. It’s fast, modular, and beautiful.
+              This web application is designed to showcase modern web
+              development practices using popular open-source technologies. It’s
+              fast, modular, and beautiful.
             </p>
           </section>
           <section className="mb-4">
@@ -45,7 +52,7 @@ export default async function AboutPage() {
           <section>
             <h2 className="text-lg font-semibold">Contact</h2>
             <p>
-              For questions or feedback, contact:{" "}
+              For questions or feedback, contact:{' '}
               <a
                 href={`mailto:${aboutData.email}`}
                 className="text-primary underline hover:text-primary/80"

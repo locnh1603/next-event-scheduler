@@ -1,7 +1,12 @@
 import React, { Suspense } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import { Button } from '@/components/button';
-import { Label } from '@/components/label';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn-ui/card';
+import { Button } from '@/components/shadcn-ui/button';
+import { Label } from '@/components/shadcn-ui/label';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 
