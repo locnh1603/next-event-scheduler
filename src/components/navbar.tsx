@@ -33,7 +33,7 @@ import { redirect } from 'next/navigation';
 const NavBar = async () => {
   const session = false;
   let user = <></>;
-  if (session?.user) {
+  if (session) {
     user = (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -42,7 +42,7 @@ const NavBar = async () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+          <DropdownMenuLabel>name</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="cursor-pointer"
