@@ -3,7 +3,6 @@ import { Button } from '@/components/shadcn-ui/button';
 import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
 import { EventModel } from '@/models/event.model';
 import { EventCommands } from '@/enums/event.enum';
-import { auth } from '@/auth';
 import Link from 'next/link';
 import EventCard from '@/app/(events)/events/event-card';
 import { generateUniqueArray } from '@/utilities/array-util';
@@ -40,7 +39,6 @@ const DashboardSkeleton = () => {
 };
 
 const DashboardContent = async () => {
-  const session = await auth();
   const body = JSON.stringify({
     payload: {},
     command: EventCommands.getDashboardEvents,
