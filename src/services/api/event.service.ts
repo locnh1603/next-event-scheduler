@@ -1,114 +1,88 @@
-import { Types } from 'mongoose';
-import Event from '@/models/event.model';
-import { subDays } from 'date-fns';
-import { v4 } from 'uuid';
-import type {
-  EventDTO,
-  FilterEventsDTO,
-  EditEventDetailsDTO,
-} from '@/models/event.model';
-import { ApiError } from '@/app/api/api-error-handler';
+import { createClient } from '@/lib/supabase/server';
+import type { EventDTO, FilterEventsDTO } from '@/models/event.model';
+
+const supabase = await createClient();
 
 class EventService {
+  /**
+   * Retrieves events by their IDs or all active events if no IDs are provided.
+   * @param ids - Optional array of event IDs to filter by.
+   * @returns Promise resolving to an array of event objects.
+   */
   async getEvents(ids?: string[]) {
-    const query = { active: true };
     if (ids?.length) {
-      return Event.find(query).where('id').in(ids);
+      const events = await supabase
+        .from('public.events')
+        .select('id, name, description, start_date, end_date')
+        .in('id', ids);
+      return events.data;
     }
-    return Event.find(query);
+    const events = await supabase
+      .from('public.events')
+      .select('id, name, description, start_date, end_date')
+      .eq('active', true);
+    return events.data;
   }
 
+  /**
+   * Filters events based on search parameters, pagination, sorting, and creator.
+   * @param params - Filtering, sorting, and pagination options.
+   * @returns Promise resolving to an object containing filtered events and pagination info.
+   */
   async filterEvents({
-                       searchParam,
-                       page,
-                       limit,
-                       sortField,
-                       sortOrder,
-                       filter,
-                       createdBy,
-                     }: FilterEventsDTO & { createdBy: string }) {
+    searchParam,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+    filter,
+    createdBy,
+  }: FilterEventsDTO & { createdBy: string }) {
     const skip = (page - 1) * limit;
-    const query = {
-      name: { $regex: searchParam || '', $options: 'i' },
-      type: {
-        $regex: filter.type ? (filter.type === 'all' ? '' : filter.type) : '',
-        $options: 'i',
-      },
-      createdBy,
-    };
-
     const [events, totalCount] = await Promise.all([
-      Event.find(query)
-        .sort({ [sortField]: sortOrder })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Event.countDocuments(query),
+      supabase
+        .from('public.events')
+        .select('id, name, description, start_date, end_date')
+        .filter('active', 'eq', true)
+        .filter('name', 'ilike', `%${searchParam}%`)
+        .filter('type', 'ilike', `%${filter.type}%`)
+        .filter('created_by', 'eq', createdBy)
+        .order(sortField, { ascending: sortOrder === 'asc' })
+        .range(skip, skip + limit),
+      supabase
+        .from('public.events')
+        .select('id', { count: 'exact' })
+        .filter('active', 'eq', true)
+        .filter('name', 'ilike', `%${searchParam}%`)
+        .filter('type', 'ilike', `%${filter.type}%`)
+        .filter('created_by', 'eq', createdBy),
     ]);
 
-    return {
-      events,
-      count: events.length,
-      totalCount,
-      totalPages: Math.ceil(totalCount / limit),
-      currentPage: page,
-    };
+    if (events.data) {
+      return {
+        events: events.data,
+        count: events.data.length,
+        totalCount: totalCount.count,
+        totalPages: totalCount.count && Math.ceil(totalCount.count / limit),
+        currentPage: page,
+      };
+    }
   }
 
-  async createEvent(eventData: EventDTO, createdBy: Types.ObjectId) {
-    return Event.create({
+  /**
+   * Creates a new event with the provided data and creator.
+   * @param eventData - Data for the new event.
+   * @param createdBy - ID of the user creating the event.
+   * @returns Promise resolving to the created event object.
+   */
+  async createEvent(eventData: EventDTO, createdBy: string) {
+    const newEvent = await supabase.from('public.events').insert({
       ...eventData,
-      id: v4(),
+      id: Date.now().toString(),
       active: true,
-      status: 'Pending',
-      createdBy,
+      created_by: createdBy,
     });
-  }
-
-  async getDashboardEvents(createdBy?: Types.ObjectId) {
-    const yesterdayTimestamp = subDays(new Date(), 1).getTime();
-    const [hotEvents, recentEvents] = await Promise.all([
-      Event.find({ interested: { $gt: 10 } }).limit(6),
-      Event.find({ startDate: { $gt: yesterdayTimestamp } }).limit(6),
-    ]);
-    const myEvents = createdBy ? await Event.find({ createdBy }).limit(6) : [];
-    return { myEvents, hotEvents, recentEvents };
-  }
-
-  async updateEventDetails({ id, name, description }: EditEventDetailsDTO) {
-    const event = await Event.findOneAndUpdate(
-      { id },
-      { name, description },
-      { new: true }
-    );
-    if (!event) {
-      throw new ApiError(404,'Event not found');
-    }
-    return event;
-  }
-
-  async joinEvent(id: string, userId: Types.ObjectId) {
-    const event = await Event.findOneAndUpdate(
-      { id },
-      { $addToSet: { participants: userId } },
-      { new: true }
-    );
-    if (!event) {
-      throw new ApiError(404,'Event not found');
-    }
-    return event;
-  }
-
-  async getParticipants(id: string) {
-    const event = await Event.findOne({ id });
-    if (!event) {
-      throw new ApiError(404,'Event not found');
-    }
-    return event.participants;
-  }
-
-  async inviteUsers(userIds: string[], eventId: string) {
-    console.log(userIds, eventId);
+    return newEvent.data?.[0];
   }
 }
 
