@@ -4,7 +4,6 @@ export interface EventDTO {
   startTime: Date;
   endTime: Date;
   location?: string;
-  hostId: string;
   allowSelfJoin?: boolean;
   allowAnonymousJoin?: boolean;
   maxParticipants?: number;
@@ -17,7 +16,8 @@ export interface Event {
   startTime: Date;
   endTime: Date;
   location?: string;
-  hostId: string;
+  createdBy: string;
+  createdAt: string;
   allowSelfJoin: boolean;
   allowAnonymousJoin: boolean;
   maxParticipants?: number;

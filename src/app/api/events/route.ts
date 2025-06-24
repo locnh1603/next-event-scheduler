@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Event from '@/models/event.model';
 import {
   IRequestBody,
   IResponseBody,
 } from '@/services/app/server/server-fetch';
 import { EventCommands } from '@/enums/event.enum';
-import dbConnect from '@/lib/dbConnect';
 import { eventValidators } from '@/app/api/events/event.validator';
 import { handleError } from '@/app/api/api-error-handler';
 import { eventService } from '@/services/api/event.service';
@@ -47,7 +45,7 @@ export const POST = async (req: NextRequest) => {
         validatedData = eventValidators.createEvent.parse(reqData);
         response.payload = await eventService.createEvent(
           validatedData.payload,
-          userId
+          userId || ''
         );
         break;
       case EventCommands.getDashboardEvents:
@@ -62,7 +60,7 @@ export const POST = async (req: NextRequest) => {
         response.payload = await eventService.filterEvents({
           ...validatedData.payload,
           searchParam: validatedData.payload.searchParam || '',
-          createdBy: userId.toString(),
+          createdBy: userId || '',
         });
         break;
       case EventCommands.updateEventDetails:

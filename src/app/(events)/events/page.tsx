@@ -1,13 +1,16 @@
+'use client';
+
 import React, { Suspense } from 'react';
 import { Button } from '@/components/shadcn-ui/button';
 import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
-import { EventModel } from '@/models/event.model';
 import { EventCommands } from '@/enums/event.enum';
 import Link from 'next/link';
 import EventCard from '@/app/(events)/events/event-card';
 import { generateUniqueArray } from '@/utilities/array-util';
 import { UserModel } from '@/models/user.model';
 import { env } from '@env';
+import { Event } from '@/models/event.model';
+import { createClient } from '@/lib/supabase/client';
 
 const DashboardSkeleton = () => {
   return (
@@ -39,6 +42,11 @@ const DashboardSkeleton = () => {
 };
 
 const DashboardContent = async () => {
+  const supabase = createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const body = JSON.stringify({
     payload: {},
     command: EventCommands.getDashboardEvents,
@@ -46,27 +54,34 @@ const DashboardContent = async () => {
   const eventResponse = await customFetch(`${env.NEXT_PUBLIC_API_URL}/events`, {
     method: 'POST',
     body,
+    headers: session?.access_token
+      ? { Authorization: `Bearer ${session.access_token}` }
+      : {},
   });
   const eventData: IResponseBody<{
-    myEvents: EventModel[];
-    hotEvents: EventModel[];
-    recentEvents: EventModel[];
+    myEvents: Event[];
+    hotEvents: Event[];
+    recentEvents: Event[];
   }> = await eventResponse.json();
   const { myEvents, hotEvents, recentEvents } = eventData.payload;
   const userIds = generateUniqueArray([
-    myEvents.map((event: EventModel) => event.createdBy.toString()),
-    hotEvents.map((event: EventModel) => event.createdBy.toString()),
-    recentEvents.map((event: EventModel) => event.createdBy.toString()),
+    myEvents.map((event: Event) => event.createdBy.toString()),
+    hotEvents.map((event: Event) => event.createdBy.toString()),
+    recentEvents.map((event: Event) => event.createdBy.toString()),
   ]);
   const userResponse = await customFetch(
     `${process.env.NEXT_PUBLIC_API_URL}/users`,
     {
       method: 'POST',
       body: JSON.stringify({ payload: { ids: userIds }, command: 'getUsers' }),
+      headers: session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : {},
     }
   );
   const usersData: IResponseBody<UserModel[]> = await userResponse.json();
   const users: UserModel[] = usersData.payload;
+
   return (
     <div className="h-full">
       <div className="max-w-7xl mx-auto mb-6">
@@ -82,7 +97,7 @@ const DashboardContent = async () => {
             </Button>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
-            {myEvents.map((event: EventModel) => (
+            {myEvents.map((event: Event) => (
               <EventCard
                 key={event.id}
                 event={event}
@@ -101,7 +116,7 @@ const DashboardContent = async () => {
           <h2 className="text-2xl font-semibold">Hot Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {hotEvents.map((event: EventModel) => (
+          {hotEvents.map((event: Event) => (
             <EventCard
               key={event.id}
               event={event}
@@ -119,7 +134,7 @@ const DashboardContent = async () => {
           <h2 className="text-2xl font-semibold">Recent Events</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          {recentEvents.map((event: EventModel) => (
+          {recentEvents.map((event: Event) => (
             <EventCard
               key={event.id}
               event={event}

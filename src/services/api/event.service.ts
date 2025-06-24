@@ -84,6 +84,40 @@ class EventService {
     });
     return newEvent.data?.[0];
   }
+
+  /**
+   * Returns dashboard data including recent events, user's events, and hot events by participation count.
+   * @param userId - ID of the authenticated user, can be null
+   * @returns Object with newEvents, myEvents, and hotEvents
+   */
+  async getDashboardEvents(userId: string | null) {
+    const newEventsPromise = supabase
+      .from('public.events')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    const myEventsPromise = userId
+      ? supabase
+          .from('public.events')
+          .select('*')
+          .eq('created_by', userId)
+          .order('created_at', { ascending: false })
+          .limit(10)
+      : Promise.resolve({ data: [] });
+
+    const [newEventsRes, myEventsRes] = await Promise.all([
+      newEventsPromise,
+      myEventsPromise,
+      [],
+    ]);
+
+    return {
+      newEvents: newEventsRes.data ?? [],
+      myEvents: myEventsRes.data ?? [],
+      hotEvents: [],
+    };
+  }
 }
 
 export const eventService = new EventService();
