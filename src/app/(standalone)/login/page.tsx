@@ -1,6 +1,3 @@
-import { Input } from '@/components/shadcn-ui/input';
-import { Button } from '@/components/shadcn-ui/button';
-import { login, signup } from './action';
 import { Metadata } from 'next';
 import { Tabs, TabsList, TabsTrigger } from '@/components/shadcn-ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
@@ -15,11 +12,11 @@ import {
 export const metadata: Metadata = {
   title: 'Login',
 };
-
+import './login.scss';
 const LoginPage = () => {
   return (
     <div className="flex justify-center items-center h-screen">
-      <Card className="w-1/6">
+      <Card className="login-card">
         <CardHeader>
           <CardTitle className="text-center">Login</CardTitle>
         </CardHeader>

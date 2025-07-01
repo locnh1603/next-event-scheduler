@@ -23,8 +23,12 @@
       "@env": ["./env"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "./vitest.setup.js"],
-  "exclude": [
-    "node_modules",
-  ]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "./vitest.setup.js"
+  ],
+  "exclude": ["node_modules"]
 }
