@@ -1,11 +1,11 @@
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, { Schema, Types } from 'mongoose';
 
-export interface UserModel {
+export interface User {
+  id: string;
   name: string;
   email: string;
-  emailVerified: Date;
+  emailVerified: string;
   image: string;
-  id: string;
 }
 
 interface IUser {
@@ -62,7 +62,7 @@ export const userSchema = new Schema<IUser>({
 });
 
 export const accountSchema = new Schema<IAccount>({
-  userId: { type: Schema.Types.ObjectId, ref: "users" },
+  userId: { type: Schema.Types.ObjectId, ref: 'users' },
   type: { type: String },
   provider: { type: String },
   providerAccountId: { type: String },
@@ -79,7 +79,7 @@ export const accountSchema = new Schema<IAccount>({
 
 export const sessionSchema = new Schema<ISession>({
   sessionToken: { type: String, unique: true },
-  userId: { type: Schema.Types.ObjectId, ref: "users" },
+  userId: { type: Schema.Types.ObjectId, ref: 'users' },
   expires: { type: Date },
 });
 
@@ -89,10 +89,11 @@ export const verificationTokenSchema = new Schema<IVerificationToken>({
   expires: { type: Date },
 });
 
-export const User = mongoose.models?.users || mongoose.model("users", userSchema);
-export const Account = mongoose.models?.accounts || mongoose.model("accounts", accountSchema);
-export const Session = mongoose.models?.sessions || mongoose.model("sessions", sessionSchema);
-export const VerificationToken = mongoose.models?.tokens || mongoose.model(
-  "tokens",
-  verificationTokenSchema
-);
+export const User =
+  mongoose.models?.users || mongoose.model('users', userSchema);
+export const Account =
+  mongoose.models?.accounts || mongoose.model('accounts', accountSchema);
+export const Session =
+  mongoose.models?.sessions || mongoose.model('sessions', sessionSchema);
+export const VerificationToken =
+  mongoose.models?.tokens || mongoose.model('tokens', verificationTokenSchema);

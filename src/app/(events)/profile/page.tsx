@@ -10,7 +10,7 @@ import { Button } from '@/components/shadcn-ui/button';
 import { Label } from '@/components/shadcn-ui/label';
 import { createClient } from '@/lib/supabase/client';
 import { redirect } from 'next/navigation';
-import { IUserProfile } from '@/models/user-profile.model';
+import { UserProfile } from '@/models/user-profile.model';
 import { clientUserProfileService } from '@/services/app/client/user-profile.service';
 
 const ProfileSkeleton = () => (
@@ -43,7 +43,7 @@ const ProfileSkeleton = () => (
 );
 
 const ProfileContent = () => {
-  const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -89,15 +89,15 @@ const ProfileContent = () => {
             </div>
             <div className="flex items-center gap-2">
               <Label>First Name</Label>
-              <span>{userProfile.firstname}</span>
+              <span>{userProfile.firstName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Last Name</Label>
-              <span>{userProfile.lastname}</span>
+              <span>{userProfile.lastName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Phone Number</Label>
-              <span>{userProfile.phonenumber}</span>
+              <span>{userProfile.phoneNumber}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Birthday</Label>

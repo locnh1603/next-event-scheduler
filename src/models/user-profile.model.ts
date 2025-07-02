@@ -1,11 +1,20 @@
-export interface IUserProfile {
+export interface UserProfile {
   id: string;
   email: string;
   role: string;
-  firstname: string | null;
-  lastname: string | null;
-  phonenumber: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  phoneNumber: string | null;
   birthday: string | null;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserProfileDTO {
+  email: string;
+  role: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
+  birthday?: string | null;
 }

@@ -1,8 +1,8 @@
 export interface EventDTO {
   title: string;
   description?: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   location?: string;
   hostName?: string;
   allowSelfJoin?: boolean;
@@ -14,8 +14,8 @@ export interface Event {
   id: string;
   title: string;
   description?: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
   location?: string;
   hostName?: string;
   createdBy: string;

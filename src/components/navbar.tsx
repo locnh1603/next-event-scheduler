@@ -29,10 +29,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/shadcn-ui/alert-dialog';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { userProfileService } from '@/services/api/user-profile.service';
-import { IUserProfile } from '@/models/user-profile.model';
+import { UserProfile } from '@/models/user-profile.model';
 
 const NavBar = async () => {
   const supabase = await createClient();
@@ -40,7 +39,7 @@ const NavBar = async () => {
     data: { user },
   } = await supabase.auth.getUser();
   let userView;
-  let profile: IUserProfile | null = null;
+  let profile: UserProfile | null = null;
   if (user) {
     try {
       profile = await userProfileService.getUserProfile();
@@ -65,7 +64,7 @@ const NavBar = async () => {
                     href="/profile"
                   >
                     <div className="mb-2 mt-4 text-lg font-medium">
-                      {profile.firstname} {profile.lastname}
+                      {profile.firstName} {profile.lastName}
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
                       View and edit your profile.

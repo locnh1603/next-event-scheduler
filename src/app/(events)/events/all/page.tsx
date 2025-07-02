@@ -3,13 +3,8 @@ import { Event, FilterEventsDTO } from '@/models/event.model';
 import EventCard from '@/app/(events)/events/event-card';
 import EventPagination from '@/app/(events)/events/all/event-pagination';
 import { EventCommands } from '@/enums/event.enum';
-import customFetch, {
-  IRequestBody,
-  IResponseBody,
-} from '@/services/app/server/server-fetch';
+import customFetch, { IRequestBody } from '@/services/app/server/server-fetch';
 import EventFilter from '@/app/(events)/events/all/event-filter';
-import { UserModel } from '@/models/user.model';
-import { generateUniqueArray } from '@/utilities/array-util';
 import { env } from '@env';
 
 const EventList = async ({

@@ -1,11 +1,11 @@
-import mongoose, {Document, Types} from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 
 export interface EventInvite {
   id: string;
   recipientId: string;
   recipientEmail: string;
   eventId: string;
-  status: 'Accepted' | 'Rejected' | 'Pending';
+  status: 'accepted' | 'rejected' | 'pending';
 }
 
 interface IInvite extends Document {
@@ -21,8 +21,9 @@ const inviteSchema = new mongoose.Schema({
   recipientId: { type: Types.ObjectId, ref: 'users' },
   recipientEmail: { type: String },
   eventId: { type: String, required: true, ref: 'events' },
-  status: { type: String, required: true, default: 'Pending' }
-})
+  status: { type: String, required: true, default: 'Pending' },
+});
 
-const Invite = mongoose.models?.events || mongoose.model<IInvite>('invites', inviteSchema);
+const Invite =
+  mongoose.models?.events || mongoose.model<IInvite>('invites', inviteSchema);
 export default Invite;

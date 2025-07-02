@@ -15,13 +15,12 @@ import { Card, CardContent } from '@/components/shadcn-ui/card';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { formatDate } from '@/utilities/date-util';
 import React from 'react';
-import { UserModel } from '@/models/user.model';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 import { showSuccess } from '@/services/app/client/toaster.service';
 
-const JoinEventDialog = (props: { event: Event; user: UserModel }) => {
-  const { event, user } = props;
+const JoinEventDialog = (props: { event: Event }) => {
+  const { event } = props;
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const joinEvent = async () => {
     try {
@@ -62,7 +61,6 @@ const JoinEventDialog = (props: { event: Event; user: UserModel }) => {
                 <p>{event.description}</p>
                 <p>From: {formatDate(event.startTime)}</p>
                 <p>To: {formatDate(event.endTime)}</p>
-                {user?.name ? <p>Created By: {user.name}</p> : <></>}
               </div>
               <Skeleton className="w-full h-[300px]"></Skeleton>
             </div>

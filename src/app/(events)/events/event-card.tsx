@@ -4,8 +4,6 @@ import { Button } from '@/components/shadcn-ui/button';
 import Link from 'next/link';
 import React from 'react';
 import { formatDate } from '@/utilities/date-util';
-import { JoinEventDialog } from '@/app/(events)/events/join-event-dialog';
-import { UserModel } from '@/models/user.model';
 import { Event } from '@/models/event.model';
 const EventCard = (props: { event: Event }) => {
   const { event } = props;

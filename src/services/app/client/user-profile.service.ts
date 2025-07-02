@@ -1,11 +1,11 @@
 import { customFetch as clientFetch } from '@/services/app/client/client-fetch';
 import { UserProfileCommands } from '@/enums/event.enum';
-import { IUserProfile } from '@/models/user-profile.model';
+import { UserProfile } from '@/models/user-profile.model';
 
 const USER_PROFILE_API_URL = '/api/user-profiles';
 
 class ClientUserProfileService {
-  async getUserProfile(userId: string): Promise<IUserProfile | null> {
+  async getUserProfile(userId: string): Promise<UserProfile | null> {
     const response = await clientFetch(USER_PROFILE_API_URL, {
       method: 'POST',
       body: JSON.stringify({
