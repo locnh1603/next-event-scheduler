@@ -4,6 +4,7 @@ export interface EventDTO {
   startTime: Date;
   endTime: Date;
   location?: string;
+  hostName?: string;
   allowSelfJoin?: boolean;
   allowAnonymousJoin?: boolean;
   maxParticipants?: number;
@@ -16,6 +17,7 @@ export interface Event {
   startTime: Date;
   endTime: Date;
   location?: string;
+  hostName?: string;
   createdBy: string;
   createdAt: string;
   allowSelfJoin: boolean;
@@ -33,7 +35,4 @@ export interface FilterEventsDTO {
   limit: number;
   sortField: string;
   sortOrder: 'asc' | 'desc';
-  filter: {
-    type: string;
-  };
 }

@@ -1,7 +1,5 @@
-import { createClient } from '@/lib/supabase/server';
 import type { EventDTO, FilterEventsDTO } from '@/models/event.model';
-
-const supabase = await createClient();
+import { createClient } from '@/lib/supabase/server';
 
 class EventService {
   /**
@@ -10,17 +8,17 @@ class EventService {
    * @returns Promise resolving to an array of event objects.
    */
   async getEvents(ids?: string[]) {
+    const supabase = await createClient();
     if (ids?.length) {
       const events = await supabase
-        .from('public.events')
-        .select('id, name, description, start_date, end_date')
+        .from('events')
+        .select('id, title, description, start_time, end_time')
         .in('id', ids);
       return events.data;
     }
     const events = await supabase
-      .from('public.events')
-      .select('id, name, description, start_date, end_date')
-      .eq('active', true);
+      .from('events')
+      .select('id, title, description, start_time, end_time');
     return events.data;
   }
 
@@ -35,26 +33,22 @@ class EventService {
     limit,
     sortField,
     sortOrder,
-    filter,
     createdBy,
   }: FilterEventsDTO & { createdBy: string }) {
+    const supabase = await createClient();
     const skip = (page - 1) * limit;
     const [events, totalCount] = await Promise.all([
       supabase
-        .from('public.events')
-        .select('id, name, description, start_date, end_date')
-        .filter('active', 'eq', true)
-        .filter('name', 'ilike', `%${searchParam}%`)
-        .filter('type', 'ilike', `%${filter.type}%`)
+        .from('events')
+        .select('id, title, description, start_time, end_time')
+        .filter('title', 'ilike', `%${searchParam}%`)
         .filter('created_by', 'eq', createdBy)
         .order(sortField, { ascending: sortOrder === 'asc' })
         .range(skip, skip + limit),
       supabase
-        .from('public.events')
+        .from('events')
         .select('id', { count: 'exact' })
-        .filter('active', 'eq', true)
-        .filter('name', 'ilike', `%${searchParam}%`)
-        .filter('type', 'ilike', `%${filter.type}%`)
+        .filter('title', 'ilike', `%${searchParam}%`)
         .filter('created_by', 'eq', createdBy),
     ]);
 
@@ -76,10 +70,10 @@ class EventService {
    * @returns Promise resolving to the created event object.
    */
   async createEvent(eventData: EventDTO, createdBy: string) {
-    const newEvent = await supabase.from('public.events').insert({
+    const supabase = await createClient();
+    const newEvent = await supabase.from('events').insert({
       ...eventData,
       id: Date.now().toString(),
-      active: true,
       created_by: createdBy,
     });
     return newEvent.data?.[0];
@@ -90,16 +84,17 @@ class EventService {
    * @param userId - ID of the authenticated user, can be null
    * @returns Object with newEvents, myEvents, and hotEvents
    */
-  async getDashboardEvents(userId: string | null) {
+  async getDashboardEvents(userId?: string) {
+    const supabase = await createClient();
     const newEventsPromise = supabase
-      .from('public.events')
+      .from('events')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(10);
 
     const myEventsPromise = userId
       ? supabase
-          .from('public.events')
+          .from('events')
           .select('*')
           .eq('created_by', userId)
           .order('created_at', { ascending: false })

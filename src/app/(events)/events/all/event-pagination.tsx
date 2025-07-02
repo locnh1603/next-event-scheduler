@@ -10,14 +10,14 @@ import {
 } from '@/components/shadcn-ui/pagination';
 import React from 'react';
 import { generateNumberArray } from '@/utilities/array-util';
-import { EventModel } from '@/models/event.model';
+import { Event } from '@/models/event.model';
 
 interface EventPaginationProps {
   currentPage: number;
   totalPages: number;
   totalCount: number;
   searchParams: string;
-  events: EventModel[];
+  events: Event[];
 }
 
 const EventPagination = (props: EventPaginationProps) => {

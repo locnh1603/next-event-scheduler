@@ -1,6 +1,6 @@
 import CreateEventForm from '@/app/(events)/events/create/create-event-form';
-import {redirect} from 'next/navigation';
-import {auth} from '@/auth';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import { Suspense } from 'react';
 
 const CreateEventSkeleton = () => (
@@ -23,8 +23,12 @@ const CreateEventSkeleton = () => (
 );
 
 const CreateEvent = async () => {
-  const session = await auth();
-  if (!session?.user) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
     redirect('/unauthorized');
   }
 
@@ -42,4 +46,3 @@ const CreateEvent = async () => {
 };
 
 export default CreateEvent;
-

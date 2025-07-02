@@ -1,6 +1,6 @@
 import { EventCommands } from '@/enums/event.enum';
 import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
-import { EventModel } from '@/models/event.model';
+import { Event } from '@/models/event.model';
 import {
   Card,
   CardContent,
@@ -16,12 +16,16 @@ import { Button } from '@/components/shadcn-ui/button';
 import Link from 'next/link';
 import { formatDate } from '@/utilities/date-util';
 import { EditDetailDialog } from '@/app/(events)/events/[id]/edit-event-dialog';
-import { auth } from '@/auth';
+import { createClient } from '@/lib/supabase/server';
 import InviteEventDialog from './invite-event-dialog';
 
-const EventMainInfo = async (props: { event: EventModel }) => {
+const EventMainInfo = async (props: { event: Event }) => {
   const { event } = props;
-  const session = await auth();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!event) {
     redirect('/events');
   }
@@ -31,16 +35,13 @@ const EventMainInfo = async (props: { event: EventModel }) => {
         <div className="flex justify-between items-center">
           <div className="flex">
             <CardTitle className="text-2xl font-bold">
-              {event.name || 'Untitled'}
+              {event.title || 'Untitled'}
             </CardTitle>
-            <Badge
-              variant={event.active ? 'default' : 'secondary'}
-              className="pointer-events-none ml-2"
-            >
-              {event.active ? 'Active' : 'Inactive'}
+            <Badge variant="default" className="pointer-events-none ml-2">
+              Active
             </Badge>
           </div>
-          {session?.user ? (
+          {user ? (
             <EditDetailDialog event={event}>
               <Button variant="outline">Edit</Button>
             </EditDetailDialog>
@@ -61,7 +62,7 @@ const EventMainInfo = async (props: { event: EventModel }) => {
           <div className="flex items-center gap-2 text-gray-600">
             <Calendar size={20} />
             <span>
-              {formatDate(event.startDate)} - {formatDate(event.endDate)}
+              {formatDate(event.startTime)} - {formatDate(event.endTime)}
             </span>
           </div>
 
@@ -71,28 +72,10 @@ const EventMainInfo = async (props: { event: EventModel }) => {
           </div>
 
           <div className="flex items-center gap-2">
-            {event.type && (
-              <Badge variant="outline" className="lowercase">
-                {event.type}
-              </Badge>
-            )}
-            {event.status && (
-              <Badge variant="outline" className="lowercase">
-                {event.status}
-              </Badge>
-            )}
+            <Badge variant="outline" className="lowercase">
+              Event
+            </Badge>
           </div>
-
-          {event.tags && event.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {event.tags.map((tag, index) => (
-                <div key={index} className="flex items-center gap-1">
-                  <Tag size={16} className="text-gray-400" />
-                  <span className="text-sm text-gray-600">{tag}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
@@ -112,7 +95,7 @@ const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
     body,
     cache: 'no-store',
   });
-  const { payload }: IResponseBody<EventModel[]> = await data.json();
+  const { payload }: IResponseBody<Event[]> = await data.json();
   return (
     <div>
       <div className="max-w-7xl mx-auto mb-6">

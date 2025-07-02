@@ -26,11 +26,9 @@ const EventFilter = (props: EventFilterProps) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const searchInput = formData.get('search');
-    const typeInput = formData.get('type');
     const params = new URLSearchParams();
     params.set('page', '1');
     if (searchInput) params.set('search', searchInput.toString());
-    if (typeInput) params.set('type', typeInput.toString());
     router.push(`/events/all?${params.toString()}`);
     setTimeout(() => setLoading(false), 1000);
   };

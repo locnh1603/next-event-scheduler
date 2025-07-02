@@ -16,9 +16,6 @@ export const eventValidators = {
       limit: z.number().min(1).max(100),
       sortField: z.string(),
       sortOrder: z.enum(['asc', 'desc']),
-      filter: z.object({
-        type: z.string(),
-      }),
     }),
   }),
 

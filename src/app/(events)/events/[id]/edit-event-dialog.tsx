@@ -1,5 +1,5 @@
 'use client';
-import { EventModel } from '@/models/event.model';
+import { Event } from '@/models/event.model';
 import {
   Dialog,
   DialogClose,
@@ -37,7 +37,7 @@ const eventDetailFormSchema = z.object({
 });
 type EventDetailFormData = z.infer<typeof eventDetailFormSchema>;
 const EditDetailDialog = (props: {
-  event: EventModel;
+  event: Event;
   children: React.ReactNode;
 }) => {
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ const EditDetailDialog = (props: {
   const form = useForm<EventDetailFormData>({
     resolver: zodResolver(eventDetailFormSchema),
     defaultValues: {
-      name: event.name,
+      name: event.title,
       description: event.description,
     },
   });

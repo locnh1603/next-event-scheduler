@@ -30,20 +30,19 @@ import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'Name must be at least 2 characters.',
+  title: z.string().min(2, {
+    message: 'Title must be at least 2 characters.',
   }),
   description: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startTime: z.date(),
+  endTime: z.date(),
   location: z.string().min(1, {
     message: 'Location is required.',
   }),
-  image: z.string(),
-  type: z.string().min(1, {
-    message: 'Type is required.',
-  }),
-  limit: z.string(),
+  hostName: z.string().optional(),
+  allowSelfJoin: z.boolean().default(false),
+  allowAnonymousJoin: z.boolean().default(false),
+  maxParticipants: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,30 +52,36 @@ const CreateEventForm = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      title: '',
       description: '',
-      startDate: new Date(),
-      endDate: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
       location: '',
-      image: '',
-      limit: '0',
-      type: 'public',
+      hostName: '',
+      allowSelfJoin: false,
+      allowAnonymousJoin: false,
+      maxParticipants: '',
     },
   });
-  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const onSubmit = async (data: FormData) => {
     setLoading(true);
-    const startDate = new Date(data.startDate).getTime();
-    const endDate = new Date(data.endDate).getTime();
-    const limit = parseInt(data.limit, 10);
+    const startTime = data.startTime.toISOString();
+    const endTime = data.endTime.toISOString();
+    const maxParticipants = data.maxParticipants
+      ? parseInt(data.maxParticipants, 10)
+      : undefined;
     const body = {
       payload: {
-        ...data,
-        tags,
-        startDate,
-        endDate,
-        limit,
+        title: data.title,
+        description: data.description,
+        startTime,
+        endTime,
+        location: data.location,
+        hostName: data.hostName,
+        allowSelfJoin: data.allowSelfJoin,
+        allowAnonymousJoin: data.allowAnonymousJoin,
+        maxParticipants,
       },
       command: EventCommands.createEvent,
     };
@@ -95,19 +100,6 @@ const CreateEventForm = () => {
     }
   };
 
-  const handleTagInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const target: HTMLInputElement = e.target as HTMLInputElement;
-    if (e.key === 'Enter' && target.value) {
-      setTags([...tags, target.value]);
-      target.value = '';
-      e.preventDefault();
-    }
-  };
-
-  const removeTag = (indexToRemove: number) => {
-    setTags(tags.filter((_, index) => index !== indexToRemove));
-  };
-
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
@@ -121,14 +113,14 @@ const CreateEventForm = () => {
                 control={form.control}
                 render={({ field }) => (
                   <>
-                    <FormLabel htmlFor="name">Name</FormLabel>
+                    <FormLabel htmlFor="title">Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter event name" {...field} />
+                      <Input placeholder="Enter event title" {...field} />
                     </FormControl>
                     <FormMessage />
                   </>
                 )}
-                name="name"
+                name="title"
               />
             </div>
 
@@ -168,7 +160,7 @@ const CreateEventForm = () => {
                         ></DateTimePicker>
                       </FormControl>
                     )}
-                    name="startDate"
+                    name="startTime"
                   />
                 </div>
                 <div className="w-100 flex mt-3">
@@ -183,7 +175,7 @@ const CreateEventForm = () => {
                         ></DateTimePicker>
                       </FormControl>
                     )}
-                    name="endDate"
+                    name="endTime"
                   />
                 </div>
               </div>
@@ -210,87 +202,100 @@ const CreateEventForm = () => {
                 control={form.control}
                 render={({ field }) => (
                   <>
-                    <FormLabel htmlFor="image">Image</FormLabel>
+                    <FormLabel htmlFor="hostName">Host Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter event image URL" {...field} />
+                      <Input placeholder="Enter host name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </>
                 )}
-                name="image"
+                name="hostName"
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <FormField
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <FormLabel>Event Type</FormLabel>
-                      <FormDescription>
-                        Invite is sent through emails.
-                      </FormDescription>
+                      <FormLabel>Allow Self Join</FormLabel>
                       <FormControl>
                         <RadioGroup
                           className="flex gap-4 mt-2"
                           {...field}
-                          onValueChange={field.onChange}
+                          onValueChange={(value) =>
+                            field.onChange(value === 'true')
+                          }
+                          value={String(field.value)}
                         >
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="public" id="public" />
-                            <Label htmlFor="public">Public</Label>
+                            <RadioGroupItem value="true" id="self-join-yes" />
+                            <Label htmlFor="self-join-yes">Yes</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="invite" id="invite" />
-                            <Label htmlFor="invite">Invite Only</Label>
+                            <RadioGroupItem value="false" id="self-join-no" />
+                            <Label htmlFor="self-join-no">No</Label>
                           </div>
                         </RadioGroup>
                       </FormControl>
                     </>
                   )}
-                  name="type"
+                  name="allowSelfJoin"
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <FormField
                   control={form.control}
                   render={({ field }) => (
                     <>
-                      <FormLabel>Participation Limit</FormLabel>
-                      <FormDescription>Set to 0 for unlimited</FormDescription>
+                      <FormLabel>Allow Anonymous Join</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field}></Input>
+                        <RadioGroup
+                          className="flex gap-4 mt-2"
+                          {...field}
+                          onValueChange={(value) =>
+                            field.onChange(value === 'true')
+                          }
+                          value={String(field.value)}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value="true"
+                              id="anonymous-join-yes"
+                            />
+                            <Label htmlFor="anonymous-join-yes">Yes</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value="false"
+                              id="anonymous-join-no"
+                            />
+                            <Label htmlFor="anonymous-join-no">No</Label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                     </>
                   )}
-                  name="limit"
+                  name="allowAnonymousJoin"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Tags</Label>
-              <Input
-                placeholder="Type and press Enter to add tags"
-                onKeyDown={handleTagInput}
-                maxLength={10}
+              <FormField
+                control={form.control}
+                render={({ field }) => (
+                  <>
+                    <FormLabel>Max Participants</FormLabel>
+                    <FormDescription>Leave empty for unlimited</FormDescription>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                  </>
+                )}
+                name="maxParticipants"
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="bg-primary/10 text-primary px-2 py-1 rounded-md text-sm flex items-center gap-1"
-                  >
-                    {tag}
-                    <button
-                      onClick={() => removeTag(index)}
-                      className="text-primary hover:text-primary/80"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-end space-x-4">

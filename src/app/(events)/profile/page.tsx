@@ -1,4 +1,5 @@
-import React, { Suspense } from 'react';
+'use client';
+import React, { Suspense, useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -7,8 +8,10 @@ import {
 } from '@/components/shadcn-ui/card';
 import { Button } from '@/components/shadcn-ui/button';
 import { Label } from '@/components/shadcn-ui/label';
-import { auth } from '@/auth';
+import { createClient } from '@/lib/supabase/client';
 import { redirect } from 'next/navigation';
+import { IUserProfile } from '@/models/user-profile.model';
+import { clientUserProfileService } from '@/services/app/client/user-profile.service';
 
 const ProfileSkeleton = () => (
   <div>
@@ -39,12 +42,35 @@ const ProfileSkeleton = () => (
   </div>
 );
 
-const ProfileContent = async () => {
-  const session = await auth();
-  if (!session?.user) {
-    redirect('/unauthorized');
+const ProfileContent = () => {
+  const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        redirect('/unauthorized');
+      }
+      const profile = await clientUserProfileService.getUserProfile(
+        data.user.id
+      );
+      setUserProfile(profile);
+      setLoading(false);
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  if (loading) {
+    return <ProfileSkeleton />;
   }
-  const { user } = session;
+
+  if (!userProfile) {
+    return <div>Failed to load user profile.</div>;
+  }
+
   return (
     <div>
       <div className="max-w-2xl mx-auto mb-6">
@@ -59,19 +85,23 @@ const ProfileContent = async () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Label>Email</Label>
-              <span>{user.email}</span>
+              <span>{userProfile.email}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Label>Full Name</Label>
-              <span>{user.name}</span>
+              <Label>First Name</Label>
+              <span>{userProfile.firstname}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Label>Phone</Label>
-              <span>{user.email}</span>
+              <Label>Last Name</Label>
+              <span>{userProfile.lastname}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Label>Email</Label>
-              <span>{user.email}</span>
+              <Label>Phone Number</Label>
+              <span>{userProfile.phonenumber}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label>Birthday</Label>
+              <span>{userProfile.birthday}</span>
             </div>
             <div className="flex gap-2 mt-6">
               <Button>Edit Profile</Button>

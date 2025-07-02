@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/shadcn-ui/dialog';
-import { EventModel } from '@/models/event.model';
+import { Event } from '@/models/event.model';
 import { Button } from '@/components/shadcn-ui/button';
 import { Card, CardContent } from '@/components/shadcn-ui/card';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
@@ -20,7 +20,7 @@ import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 import { showSuccess } from '@/services/app/client/toaster.service';
 
-const JoinEventDialog = (props: { event: EventModel; user: UserModel }) => {
+const JoinEventDialog = (props: { event: Event; user: UserModel }) => {
   const { event, user } = props;
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const joinEvent = async () => {
@@ -52,7 +52,7 @@ const JoinEventDialog = (props: { event: EventModel; user: UserModel }) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Join Event {event.name}</DialogTitle>
+          <DialogTitle>Join Event {event.title}</DialogTitle>
           <DialogDescription>Join an eligible event!</DialogDescription>
         </DialogHeader>
         <Card>
@@ -60,8 +60,8 @@ const JoinEventDialog = (props: { event: EventModel; user: UserModel }) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p>{event.description}</p>
-                <p>From: {formatDate(event.startDate)}</p>
-                <p>To: {formatDate(event.endDate)}</p>
+                <p>From: {formatDate(event.startTime)}</p>
+                <p>To: {formatDate(event.endTime)}</p>
                 {user?.name ? <p>Created By: {user.name}</p> : <></>}
               </div>
               <Skeleton className="w-full h-[300px]"></Skeleton>
