@@ -1,13 +1,5 @@
 import Link from 'next/link';
 import { Button } from '@/components/shadcn-ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/shadcn-ui/dropdown-menu';
 import { Settings, User, LogOut, Menu } from 'lucide-react';
 import {
   NavigationMenu,

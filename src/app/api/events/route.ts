@@ -6,8 +6,6 @@ import {
 import { EventCommands } from '@/enums/event.enum';
 import { eventValidators } from '@/app/api/events/event.validator';
 import { handleError } from '@/app/api/api-error-handler';
-import { mailService } from '@/services/api/mail.service';
-import { createClient } from '@/lib/supabase/server';
 import { createServerClient } from '@supabase/ssr';
 import { env } from '@env';
 
@@ -29,7 +27,12 @@ const createApiClient = (req: NextRequest) => {
   );
 };
 
-const handleGetEvents = async (reqData: IRequestBody, supabase: any) => {
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+const handleGetEvents = async (
+  reqData: IRequestBody,
+  supabase: SupabaseClient
+) => {
   const validatedData = eventValidators.getEvents.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -47,7 +50,7 @@ const handleGetEvents = async (reqData: IRequestBody, supabase: any) => {
 const handleCreateEvent = async (
   reqData: IRequestBody,
   userId: string,
-  supabase: any
+  supabase: SupabaseClient
 ) => {
   const validatedData = eventValidators.createEvent.safeParse(reqData);
   if (!validatedData.success) {
@@ -70,7 +73,7 @@ const handleCreateEvent = async (
 
 const handleGetDashboardEvents = async (
   userId: string | undefined,
-  supabase: any
+  supabase: SupabaseClient
 ) => {
   const newEventsPromise = supabase
     .from('events')
@@ -103,7 +106,7 @@ const handleGetDashboardEvents = async (
 const handleFilterEvents = async (
   reqData: IRequestBody,
   userId: string,
-  supabase: any
+  supabase: SupabaseClient
 ) => {
   const validatedData = eventValidators.filterEvents.safeParse(reqData);
   if (!validatedData.success) {
@@ -150,7 +153,7 @@ const handleFilterEvents = async (
 
 const handleUpdateEventDetails = async (
   reqData: IRequestBody,
-  supabase: any
+  supabase: SupabaseClient
 ) => {
   const validatedData = eventValidators.updateEventDetails.safeParse(reqData);
   if (!validatedData.success) {
@@ -167,7 +170,10 @@ const handleUpdateEventDetails = async (
   return { payload };
 };
 
-const handleGetParticipants = async (reqData: IRequestBody, supabase: any) => {
+const handleGetParticipants = async (
+  reqData: IRequestBody,
+  supabase: SupabaseClient
+) => {
   const validatedData = eventValidators.getParticipants.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -185,7 +191,7 @@ const handleGetParticipants = async (reqData: IRequestBody, supabase: any) => {
 const handleJoinEvent = async (
   reqData: IRequestBody,
   userId: string,
-  supabase: any
+  supabase: SupabaseClient
 ) => {
   const validatedData = eventValidators.joinEvent.safeParse(reqData);
   if (!validatedData.success) {
@@ -204,7 +210,10 @@ const handleJoinEvent = async (
   return { payload };
 };
 
-const handleInviteUsers = async (reqData: IRequestBody, supabase: any) => {
+const handleInviteUsers = async (
+  reqData: IRequestBody,
+  supabase: SupabaseClient
+) => {
   const validatedData = eventValidators.inviteUsers.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(

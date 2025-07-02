@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { format } from 'date-fns';
 import { Input } from '@/components/shadcn-ui/input';
 import { Button } from '@/components/shadcn-ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -15,14 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/shadcn-ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/shadcn-ui/popover';
-import { Calendar } from '@/components/shadcn-ui/calendar';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { ControllerRenderProps } from 'react-hook-form';
 import { DateTimePicker } from '@/components/shadcn-ui/date-time-picker';
 
@@ -118,6 +109,7 @@ const SignupForm = () => {
         form.reset();
       }
     } catch (error) {
+      console.error('Signup error:', error);
       setServerError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);

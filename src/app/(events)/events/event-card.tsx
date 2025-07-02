@@ -7,7 +7,6 @@ import { formatDate } from '@/utilities/date-util';
 import { Event } from '@/models/event.model';
 const EventCard = (props: { event: Event }) => {
   const { event } = props;
-  const isParticipant = true; // Replace with actual logic to check if the user is a participant
   return (
     <Card key={event.id}>
       <CardContent className="p-4">

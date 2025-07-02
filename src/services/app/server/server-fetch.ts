@@ -1,5 +1,4 @@
 'use server';
-import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
 export interface IRequestBody<T = unknown> {
@@ -12,7 +11,9 @@ export interface IResponseBody<T = unknown> {
   command: string;
 }
 
-const customFetch = async (url: string, options = {}) => {
+type CustomFetchOptions = RequestInit & { headers?: Record<string, string> };
+
+const customFetch = async (url: string, options: CustomFetchOptions = {}) => {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
@@ -21,7 +22,7 @@ const customFetch = async (url: string, options = {}) => {
     headers: {
       Cookie: cookieHeader,
       'Content-Type': 'application/json',
-      ...((options as any)?.headers || {}),
+      ...(options.headers || {}),
     },
     ...options,
   });
@@ -29,8 +30,8 @@ const customFetch = async (url: string, options = {}) => {
   if (response.status === 200) {
     return response;
   } else if (response.status === 401) {
+    // Only throw, do not call redirect after throw
     throw new Error("You don't have permission for this action");
-    redirect('/events');
   } else {
     const { status, statusText } = response;
     const errorMessage = `API error: ${status} ${statusText || ''}`.trim();

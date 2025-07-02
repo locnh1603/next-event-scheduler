@@ -4,7 +4,6 @@ import customFetch from '@/services/app/server/server-fetch';
 import { EventCommands } from '@/enums/event.enum';
 import Link from 'next/link';
 import EventCard from '@/app/(events)/events/event-card';
-import { generateUniqueArray } from '@/utilities/array-util';
 import { env } from '@env';
 import { Event } from '@/models/event.model';
 import { createClient } from '@/lib/supabase/server';

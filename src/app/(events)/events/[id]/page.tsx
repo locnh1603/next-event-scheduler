@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import React, { Suspense } from 'react';
-import { Calendar, Map, Tag } from 'lucide-react';
+import { Calendar, Map } from 'lucide-react';
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { redirect } from 'next/navigation';
