@@ -6,7 +6,11 @@
 
 pnpm install
 
-### 2. Run the development server
+### 2. Create .env file
+
+create your env file based on .env.example file
+
+### 3. Run the development server
 
 pnpm dev
 
@@ -55,6 +59,9 @@ pnpm dev
 
 Deploy easily on [Vercel](https://vercel.com/) or your favorite platform. See [Next.js deployment guide](https://nextjs.org/docs/app/building-your-application/deploying) for more information.
 
+Current app deployment 
+- Dev: [https://dev-events.locnh.io.vn/](https://dev-events.locnh.io.vn/)
+- Prod: [https://events.locnh.io.vn/](https://events.locnh.io.vn/)
 ---
 
 **License:** MIT  
