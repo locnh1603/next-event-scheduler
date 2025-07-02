@@ -16,24 +16,20 @@ export const eventValidators = {
       limit: z.number().min(1).max(100),
       sortField: z.string(),
       sortOrder: z.enum(['asc', 'desc']),
-      filter: z.object({
-        type: z.string(),
-      }),
     }),
   }),
 
   createEvent: z.object({
     command: z.literal('createEvent'),
     payload: z.object({
-      name: z.string().min(1),
+      title: z.string().min(1),
       description: z.string().optional(),
-      startDate: z.number(),
-      endDate: z.number(),
+      startTime: z.coerce.date(),
+      endTime: z.coerce.date(),
       location: z.string().optional(),
-      image: z.string().optional(),
-      type: z.string(),
-      limit: z.number(),
-      tags: z.array(z.string()),
+      allowSelfJoin: z.boolean().optional(),
+      allowAnonymousJoin: z.boolean().optional(),
+      maxParticipants: z.number().optional(),
     }),
   }),
 
@@ -56,7 +52,7 @@ export const eventValidators = {
   getParticipants: z.object({
     command: z.literal('getParticipants'),
     payload: z.object({
-      eventId: z.string()
+      eventId: z.string(),
     }),
   }),
 
@@ -75,5 +71,4 @@ export const eventValidators = {
       emails: z.array(z.string()),
     }),
   }),
-}
-
+};

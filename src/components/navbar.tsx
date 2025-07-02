@@ -1,14 +1,5 @@
-import {auth, signIn, signOut} from "@/auth";
 import Link from 'next/link';
-import {Button} from '@/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/dropdown-menu";
+import { Button } from '@/components/shadcn-ui/button';
 import { Settings, User, LogOut, Menu } from 'lucide-react';
 import {
   NavigationMenu,
@@ -17,7 +8,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/navigation-menu";
+  navigationMenuTriggerStyle,
+} from '@/components/shadcn-ui/navigation-menu';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -27,104 +19,134 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/alert-dialog"
-import Image from "next/image";
-import {redirect} from 'next/navigation';
+} from '@/components/shadcn-ui/alert-dialog';
+import Image from 'next/image';
+import { createClient } from '@/lib/supabase/server';
+import { userProfileService } from '@/services/api/user-profile.service';
+import { UserProfile } from '@/models/user-profile.model';
 
 const NavBar = async () => {
-  const session = await auth();
-  let user = <></>;
-  if (session?.user) {
-    user = (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5"/>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
-          <DropdownMenuSeparator/>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            redirect('/profile');
-          }}>
-            <User className="mr-2 h-4 w-4"/>
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            redirect('/settings');
-          }}>
-            <Settings className="mr-2 h-4 w-4"/>
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator/>
-          <DropdownMenuItem className="cursor-pointer" onClick={async () => {
-            "use server"
-            await signOut();
-          }}>
-            <LogOut className="mr-2 h-4 w-4"/>
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    )
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let userView;
+  let profile: UserProfile | null = null;
+  if (user) {
+    try {
+      profile = await userProfileService.getUserProfile();
+    } catch (error) {
+      console.error('Failed to fetch user profile', error);
+    }
+  }
+
+  if (user && profile) {
+    userView = (
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>
+              <User className="h-5 w-5" />
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="grid w-[300px] gap-3 p-4">
+                <NavigationMenuLink asChild>
+                  <a
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    href="/profile"
+                  >
+                    <div className="mb-2 mt-4 text-lg font-medium">
+                      {profile.firstName} {profile.lastName}
+                    </div>
+                    <p className="text-sm leading-tight text-muted-foreground">
+                      View and edit your profile.
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+                <NavigationMenuLink
+                  className="cursor-pointer hover:bg-slate-100 p-2 rounded"
+                  asChild
+                >
+                  <Link href="/settings" className="flex items-center">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </NavigationMenuLink>
+                <form action="/api/auth/signout" method="post">
+                  <NavigationMenuLink
+                    asChild
+                    className="cursor-pointer hover:bg-slate-100 p-2 rounded"
+                  >
+                    <div className="flex items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </div>
+                  </NavigationMenuLink>
+                </form>
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    );
   } else {
-    user = (
-      <div>
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5"/>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Guest</DropdownMenuLabel>
-              <DropdownMenuSeparator/>
-              <DropdownMenuItem className="cursor-pointer">
-                <User className="mr-2 h-4 w-4"/>
-                <AlertDialogTrigger asChild>
-                  <div>Login</div>
-                </AlertDialogTrigger>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AlertDialogContent className="sm:max-w-[425px]">
-            <AlertDialogHeader>
-              <AlertDialogTitle>Login</AlertDialogTitle>
-              <AlertDialogDescription>
-                Login to use any of the providers below
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-1 gap-2">
-                <Button variant="outline" className="w-full" onClick={async() => {
-                  'use server'
-                  await signIn('google');
-                }}>
+    userView = (
+      <AlertDialog>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>
+                <User className="h-5 w-5" />
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[200px] gap-3 p-4 md:w-[250px]">
+                  <AlertDialogTrigger asChild>
+                    <li>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        Login
+                      </NavigationMenuLink>
+                    </li>
+                  </AlertDialogTrigger>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+        <AlertDialogContent className="sm:max-w-[425px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Login</AlertDialogTitle>
+            <AlertDialogDescription>
+              Login to use any of the providers below
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-1 gap-2">
+              <form action="/api/auth/signin" method="post">
+                <Button variant="outline" className="w-full" type="submit">
                   Google
                 </Button>
-              </div>
+              </form>
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    )
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
   }
   return (
     <div className="w-full border-b min-h-[5vh]">
       <div className="flex h-16 items-center px-4 justify-between">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5"/>
+            <Menu className="h-5 w-5" />
           </Button>
           <span className="text-xl font-bold">
-            <Image src="/next.svg" alt="Logo" width="50" height="50"/>
+            <Image src="/next.svg" alt="Logo" width="50" height="50" />
           </span>
         </div>
         <div className="flex items-center space-x-4">
@@ -133,40 +155,44 @@ const NavBar = async () => {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Events</NavigationMenuTrigger>
                 <NavigationMenuContent className="data-[side=bottom]:animate-slideUpAndFade">
-                  <div className="grid gap-3 p-4 w-[400px]">
-                    <Link href='/events' passHref legacyBehavior>
-                      <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
-                        Event List
-                      </NavigationMenuLink>
-                    </Link>
-                    <Link href='/events/create' passHref legacyBehavior>
-                      <NavigationMenuLink className={
-                        `cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`
-                      }>
-                      Create Event
-                      </NavigationMenuLink>
-                    </Link>
-                    <Link href='/calendar' passHref legacyBehavior>
-                      <NavigationMenuLink className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${session?.user ? '' : ' disabled'}`}>
-                        My Calendar
-                      </NavigationMenuLink>
-                    </Link>
+                  <div className="grid gap-3 p-4 w-[300px]">
+                    <NavigationMenuLink
+                      className="cursor-pointer hover:bg-slate-100 p-2 rounded"
+                      asChild
+                    >
+                      <Link href="/events">Event List</Link>
+                    </NavigationMenuLink>
+
+                    <NavigationMenuLink
+                      className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${user ? '' : ' disabled'}`}
+                      asChild
+                    >
+                      <Link href="/events/create">Create Event</Link>
+                    </NavigationMenuLink>
+
+                    <NavigationMenuLink
+                      className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${user ? '' : ' disabled'}`}
+                      asChild
+                    >
+                      <Link href="/calendar">My Calendar</Link>
+                    </NavigationMenuLink>
                   </div>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/about" passHref legacyBehavior>
-                  <NavigationMenuLink className="cursor-pointer hover:bg-slate-100 p-2 rounded">
-                    About
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  className={navigationMenuTriggerStyle()}
+                  asChild
+                >
+                  <Link href="/about">About</Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
-          {user}
+          {userView}
         </div>
       </div>
     </div>
-  )
-}
-export default NavBar
+  );
+};
+export default NavBar;

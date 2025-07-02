@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
-import { Input } from '@/components/input';
-import { Button } from '@/components/button';
+import { Input } from '@/components/shadcn-ui/input';
+import { Button } from '@/components/shadcn-ui/button';
 
 function optimizeProduction(
   A: number,

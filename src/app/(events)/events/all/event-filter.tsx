@@ -1,10 +1,16 @@
-'use client'
-import {Card, CardContent} from '@/components/card';
-import {Input} from '@/components/input';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/select';
-import {Button} from '@/components/button';
+'use client';
+import { Card, CardContent } from '@/components/shadcn-ui/card';
+import { Input } from '@/components/shadcn-ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/shadcn-ui/select';
+import { Button } from '@/components/shadcn-ui/button';
 import React, { useState } from 'react';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface EventFilterProps {
   search: string;
@@ -14,17 +20,15 @@ interface EventFilterProps {
 const EventFilter = (props: EventFilterProps) => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const {search, type} = props;
+  const { search, type } = props;
   const filterEvents = (e: React.FormEvent<HTMLFormElement>) => {
     setLoading(true);
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const searchInput = formData.get('search');
-    const typeInput = formData.get('type');
     const params = new URLSearchParams();
     params.set('page', '1');
     if (searchInput) params.set('search', searchInput.toString());
-    if (typeInput) params.set('type', typeInput.toString());
     router.push(`/events/all?${params.toString()}`);
     setTimeout(() => setLoading(false), 1000);
   };
@@ -43,7 +47,7 @@ const EventFilter = (props: EventFilterProps) => {
             </div>
             <Select name="type" defaultValue={type || 'all'}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Type"/>
+                <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
@@ -51,14 +55,19 @@ const EventFilter = (props: EventFilterProps) => {
                 <SelectItem value="invite">Invite Only</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" className={`flex items-center gap-2 ${loading ? 'disabled' : ''}`} disabled={loading} type="submit">
+            <Button
+              variant="outline"
+              className={`flex items-center gap-2 ${loading ? 'disabled' : ''}`}
+              disabled={loading}
+              type="submit"
+            >
               Apply
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 export default EventFilter;

@@ -15,3 +15,8 @@ export enum UserCommands {
   inviteUsers = 'inviteUsers',
   inviteEmails = 'inviteEmails',
 }
+
+export enum UserProfileCommands {
+  getUserProfile = 'getUserProfile',
+  getUserProfiles = 'getUserProfiles',
+}

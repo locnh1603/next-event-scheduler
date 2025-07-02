@@ -1,5 +1,4 @@
-import type { NextConfig } from "next";
-import { env } from '@env';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -13,10 +12,10 @@ const nextConfig: NextConfig = {
       {
         source: '/',
         destination: '/events',
-        permanent: false
-      }
-    ]
-  }
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
