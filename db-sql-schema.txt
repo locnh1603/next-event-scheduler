@@ -1,0 +1,63 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.event_invitations (
+  event_id uuid NOT NULL,
+  user_id uuid NOT NULL,
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  status text NOT NULL DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'accepted'::text, 'declined'::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT event_invitations_pkey PRIMARY KEY (id),
+  CONSTRAINT event_invitations_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT event_invitations_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
+);
+CREATE TABLE public.event_participants (
+  event_id uuid NOT NULL,
+  user_id uuid,
+  anonymous_name text,
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  joined_at timestamp with time zone NOT NULL DEFAULT now(),
+  is_anonymous boolean NOT NULL DEFAULT false,
+  CONSTRAINT event_participants_pkey PRIMARY KEY (id),
+  CONSTRAINT event_participants_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id),
+  CONSTRAINT event_participants_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.events (
+  host_name text,
+  created_by uuid NOT NULL,
+  title text NOT NULL,
+  description text,
+  start_time timestamp with time zone NOT NULL,
+  end_time timestamp with time zone NOT NULL,
+  location text,
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  created_at timestamp with time zone DEFAULT now(),
+  allow_self_join boolean NOT NULL DEFAULT false,
+  allow_anonymous_join boolean NOT NULL DEFAULT false,
+  max_participants integer,
+  CONSTRAINT events_pkey PRIMARY KEY (id),
+  CONSTRAINT events_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.messages (
+  sender_id uuid NOT NULL,
+  receiver_id uuid NOT NULL,
+  content text NOT NULL,
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  sent_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT messages_pkey PRIMARY KEY (id),
+  CONSTRAINT messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES public.profiles(id),
+  CONSTRAINT messages_receiver_id_fkey FOREIGN KEY (receiver_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  email text NOT NULL UNIQUE,
+  role text NOT NULL DEFAULT 'client'::text CHECK (role = ANY (ARRAY['host'::text, 'client'::text])),
+  firstname text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  lastname text,
+  phonenumber text,
+  birthday timestamp with time zone,
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);

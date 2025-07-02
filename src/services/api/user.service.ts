@@ -1,24 +1,27 @@
-import {User} from '@/models/user.model';
-import {Types} from 'mongoose';
+import { createClient } from '@/lib/supabase/server';
+const supabase = await createClient();
 
 class UserService {
-  async getUsers(ids?: string[]) {
-    if (!ids?.length) {
-      return User.find();
+  async getUsers(ids: string[]) {
+    const { data, error } = await supabase
+      .from('public.profiles')
+      .select('*')
+      .in('id', ids);
+    if (error) {
+      throw error;
     }
-    const query = {
-      _id: {
-        $in: ids.map(id => new Types.ObjectId(id))
-      }
-    };
-    const result = await User.find(query).lean();
-    return result.map(userValue => {
-      return {
-        ...userValue,
-        id: userValue._id
-      }
-    });
+    return data;
+  }
+  async getUser(id: string) {
+    const { data, error } = await supabase
+      .from('public.profiles')
+      .select('*')
+      .eq('id', id);
+    if (error) {
+      throw error;
+    }
+    return data;
   }
 }
 
-export const userService = new UserService()
+export const userService = new UserService();

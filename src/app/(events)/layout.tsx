@@ -7,7 +7,7 @@ import { Toaster } from 'sonner';
 export const metadata: Metadata = {
   title: 'Event Scheduler',
 };
-export default function RootLayout({
+export default function EventsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (

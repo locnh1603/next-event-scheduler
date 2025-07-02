@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { Button } from '@/components/button';
+import { Button } from '@/components/shadcn-ui/button';
 import { errorHandler } from '@/utilities/error-handler';
 import { env } from '@env';
 
@@ -31,9 +31,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
             <p className="font-medium text-foreground">
               Error: {error.message}
             </p>
-            {error.name && (
-              <p className="text-xs mt-2">Name: {error.name}</p>
-            )}
+            {error.name && <p className="text-xs mt-2">Name: {error.name}</p>}
             {error.digest && (
               <p className="font-mono text-xs mt-2">Digest: {error.digest}</p>
             )}
@@ -42,11 +40,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
             )}
           </div>
         )}
-        <Button
-          onClick={reset}
-          variant="default"
-          className="mt-4"
-        >
+        <Button onClick={reset} variant="default" className="mt-4">
           Try again
         </Button>
       </div>

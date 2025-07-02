@@ -1,18 +1,39 @@
 'use client';
 
 import * as React from 'react';
-import { DayFlag, DayPicker, DropdownProps, SelectionState, UI } from 'react-day-picker';
+import {
+  DayFlag,
+  DayPicker,
+  DropdownProps,
+  SelectionState,
+  UI,
+} from 'react-day-picker';
 
-import { buttonVariants } from '@/components/button';
+import { buttonVariants } from '@/components/shadcn-ui/button';
 import { cn } from '@/lib/utils';
 import { Select } from '@radix-ui/react-select';
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+} from 'lucide-react';
 import { ScrollArea } from './scroll-area';
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import {
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -32,7 +53,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ),
         [UI.MonthGrid]: 'w-full border-collapse space-y-1',
         [UI.Weekdays]: 'flex',
-        [UI.Weekday]: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
+        [UI.Weekday]:
+          'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]',
         [UI.Week]: 'flex w-full mt-2',
         [UI.Day]:
           'h-9 w-9 text-center rounded-md text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20',
@@ -44,7 +66,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         [SelectionState.range_end]: 'day-range-end',
         [SelectionState.selected]:
           'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-        [SelectionState.range_middle]: 'aria-selected:bg-accent aria-selected:text-accent-foreground',
+        [SelectionState.range_middle]:
+          'aria-selected:bg-accent aria-selected:text-accent-foreground',
         [DayFlag.today]: 'bg-accent text-accent-foreground',
         [DayFlag.outside]:
           'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
@@ -55,7 +78,9 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       components={{
         Chevron: ({ ...props }) => <Chevron {...props} />,
         Dropdown: ({ value, onChange, ...props }: DropdownProps) => {
-          const selected = props.options?.find((child) => child.value === value);
+          const selected = props.options?.find(
+            (child) => child.value === value
+          );
           const handleChange = (value: string) => {
             const changeEvent = {
               target: { value },
@@ -75,7 +100,10 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
               <SelectContent position="popper">
                 <ScrollArea className="h-80">
                   {props.options?.map((option, id: number) => (
-                    <SelectItem key={`${option.value}-${id}`} value={option.value?.toString() ?? ''}>
+                    <SelectItem
+                      key={`${option.value}-${id}`}
+                      value={option.value?.toString() ?? ''}
+                    >
                       {option.label}
                     </SelectItem>
                   ))}

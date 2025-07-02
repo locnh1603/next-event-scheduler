@@ -1,0 +1,7 @@
+- The core stack is using NextJS front end app , supabase for database interactions, Nextjs api routes for api interfaces, vitest for unit testing. Database schema is in root/db-sql-schema.txt
+- All components inside src/components/shadcn-ui are generated and need to be exclude from tests , checks
+- All components and services inside src except src/components/shadcn-ui , middleware.ts , src/lib should have test in the format "foldername.spec.tsx"
+- After all changes are made, ALWAYS build the project with `npm run build`. Ignore warnings, fix errors.
+- If you forget, the user can type the command "finish" and you will run the build and update `.cursor-updates`.
+- Keep source code files under 250 lines
+- If the being generated file is too big, generate small pieces then use a command to concat them."
