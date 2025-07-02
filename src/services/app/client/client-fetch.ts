@@ -10,6 +10,7 @@ const customFetch = async (url: string, options = {}) => {
     return response;
   } else if (response.status === 401) {
     showError('You dont have permission for this action');
+    throw new AppError('Unauthorized: You dont have permission for this action');
   } else {
     throw new AppError(response.status);
   }
