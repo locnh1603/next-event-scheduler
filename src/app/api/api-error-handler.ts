@@ -1,11 +1,10 @@
-import {ZodError} from 'zod';
-import {MongooseError} from 'mongoose';
+import { ZodError } from 'zod';
 import { NextResponse } from 'next/server';
 
 export class ApiError extends Error {
   constructor(
     public statusCode: number,
-    message?: string,
+    message?: string
   ) {
     super(message);
     this.name = 'ApiError';
@@ -33,18 +32,12 @@ export function handleError(error: unknown) {
     );
   }
 
-  if (error instanceof MongooseError) {
-    return NextResponse.json(
-      {
-        message: 'Database Error',
-        error: error.message,
-      },
-      { status: 500 }
-    );
-  }
-
+  // Generic DB error handling for Supabase/Postgres
   return NextResponse.json(
-    { message: 'Internal Server Error' },
+    {
+      message: 'Internal Server Error',
+      error: (error as Error).message,
+    },
     { status: 500 }
   );
 }
