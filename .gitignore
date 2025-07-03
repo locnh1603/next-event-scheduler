@@ -152,3 +152,7 @@ fabric.properties
 .env.*
 !.env.example
 .env
+
+
+.pnpm-store
+.pnpm-store/*

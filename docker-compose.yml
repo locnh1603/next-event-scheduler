@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -7,13 +5,19 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     ports:
-      - '3001:3000'
+      - '3000:3000'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3000
       - HOSTNAME=0.0.0.0
     volumes:
-      # Optional: for development, you can mount source for hot reload
-      # - .:/app
-      # - /app/node_modules
+      # Mount only source code and public assets for hot reload
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./components:/app/components
+      # Keep node_modules in a Docker-managed volume
+      - /app/node_modules
     restart: unless-stopped
+    # Optional: for better development experience
+    stdin_open: true
+    tty: true

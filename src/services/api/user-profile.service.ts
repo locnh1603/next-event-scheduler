@@ -12,7 +12,7 @@ class UserProfileService {
     }
 
     const { data, error } = await supabase
-      .from('public.profiles')
+      .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single();
@@ -26,7 +26,7 @@ class UserProfileService {
   async getUserProfiles(userIds: string[]) {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from('public.profiles')
+      .from('profiles')
       .select('*')
       .in('id', userIds);
     if (error) {
