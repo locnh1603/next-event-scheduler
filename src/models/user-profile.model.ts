@@ -1,20 +1,20 @@
 export interface UserProfile {
   id: string;
   email: string;
-  role: string;
-  firstName: string | null;
-  lastName: string | null;
-  phoneNumber: string | null;
+  role: 'host' | 'client';
+  firstname: string | null;
+  lastname: string | null;
+  phonenumber: string | null;
   birthday: string | null;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface UserProfileDTO {
   email: string;
-  role: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  phoneNumber?: string | null;
+  role: 'host' | 'client';
+  firstname?: string | null;
+  lastname?: string | null;
+  phonenumber?: string | null;
   birthday?: string | null;
 }
