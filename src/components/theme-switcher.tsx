@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from './shadcn-ui/select';
+import { toast } from 'sonner';
 
 const ThemeSwitcher = () => {
   const [mounted, setMounted] = useState(false);
@@ -25,9 +26,14 @@ const ThemeSwitcher = () => {
   if (!mounted) {
     return null;
   }
+  const onThemeChange = (value: string) => {
+    const themeName = themes.find((t) => t.value === value)?.label;
+    toast.success('Theme changed to ' + themeName);
+    setTheme(value);
+  };
   return (
-    <Select defaultValue="light" value={theme} onValueChange={setTheme}>
-      <SelectTrigger className="w-[180px]">
+    <Select defaultValue="light" value={theme} onValueChange={onThemeChange}>
+      <SelectTrigger className="w-[130px]">
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
       <SelectContent>

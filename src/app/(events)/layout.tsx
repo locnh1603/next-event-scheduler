@@ -1,9 +1,7 @@
 import React from 'react';
 import '../globals.css';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
 import NavBar from '@/components/navbar';
-import { Toaster } from 'sonner';
 export const metadata: Metadata = {
   title: 'Event Scheduler',
 };
@@ -16,8 +14,6 @@ export default function EventsLayout({
         <NavBar />
         <div className="min-h-[95vh] p-4">{children}</div>
       </div>
-      <Toaster />
-      <SpeedInsights />
     </div>
   );
 }

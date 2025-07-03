@@ -38,7 +38,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/shadcn-ui/table';
-import { showError } from '@/services/app/client/toaster.service';
 import { EventCommands } from '@/enums/event.enum';
 const eventInviteFormSchema = z.object({
   email: z.string().min(1, {
@@ -110,7 +109,7 @@ const InviteEventDialog = (props: {
       setData(emails);
       form.reset();
     } else {
-      showError('Email already exists');
+      // showError('Email already exists');
     }
   };
 

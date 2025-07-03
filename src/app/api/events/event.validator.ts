@@ -30,6 +30,7 @@ export const eventValidators = {
       allowSelfJoin: z.boolean().optional(),
       allowAnonymousJoin: z.boolean().optional(),
       maxParticipants: z.number().optional(),
+      hostName: z.string().optional(),
     }),
   }),
 

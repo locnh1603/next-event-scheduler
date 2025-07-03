@@ -31,7 +31,6 @@
     "@supabase/supabase-js": "^2.50.2",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-table": "^8.21.3",
-    "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookies-next": "^5.1.0",

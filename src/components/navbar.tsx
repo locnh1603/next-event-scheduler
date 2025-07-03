@@ -35,7 +35,6 @@ const NavBar = async () => {
   if (user) {
     try {
       profile = await userProfileService.getUserProfile();
-      console.log('User profile fetched successfully', profile, user);
     } catch (error) {
       console.error('Failed to fetch user profile', error);
     }
@@ -57,7 +56,7 @@ const NavBar = async () => {
                     href="/profile"
                   >
                     <div className="mb-2 mt-4 text-lg font-medium">
-                      {profile.firstname} {profile.lastname}
+                      {profile.firstName} {profile.lastName}
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
                       View and edit your profile.

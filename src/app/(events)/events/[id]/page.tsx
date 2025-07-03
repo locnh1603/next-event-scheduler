@@ -82,8 +82,7 @@ const EventMainInfo = async (props: { event: Event }) => {
   );
 };
 
-const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params;
+const EventDetailContent = async ({ id }: { id: string }) => {
   const body = JSON.stringify({
     payload: {
       ids: [id],
@@ -96,6 +95,27 @@ const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
     cache: 'no-store',
   });
   const { payload }: IResponseBody<Event[]> = await data.json();
+  const event = payload[0];
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="grid col-span-4 gap-4">
+          <div className="flex items-center justify-center text-lg font-bold">
+            <EventMainInfo event={event} />
+          </div>
+          <div className="flex items-center justify-center text-lg font-bold">
+            <Skeleton className="w-full h-[600px]" />
+          </div>
+        </div>
+        <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
+          <Skeleton className="w-full h-[915px]" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EventDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div>
       <div className="max-w-7xl mx-auto mb-6">
@@ -107,27 +127,21 @@ const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
           <Link href={`/events`}>Back</Link>
         </Button>
       </div>
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-12 gap-4">
-          <div className="grid col-span-4 gap-4">
-            <div className="flex items-center justify-center text-lg font-bold">
-              <Suspense
-                fallback={<Skeleton className="w-full h-full"></Skeleton>}
-              >
-                <EventMainInfo event={payload[0]}></EventMainInfo>
-              </Suspense>
-            </div>
-            <div className="flex items-center justify-center text-lg font-bold">
-              <Skeleton className="w-full h-[600px]"></Skeleton>
-            </div>
-          </div>
-          <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
-            <Skeleton className="w-full h-[915px]"></Skeleton>
-          </div>
-        </div>
-      </div>
+      <Suspense fallback={<Skeleton className="w-full h-[915px]" />}>
+        <EventDetailContentPromise params={params} />
+      </Suspense>
     </div>
   );
+};
+
+// Helper to unwrap params promise for server component
+const EventDetailContentPromise = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id } = await params;
+  return <EventDetailContent id={id} />;
 };
 
 export default EventDetail;
