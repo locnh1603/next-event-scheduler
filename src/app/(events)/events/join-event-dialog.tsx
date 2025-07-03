@@ -17,7 +17,6 @@ import { formatDate } from '@/utilities/date-util';
 import React from 'react';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
-import { showSuccess } from '@/services/app/client/toaster.service';
 
 const JoinEventDialog = (props: { event: Event }) => {
   const { event } = props;
@@ -36,7 +35,6 @@ const JoinEventDialog = (props: { event: Event }) => {
       const jsonResponse = await response?.json();
       if (jsonResponse) {
         setDialogOpen(false);
-        showSuccess('You have successfully registered for an event');
       }
     } catch (error) {
       console.log(error);

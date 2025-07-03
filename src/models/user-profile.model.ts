@@ -2,12 +2,12 @@ export interface UserProfile {
   id: string;
   email: string;
   role: 'host' | 'client';
-  firstname: string | null;
-  lastname: string | null;
-  phonenumber: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  phoneNumber: string | null;
   birthday: string | null;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserProfileDTO {

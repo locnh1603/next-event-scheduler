@@ -89,15 +89,15 @@ const ProfileContent = () => {
             </div>
             <div className="flex items-center gap-2">
               <Label>First Name</Label>
-              <span>{userProfile.firstname}</span>
+              <span>{userProfile.firstName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Last Name</Label>
-              <span>{userProfile.lastname}</span>
+              <span>{userProfile.lastName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Phone Number</Label>
-              <span>{userProfile.phonenumber}</span>
+              <span>{userProfile.phoneNumber}</span>
             </div>
             <div className="flex items-center gap-2">
               <Label>Birthday</Label>

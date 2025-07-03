@@ -1,6 +1,7 @@
 import React from 'react';
 import './globals.css';
 import { ThemeProvider } from 'next-themes';
+import { ToastProvider } from '@/providers/toast.provider';
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -13,6 +14,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
         >
           {children}
         </ThemeProvider>
+        <ToastProvider />
       </body>
     </html>
   );

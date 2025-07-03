@@ -3,23 +3,92 @@ import { createClient } from '@/lib/supabase/server';
 
 class EventService {
   /**
+   * Get participants for an event
+   */
+  async getParticipants(eventId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('event_participants')
+      .select('user_id, users(name, email)')
+      .eq('event_id', eventId);
+    if (error) throw error;
+    // No event data in this payload, return as is
+    return data;
+  }
+
+  /**
+   * Join an event as a participant
+   */
+  async joinEvent(eventId: string, userId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('event_participants')
+      .insert({ event_id: eventId, user_id: userId })
+      .select();
+    if (error) throw error;
+    // No event data in this payload, return as is
+    return data;
+  }
+
+  /**
+   * Invite users to an event
+   */
+  async inviteUsers(eventId: string, userIds: string[]) {
+    const supabase = await createClient();
+    const invitations = userIds.map((user_id) => ({
+      event_id: eventId,
+      user_id,
+      status: 'pending',
+    }));
+    const { data, error } = await supabase
+      .from('event_invitations')
+      .insert(invitations)
+      .select();
+    if (error) throw error;
+    // No event data in this payload, return as is
+    return data;
+  }
+  /**
+   * Updates an event by id with the provided data (snake_case DTO)
+   * @param id - Event id
+   * @param updateData - Partial<EventDTO> with fields to update
+   * @returns Promise resolving to the updated event object
+   */
+  async updateEvent(id: string, updateData: Partial<EventDTO>) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('events')
+      .update(updateData)
+      .eq('id', id)
+      .select();
+    if (error) throw error;
+    const { mapSupabaseEvent } = await import('@/utilities/data-mapper');
+    return data?.[0] ? mapSupabaseEvent(data[0]) : null;
+  }
+  /**
    * Retrieves events by their IDs or all active events if no IDs are provided.
    * @param ids - Optional array of event IDs to filter by.
    * @returns Promise resolving to an array of event objects.
    */
   async getEvents(ids?: string[]) {
     const supabase = await createClient();
+    let events;
     if (ids?.length) {
-      const events = await supabase
+      events = await supabase
         .from('events')
-        .select('id, title, description, start_time, end_time')
+        .select(
+          'id, title, description, start_time, end_time, location, host_name, created_by, created_at, allow_self_join, allow_anonymous_join, max_participants'
+        )
         .in('id', ids);
-      return events.data;
+    } else {
+      events = await supabase
+        .from('events')
+        .select(
+          'id, title, description, start_time, end_time, location, host_name, created_by, created_at, allow_self_join, allow_anonymous_join, max_participants'
+        );
     }
-    const events = await supabase
-      .from('events')
-      .select('id, title, description, start_time, end_time');
-    return events.data;
+    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
+    return events.data ? mapSupabaseEvents(events.data) : [];
   }
 
   /**
@@ -40,11 +109,13 @@ class EventService {
     const [events, totalCount] = await Promise.all([
       supabase
         .from('events')
-        .select('id, title, description, start_time, end_time')
+        .select(
+          'id, title, description, start_time, end_time, location, host_name, created_by, created_at, allow_self_join, allow_anonymous_join, max_participants'
+        )
         .filter('title', 'ilike', `%${searchParam}%`)
         .filter('created_by', 'eq', createdBy)
         .order(sortField, { ascending: sortOrder === 'asc' })
-        .range(skip, skip + limit),
+        .range(skip, skip + limit - 1),
       supabase
         .from('events')
         .select('id', { count: 'exact' })
@@ -52,15 +123,14 @@ class EventService {
         .filter('created_by', 'eq', createdBy),
     ]);
 
-    if (events.data) {
-      return {
-        events: events.data,
-        count: events.data.length,
-        totalCount: totalCount.count,
-        totalPages: totalCount.count && Math.ceil(totalCount.count / limit),
-        currentPage: page,
-      };
-    }
+    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
+    return {
+      events: events.data ? mapSupabaseEvents(events.data) : [],
+      count: events.data?.length ?? 0,
+      totalCount: totalCount.count ?? 0,
+      totalPages: totalCount.count ? Math.ceil(totalCount.count / limit) : 0,
+      currentPage: page,
+    };
   }
 
   /**
@@ -71,12 +141,15 @@ class EventService {
    */
   async createEvent(eventData: EventDTO, createdBy: string) {
     const supabase = await createClient();
-    const newEvent = await supabase.from('events').insert({
-      ...eventData,
-      id: Date.now().toString(),
-      created_by: createdBy,
-    });
-    return newEvent.data?.[0];
+    const newEvent = await supabase
+      .from('events')
+      .insert({
+        ...eventData,
+        created_by: createdBy,
+      })
+      .select();
+    const { mapSupabaseEvent } = await import('@/utilities/data-mapper');
+    return newEvent.data?.[0] ? mapSupabaseEvent(newEvent.data[0]) : null;
   }
 
   /**
@@ -107,9 +180,10 @@ class EventService {
       [],
     ]);
 
+    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
     return {
-      newEvents: newEventsRes.data ?? [],
-      myEvents: myEventsRes.data ?? [],
+      newEvents: newEventsRes.data ? mapSupabaseEvents(newEventsRes.data) : [],
+      myEvents: myEventsRes.data ? mapSupabaseEvents(myEventsRes.data) : [],
       hotEvents: [],
     };
   }

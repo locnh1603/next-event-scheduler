@@ -6,33 +6,11 @@ import {
 import { EventCommands } from '@/enums/event.enum';
 import { eventValidators } from '@/app/api/events/event.validator';
 import { handleError } from '@/app/api/api-error-handler';
-import { createServerClient } from '@supabase/ssr';
-import { env } from '@env';
+import { eventService } from '@/services/api/event.service';
+import { createClient } from '@/lib/supabase/server';
+import { mapEventToDTO } from '@/utilities/data-mapper';
 
-// Create a special client for API routes
-const createApiClient = (req: NextRequest) => {
-  return createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL!,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return req.cookies.getAll();
-        },
-        setAll() {
-          // API routes don't need to set cookies
-        },
-      },
-    }
-  );
-};
-
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-const handleGetEvents = async (
-  reqData: IRequestBody,
-  supabase: SupabaseClient
-) => {
+const handleGetEvents = async (reqData: IRequestBody) => {
   const validatedData = eventValidators.getEvents.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -40,18 +18,11 @@ const handleGetEvents = async (
       { status: 400 }
     );
   }
-  const payload = await supabase
-    .from('events')
-    .select('id, title, description, start_time, end_time')
-    .in('id', (validatedData.data.payload.ids ?? []) as string[]);
+  const payload = await eventService.getEvents(validatedData.data.payload.ids);
   return { payload };
 };
 
-const handleCreateEvent = async (
-  reqData: IRequestBody,
-  userId: string,
-  supabase: SupabaseClient
-) => {
+const handleCreateEvent = async (reqData: IRequestBody, userId: string) => {
   const validatedData = eventValidators.createEvent.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -59,55 +30,22 @@ const handleCreateEvent = async (
       { status: 400 }
     );
   }
-  // Create event directly with supabase instead of using eventService
-  const payload = await supabase
-    .from('events')
-    .insert({
-      ...validatedData.data.payload,
-      id: Date.now().toString(),
-      created_by: userId,
-    })
-    .select();
+  console.log('received data', validatedData.data.payload, userId);
+  const dto = mapEventToDTO({
+    ...validatedData.data.payload,
+    createdBy: userId,
+  });
+  console.log('DTO:', dto);
+  const payload = await eventService.createEvent(dto, userId);
   return { payload };
 };
 
-const handleGetDashboardEvents = async (
-  userId: string | undefined,
-  supabase: SupabaseClient
-) => {
-  const newEventsPromise = supabase
-    .from('events')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(10);
-
-  const myEventsPromise = userId
-    ? supabase
-        .from('events')
-        .select('*')
-        .eq('created_by', userId)
-        .order('created_at', { ascending: false })
-        .limit(10)
-    : Promise.resolve({ data: [] });
-
-  const [newEventsRes, myEventsRes] = await Promise.all([
-    newEventsPromise,
-    myEventsPromise,
-  ]);
-
-  const payload = {
-    newEvents: newEventsRes.data ?? [],
-    myEvents: myEventsRes.data ?? [],
-    hotEvents: [],
-  };
+const handleGetDashboardEvents = async (userId: string | undefined) => {
+  const payload = await eventService.getDashboardEvents(userId);
   return { payload };
 };
 
-const handleFilterEvents = async (
-  reqData: IRequestBody,
-  userId: string,
-  supabase: SupabaseClient
-) => {
+const handleFilterEvents = async (reqData: IRequestBody, userId: string) => {
   const validatedData = eventValidators.filterEvents.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -115,7 +53,6 @@ const handleFilterEvents = async (
       { status: 400 }
     );
   }
-
   const {
     searchParam = '',
     page = 1,
@@ -123,38 +60,18 @@ const handleFilterEvents = async (
     sortField = 'created_at',
     sortOrder = 'desc',
   } = validatedData.data.payload;
-  const skip = (page - 1) * limit;
-
-  const [events, totalCount] = await Promise.all([
-    supabase
-      .from('events')
-      .select('id, title, description, start_time, end_time')
-      .filter('title', 'ilike', `%${searchParam}%`)
-      .filter('created_by', 'eq', userId)
-      .order(sortField, { ascending: sortOrder === 'asc' })
-      .range(skip, skip + limit - 1),
-    supabase
-      .from('events')
-      .select('id', { count: 'exact' })
-      .filter('title', 'ilike', `%${searchParam}%`)
-      .filter('created_by', 'eq', userId),
-  ]);
-
-  const payload = {
-    events: events.data ?? [],
-    count: events.data?.length ?? 0,
-    totalCount: totalCount.count ?? 0,
-    totalPages: totalCount.count ? Math.ceil(totalCount.count / limit) : 0,
-    currentPage: page,
-  };
-
+  const payload = await eventService.filterEvents({
+    searchParam,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+    createdBy: userId,
+  });
   return { payload };
 };
 
-const handleUpdateEventDetails = async (
-  reqData: IRequestBody,
-  supabase: SupabaseClient
-) => {
+const handleUpdateEventDetails = async (reqData: IRequestBody) => {
   const validatedData = eventValidators.updateEventDetails.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -162,18 +79,13 @@ const handleUpdateEventDetails = async (
       { status: 400 }
     );
   }
-  const payload = await supabase
-    .from('events')
-    .update(validatedData.data.payload)
-    .eq('id', validatedData.data.payload.id)
-    .select();
+  const { id, ...rest } = validatedData.data.payload;
+  const dto = mapEventToDTO(rest);
+  const payload = await eventService.updateEvent(id, dto);
   return { payload };
 };
 
-const handleGetParticipants = async (
-  reqData: IRequestBody,
-  supabase: SupabaseClient
-) => {
+const handleGetParticipants = async (reqData: IRequestBody) => {
   const validatedData = eventValidators.getParticipants.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -181,18 +93,13 @@ const handleGetParticipants = async (
       { status: 400 }
     );
   }
-  const payload = await supabase
-    .from('event_participants')
-    .select('user_id, users(name, email)')
-    .eq('event_id', validatedData.data.payload.eventId);
+  const payload = await eventService.getParticipants(
+    validatedData.data.payload.eventId
+  );
   return { payload };
 };
 
-const handleJoinEvent = async (
-  reqData: IRequestBody,
-  userId: string,
-  supabase: SupabaseClient
-) => {
+const handleJoinEvent = async (reqData: IRequestBody, userId: string) => {
   const validatedData = eventValidators.joinEvent.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -200,20 +107,14 @@ const handleJoinEvent = async (
       { status: 400 }
     );
   }
-  const payload = await supabase
-    .from('event_participants')
-    .insert({
-      event_id: validatedData.data.payload.eventId,
-      user_id: userId,
-    })
-    .select();
+  const payload = await eventService.joinEvent(
+    validatedData.data.payload.eventId,
+    userId
+  );
   return { payload };
 };
 
-const handleInviteUsers = async (
-  reqData: IRequestBody,
-  supabase: SupabaseClient
-) => {
+const handleInviteUsers = async (reqData: IRequestBody) => {
   const validatedData = eventValidators.inviteUsers.safeParse(reqData);
   if (!validatedData.success) {
     return NextResponse.json(
@@ -221,17 +122,10 @@ const handleInviteUsers = async (
       { status: 400 }
     );
   }
-  const invitations = validatedData.data.payload.userIds.map(
-    (invitedUserId: string) => ({
-      event_id: validatedData.data.payload.eventId,
-      user_id: invitedUserId,
-      status: 'pending',
-    })
+  const payload = await eventService.inviteUsers(
+    validatedData.data.payload.eventId,
+    validatedData.data.payload.userIds
   );
-  const payload = await supabase
-    .from('event_invitations')
-    .insert(invitations)
-    .select();
   return { payload };
 };
 
@@ -252,7 +146,8 @@ const handleInviteUsers = async (
 // };
 
 export const GET = async (req: NextRequest) => {
-  const supabase = createApiClient(req);
+  console.log('GET request received for events', req);
+  const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   const userId = data.user?.id;
 
@@ -265,7 +160,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    const supabase = createApiClient(req);
+    const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
     const userId = data.user?.id;
     const reqData: IRequestBody = await req.json();
@@ -292,28 +187,28 @@ export const POST = async (req: NextRequest) => {
     let result;
     switch (command as EventCommands) {
       case EventCommands.getEvents:
-        result = await handleGetEvents(reqData, supabase);
+        result = await handleGetEvents(reqData);
         break;
       case EventCommands.createEvent:
-        result = await handleCreateEvent(reqData, userId as string, supabase);
+        result = await handleCreateEvent(reqData, userId as string);
         break;
       case EventCommands.getDashboardEvents:
-        result = await handleGetDashboardEvents(userId, supabase);
+        result = await handleGetDashboardEvents(userId);
         break;
       case EventCommands.filterEvents:
-        result = await handleFilterEvents(reqData, userId as string, supabase);
+        result = await handleFilterEvents(reqData, userId as string);
         break;
       case EventCommands.updateEventDetails:
-        result = await handleUpdateEventDetails(reqData, supabase);
+        result = await handleUpdateEventDetails(reqData);
         break;
       case EventCommands.getParticipants:
-        result = await handleGetParticipants(reqData, supabase);
+        result = await handleGetParticipants(reqData);
         break;
       case EventCommands.joinEvent:
-        result = await handleJoinEvent(reqData, userId as string, supabase);
+        result = await handleJoinEvent(reqData, userId as string);
         break;
       case EventCommands.inviteUsers:
-        result = await handleInviteUsers(reqData, supabase);
+        result = await handleInviteUsers(reqData);
         break;
       // case EventCommands.inviteEmails:
       //   result = await handleInviteEmails(reqData, userId as string);
