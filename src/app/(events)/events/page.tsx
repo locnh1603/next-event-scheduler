@@ -79,10 +79,17 @@ const DashboardContent = async () => {
 
       {user ? (
         <section className="max-w-7xl mx-auto mb-8">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center mb-4">
             <h2 className="text-2xl font-semibold">My Events</h2>
             <Button variant="outline" asChild>
-              <Link href="/events/all">View All</Link>
+              <Link href="/events/create" className="ml-auto">
+                Create
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/events/all" className="ml-2">
+                View All
+              </Link>
             </Button>
           </div>
           <div className="grid md:grid-cols-2 gap-4">

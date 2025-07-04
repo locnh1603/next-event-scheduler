@@ -39,6 +39,7 @@ import {
   TableRow,
 } from '@/components/shadcn-ui/table';
 import { EventCommands } from '@/enums/event.enum';
+import { Minus, Plus } from 'lucide-react';
 const eventInviteFormSchema = z.object({
   email: z.string().min(1, {
     message: 'Email is required.',
@@ -126,9 +127,9 @@ const InviteEventDialog = (props: {
     columnHelper.display({
       id: 'action',
       cell: (info) => (
-        <button onClick={() => removeEmailByIndex(info.row.index)}>
-          Remove
-        </button>
+        <Button onClick={() => removeEmailByIndex(info.row.index)}>
+          <Minus color="#ffffff" />
+        </Button>
       ),
     }),
   ];
@@ -214,11 +215,16 @@ const InviteEventDialog = (props: {
                       <>
                         <FormLabel htmlFor="email">Email</FormLabel>
                         <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Enter user email"
-                            {...field}
-                          />
+                          <div className="flex w-full items-center gap-2">
+                            <Input
+                              type="email"
+                              placeholder="Enter user email"
+                              {...field}
+                            />
+                            <Button type="submit">
+                              <Plus color="#ffffff" />
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </>
@@ -226,7 +232,6 @@ const InviteEventDialog = (props: {
                     name="email"
                   />
                 </div>
-                <Button type="submit">Add Email</Button>
               </div>
             )}
           </form>

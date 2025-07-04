@@ -8,14 +8,13 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import React, { Suspense } from 'react';
-import { Calendar, Map } from 'lucide-react';
+import { Calendar, Map, SquareArrowOutUpRight } from 'lucide-react';
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/shadcn-ui/button';
 import Link from 'next/link';
 import { formatDate } from '@/utilities/date-util';
-import { EditDetailDialog } from '@/app/(events)/events/[id]/edit-event-dialog';
 import { createClient } from '@/lib/supabase/server';
 import InviteEventDialog from './invite-event-dialog';
 import { ChatBox } from '@/components/chatbox';
@@ -47,23 +46,31 @@ const EventMainInfo = async (props: { event: Event }) => {
       <CardHeader>
         <div className="flex justify-between items-center">
           <div className="flex">
-            <CardTitle className="text-2xl font-bold">
+            <CardTitle className="font-semibold text-lg">
               {event.title || 'Untitled'}
             </CardTitle>
-            <Badge variant="default" className="pointer-events-none ml-2">
+            <Badge variant="secondary" className="pointer-events-none ml-2">
               Active
             </Badge>
           </div>
-          {user ? (
-            <EditDetailDialog event={event}>
-              <Button variant="outline">Edit</Button>
-            </EditDetailDialog>
-          ) : (
-            <></>
-          )}
           <InviteEventDialog eventId={event.id}>
             <Button variant="outline">Invite</Button>
           </InviteEventDialog>
+          {user ? (
+            <form
+              action={async () => {
+                'use server';
+                redirect(`/events/update/${event.id}`);
+              }}
+            >
+              <Button variant="outline" className="ml-2">
+                Edit
+                <SquareArrowOutUpRight size={16} strokeWidth={1.5} />
+              </Button>
+            </form>
+          ) : (
+            <></>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -82,12 +89,6 @@ const EventMainInfo = async (props: { event: Event }) => {
           <div className="flex items-center gap-2 text-gray-600">
             <Map size={20} />
             <span>{event.location || 'Location not specified'}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="lowercase">
-              Event
-            </Badge>
           </div>
         </div>
       </CardContent>
@@ -114,7 +115,7 @@ const EventDetailBody = async ({ id }: { id: string }) => {
   const { payload }: IResponseBody<Event[]> = await data.json();
   const event = payload[0];
   if (!user || !event) {
-    redirect('/events');
+    redirect('/unauthorized');
   }
   return (
     <div className="max-w-7xl mx-auto">
