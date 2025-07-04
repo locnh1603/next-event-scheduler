@@ -13,7 +13,7 @@ const EventImages = () => {
     <Carousel>
       <CarouselContent>
         <Image
-          src=""
+          src="/images/default-event.jpg"
           alt="event-images"
           width={800}
           height={600}
