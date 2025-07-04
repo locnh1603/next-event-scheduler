@@ -1,3 +1,4 @@
+import { Message } from '@/models/message.model';
 import { UserProfile, UserProfileDTO } from '@/models/user-profile.model';
 // Map DB row (snake_case) to app UserProfile (camelCase)
 export interface DbUserProfileRow {
@@ -96,4 +97,26 @@ export function mapSupabaseEvent(row: DbEventRow): Event {
 
 export function mapSupabaseEvents(rows: DbEventRow[]): Event[] {
   return rows.map(mapSupabaseEvent);
+}
+
+export interface DbMessageRow {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  sent_at: string;
+}
+
+export function mapDbMessageToAppMessage(row: DbMessageRow): Message {
+  return {
+    id: row.id,
+    senderId: row.sender_id,
+    receiverId: row.receiver_id,
+    content: row.content,
+    sentAt: row.sent_at,
+  };
+}
+
+export function mapDbMessagesToAppMessages(rows: DbMessageRow[]): Message[] {
+  return rows.map(mapDbMessageToAppMessage);
 }
