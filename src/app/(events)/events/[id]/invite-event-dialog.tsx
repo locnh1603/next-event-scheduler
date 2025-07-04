@@ -127,7 +127,7 @@ const InviteEventDialog = (props: {
     columnHelper.display({
       id: 'action',
       cell: (info) => (
-        <Button onClick={() => removeEmailByIndex(info.row.index)}>
+        <Button onClick={() => removeEmailByIndex(info.row.index)} aria-label="Remove email">
           <Minus color="#ffffff" />
         </Button>
       ),
