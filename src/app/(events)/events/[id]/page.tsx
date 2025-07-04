@@ -18,7 +18,20 @@ import { formatDate } from '@/utilities/date-util';
 import { EditDetailDialog } from '@/app/(events)/events/[id]/edit-event-dialog';
 import { createClient } from '@/lib/supabase/server';
 import InviteEventDialog from './invite-event-dialog';
+import { ChatBox } from '@/components/chatbox';
 
+// New component for the header section
+const EventDetailHeader = () => (
+  <div className="max-w-7xl mx-auto mb-6">
+    <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
+    <p className="text-gray-600">Event details and additional information</p>
+    <Button variant="outline" asChild>
+      <Link href={`/events`}>Back</Link>
+    </Button>
+  </div>
+);
+
+// Existing component with minor modifications
 const EventMainInfo = async (props: { event: Event }) => {
   const { event } = props;
   const supabase = await createClient();
@@ -82,7 +95,11 @@ const EventMainInfo = async (props: { event: Event }) => {
   );
 };
 
-const EventDetailContent = async ({ id }: { id: string }) => {
+const EventDetailBody = async ({ id }: { id: string }) => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const body = JSON.stringify({
     payload: {
       ids: [id],
@@ -96,6 +113,9 @@ const EventDetailContent = async ({ id }: { id: string }) => {
   });
   const { payload }: IResponseBody<Event[]> = await data.json();
   const event = payload[0];
+  if (!user || !event) {
+    redirect('/events');
+  }
   return (
     <div className="max-w-7xl mx-auto">
       <div className="grid grid-cols-12 gap-4">
@@ -104,7 +124,12 @@ const EventDetailContent = async ({ id }: { id: string }) => {
             <EventMainInfo event={event} />
           </div>
           <div className="flex items-center justify-center text-lg font-bold">
-            <Skeleton className="w-full h-[600px]" />
+            <ChatBox
+              readOnly
+              title="Announcements"
+              messages={[]}
+              currentUserId={user.id}
+            />
           </div>
         </div>
         <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
@@ -115,33 +140,17 @@ const EventDetailContent = async ({ id }: { id: string }) => {
   );
 };
 
-const EventDetail = ({ params }: { params: Promise<{ id: string }> }) => {
+// Refactored main component
+const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
   return (
     <div>
-      <div className="max-w-7xl mx-auto mb-6">
-        <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
-        <p className="text-gray-600">
-          Event details and additional information
-        </p>
-        <Button variant="outline" asChild>
-          <Link href={`/events`}>Back</Link>
-        </Button>
-      </div>
+      <EventDetailHeader />
       <Suspense fallback={<Skeleton className="w-full h-[915px]" />}>
-        <EventDetailContentPromise params={params} />
+        <EventDetailBody id={id} />
       </Suspense>
     </div>
   );
-};
-
-// Helper to unwrap params promise for server component
-const EventDetailContentPromise = async ({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) => {
-  const { id } = await params;
-  return <EventDetailContent id={id} />;
 };
 
 export default EventDetail;
