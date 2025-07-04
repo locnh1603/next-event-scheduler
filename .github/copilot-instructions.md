@@ -1,11 +1,11 @@
 # Specific Guidelines for this codebase
 
-- The core stack is using NextJS front end app , supabase for database interactions, Nextjs api routes for api interfaces, vitest for unit testing. Database schema is in root/db-sql-schema.txt
+- The core stack is using NextJS front end app , supabase for database interactions, Nextjs api routes for api interfaces, vitest for unit testing. Database schema is in `/db-sql-schema.txt`
 - All components inside src/components/shadcn-ui are generated and need to be exclude from tests.
-- After all changes are made, ALWAYS build the project with `pnpm build`. Ignore warnings, fix errors.
 - Keep source code files under 250 lines
 - If the being generated file is too big, generate small pieces then use a command to concat them.
 - Environment variables are imported through `import { env } from '@env`
+- Service level modules will be in `/services`. Models in `/models` . Utility functions in `/utilities`
 
 # Performances
 

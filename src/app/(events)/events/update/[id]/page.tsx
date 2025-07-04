@@ -2,6 +2,9 @@ import EventForm from '@/app/(events)/events/event-form';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Suspense } from 'react';
+import { EventCommands } from '@/enums/event.enum';
+import customFetch, { IResponseBody } from '@/services/app/server/server-fetch';
+import { Event } from '@/models/event.model';
 
 const CreateEventSkeleton = () => (
   <div>
@@ -22,7 +25,7 @@ const CreateEventSkeleton = () => (
   </div>
 );
 
-const CreateEvent = async () => {
+const CreateEvent = async ({ params }: { params: Promise<{ id: string }> }) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,6 +35,19 @@ const CreateEvent = async () => {
     redirect('/unauthorized');
   }
 
+  const { id } = await params;
+  const body = JSON.stringify({
+    payload: {
+      ids: [id],
+    },
+    command: EventCommands.getEvents,
+  });
+  const data = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+    method: 'POST',
+    body,
+  });
+  const { payload }: IResponseBody<Event[]> = await data.json();
+  const event = payload[0];
   return (
     <div>
       <div className="max-w-2xl mx-auto mb-6">
@@ -39,7 +55,7 @@ const CreateEvent = async () => {
         <p className="text-gray-600">Create new event</p>
       </div>
       <Suspense fallback={<CreateEventSkeleton />}>
-        <EventForm />
+        <EventForm event={event} />
       </Suspense>
     </div>
   );
