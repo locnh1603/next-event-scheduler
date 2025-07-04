@@ -38,8 +38,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/shadcn-ui/table';
-import { showError } from '@/services/app/client/toaster.service';
 import { EventCommands } from '@/enums/event.enum';
+import { Minus, Plus } from 'lucide-react';
 const eventInviteFormSchema = z.object({
   email: z.string().min(1, {
     message: 'Email is required.',
@@ -110,7 +110,7 @@ const InviteEventDialog = (props: {
       setData(emails);
       form.reset();
     } else {
-      showError('Email already exists');
+      // showError('Email already exists');
     }
   };
 
@@ -127,9 +127,9 @@ const InviteEventDialog = (props: {
     columnHelper.display({
       id: 'action',
       cell: (info) => (
-        <button onClick={() => removeEmailByIndex(info.row.index)}>
-          Remove
-        </button>
+        <Button onClick={() => removeEmailByIndex(info.row.index)} aria-label="Remove email">
+          <Minus color="#ffffff" />
+        </Button>
       ),
     }),
   ];
@@ -215,11 +215,16 @@ const InviteEventDialog = (props: {
                       <>
                         <FormLabel htmlFor="email">Email</FormLabel>
                         <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Enter user email"
-                            {...field}
-                          />
+                          <div className="flex w-full items-center gap-2">
+                            <Input
+                              type="email"
+                              placeholder="Enter user email"
+                              {...field}
+                            />
+                            <Button type="submit" aria-label="Add email">
+                              <Plus color="#ffffff" />
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </>
@@ -227,7 +232,6 @@ const InviteEventDialog = (props: {
                     name="email"
                   />
                 </div>
-                <Button type="submit">Add Email</Button>
               </div>
             )}
           </form>

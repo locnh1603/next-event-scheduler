@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { EventCommands } from '@/enums/event.enum';
+import { Event } from '@/models/event.model';
 import {
   Card,
   CardContent,
@@ -47,8 +48,14 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const CreateEventForm = () => {
+interface CreateEventFormProps {
+  event?: Event;
+}
+
+const EventForm = ({ event }: CreateEventFormProps) => {
   const router = useRouter();
+  const isEditMode = !!event;
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,6 +70,26 @@ const CreateEventForm = () => {
       maxParticipants: '',
     },
   });
+
+  // Prefill form data when event prop is provided
+  useEffect(() => {
+    if (event) {
+      form.reset({
+        title: event.title,
+        description: event.description || '',
+        startTime: new Date(event.startTime),
+        endTime: new Date(event.endTime),
+        location: event.location || '',
+        hostName: event.hostName || '',
+        allowSelfJoin: event.allowSelfJoin,
+        allowAnonymousJoin: event.allowAnonymousJoin,
+        maxParticipants: event.maxParticipants
+          ? String(event.maxParticipants)
+          : '',
+      });
+    }
+  }, [event, form]);
+
   const [loading, setLoading] = useState<boolean>(false);
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -83,17 +110,21 @@ const CreateEventForm = () => {
         allowAnonymousJoin: data.allowAnonymousJoin,
         maxParticipants,
       },
-      command: EventCommands.createEvent,
+      command: isEditMode
+        ? EventCommands.updateEventDetails
+        : EventCommands.createEvent,
     };
     try {
-      const url = `${env.NEXT_PUBLIC_API_URL}/events`;
+      const url = isEditMode
+        ? `${env.NEXT_PUBLIC_API_URL}/events/${event.id}`
+        : `${env.NEXT_PUBLIC_API_URL}/events`;
       const eventResponse = await customFetch(url, {
         body: JSON.stringify(body),
-        method: 'POST',
+        method: isEditMode ? 'PUT' : 'POST',
       });
       const { payload } = await (eventResponse as Response).json();
       setLoading(false);
-      router.push(`/events/${payload.id}`);
+      router.push(`/events/${isEditMode ? event.id : payload.id}`);
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -103,7 +134,7 @@ const CreateEventForm = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Event Details</CardTitle>
+        <CardTitle>{isEditMode ? 'Edit Event' : 'Create Event'}</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -299,9 +330,15 @@ const CreateEventForm = () => {
             </div>
           </CardContent>
           <CardFooter className="flex justify-end space-x-4">
-            <Button variant="outline">Cancel</Button>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
             <Button type="submit" disabled={loading}>
-              Create Event
+              {isEditMode ? 'Update Event' : 'Create Event'}
             </Button>
           </CardFooter>
         </form>
@@ -310,4 +347,4 @@ const CreateEventForm = () => {
   );
 };
 
-export default CreateEventForm;
+export default EventForm;

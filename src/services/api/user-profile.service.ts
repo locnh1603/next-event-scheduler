@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { mapDbUserProfile } from '@/utilities/data-mapper';
 
 class UserProfileService {
   async getUserProfile() {
@@ -12,27 +13,26 @@ class UserProfileService {
     }
 
     const { data, error } = await supabase
-      .from('public.profiles')
+      .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single();
     if (error) {
-      console.log('Error fetching user profile:', error, user.id);
       throw error;
     }
-    return data;
+    return data ? mapDbUserProfile(data) : null;
   }
 
   async getUserProfiles(userIds: string[]) {
     const supabase = await createClient();
     const { data, error } = await supabase
-      .from('public.profiles')
+      .from('profiles')
       .select('*')
       .in('id', userIds);
     if (error) {
       throw error;
     }
-    return data;
+    return data ? data.map(mapDbUserProfile) : [];
   }
 }
 

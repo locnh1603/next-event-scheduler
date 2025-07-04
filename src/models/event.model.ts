@@ -1,21 +1,24 @@
+// Matches the public.events table
 export interface EventDTO {
   title: string;
   description?: string;
-  startTime: string;
-  endTime: string;
+  start_time: string; // timestamp with time zone
+  end_time: string; // timestamp with time zone
   location?: string;
-  hostName?: string;
-  allowSelfJoin?: boolean;
-  allowAnonymousJoin?: boolean;
-  maxParticipants?: number;
+  host_name?: string;
+  created_by: string; // uuid
+  allow_self_join?: boolean;
+  allow_anonymous_join?: boolean;
+  max_participants?: number;
 }
 
+// App-level Event model
 export interface Event {
   id: string;
   title: string;
   description?: string;
-  startTime: string;
-  endTime: string;
+  startTime: string | Date;
+  endTime: string | Date;
   location?: string;
   hostName?: string;
   createdBy: string;

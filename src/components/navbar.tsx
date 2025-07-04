@@ -20,10 +20,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/shadcn-ui/alert-dialog';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { userProfileService } from '@/services/api/user-profile.service';
 import { UserProfile } from '@/models/user-profile.model';
+import ThemeSwitcher from './theme-switcher';
 
 const NavBar = async () => {
   const supabase = await createClient();
@@ -145,9 +145,9 @@ const NavBar = async () => {
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-xl font-bold">
-            <Image src="/next.svg" alt="Logo" width="50" height="50" />
-          </span>
+          <Link href="/events" className="text-xl font-bold">
+            Home
+          </Link>
         </div>
         <div className="flex items-center space-x-4">
           <NavigationMenu className="hidden md:flex">
@@ -190,6 +190,7 @@ const NavBar = async () => {
             </NavigationMenuList>
           </NavigationMenu>
           {userView}
+          <ThemeSwitcher />
         </div>
       </div>
     </div>

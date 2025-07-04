@@ -1,16 +1,16 @@
 'use client';
 import { AppError } from '@/utilities/error-handler';
-import { showError } from '@/services/app/client/toaster.service';
+import { toast } from 'sonner';
 
 const customFetch = async (url: string, options = {}) => {
   const response = await fetch(url, {
-    credentials: 'include', // This is crucial for sending cookies
+    credentials: 'include',
     ...options,
   });
   if (response.status === 200) {
     return response;
   } else if (response.status === 401) {
-    showError('You dont have permission for this action');
+    toast.error('You dont have permission for this action');
     throw new AppError(
       401,
       undefined,
