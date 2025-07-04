@@ -156,3 +156,6 @@ fabric.properties
 
 .pnpm-store
 .pnpm-store/*
+
+# Gemini settings
+.gemini/settings.json
