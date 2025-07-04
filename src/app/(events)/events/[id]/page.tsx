@@ -141,7 +141,7 @@ const EventDetailBody = async ({ id }: { id: string }) => {
 };
 
 // Refactored main component
-const EventDetail = async ({ params }: { params: { id: string } }) => {
+const EventDetail = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   return (
     <div>
