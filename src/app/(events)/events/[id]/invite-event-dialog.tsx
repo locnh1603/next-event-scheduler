@@ -221,7 +221,7 @@ const InviteEventDialog = (props: {
                               placeholder="Enter user email"
                               {...field}
                             />
-                            <Button type="submit">
+                            <Button type="submit" aria-label="Add email">
                               <Plus color="#ffffff" />
                             </Button>
                           </div>
