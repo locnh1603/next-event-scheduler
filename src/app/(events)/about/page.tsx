@@ -6,6 +6,7 @@ import {
 } from '@/components/shadcn-ui/card';
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Metadata } from 'next';
+import { env } from '@env';
 
 interface AboutProps {
   creator: string;
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     title: 'About | Next Event Scheduler',
     description:
       'Learn about the Next Event Scheduler app, its creator, and the technologies used to build it.',
-    url: 'https://yourdomain.com/about',
+    url: `${env.APP_URL}/about`,
     siteName: 'Next Event Scheduler',
     type: 'website',
   },

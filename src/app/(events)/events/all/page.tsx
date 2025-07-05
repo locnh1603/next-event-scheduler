@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: 'All Events | Next Event Scheduler',
     description:
       'Browse all public events on Next Event Scheduler. Find, join, and participate in events easily.',
-    url: 'https://yourdomain.com/events/all',
+    url: `${env.APP_URL}/events/all`,
     siteName: 'Next Event Scheduler',
     type: 'website',
   },

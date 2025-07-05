@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/shadcn-ui/input';
 import { Button } from '@/components/shadcn-ui/button';
 import { Metadata } from 'next';
+import { env } from '@env';
 
 export const metadata: Metadata = {
   title: 'Tools | Next Event Scheduler',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Tools | Next Event Scheduler',
     description:
       'Useful tools and utilities for event organizers and participants.',
-    url: 'https://yourdomain.com/tools',
+    url: `${env.APP_URL}/tools`,
     siteName: 'Next Event Scheduler',
     type: 'website',
   },

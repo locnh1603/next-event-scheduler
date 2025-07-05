@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { env } from '@env';
 
 export const metadata: Metadata = {
   title: 'Next Event Scheduler | Home',
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Next Event Scheduler',
     description:
       'Plan, discover, and manage events with Next Event Scheduler. Modern, fast, and open-source event platform.',
-    url: 'https://yourdomain.com/',
+    url: env.APP_URL,
     siteName: 'Next Event Scheduler',
     type: 'website',
   },
