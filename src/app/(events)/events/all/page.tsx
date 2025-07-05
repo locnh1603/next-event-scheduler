@@ -6,6 +6,21 @@ import { EventCommands } from '@/enums/event.enum';
 import customFetch, { IRequestBody } from '@/services/app/server/server-fetch';
 import EventFilter from '@/app/(events)/events/all/event-filter';
 import { env } from '@env';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'All Events | Next Event Scheduler',
+  description:
+    'Browse all public events on Next Event Scheduler. Find, join, and participate in events easily.',
+  openGraph: {
+    title: 'All Events | Next Event Scheduler',
+    description:
+      'Browse all public events on Next Event Scheduler. Find, join, and participate in events easily.',
+    url: `${env.APP_URL}/events/all`,
+    siteName: 'Next Event Scheduler',
+    type: 'website',
+  },
+};
 
 const EventList = async ({
   searchParams,

@@ -5,11 +5,27 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import { Badge } from '@/components/shadcn-ui/badge';
+import { Metadata } from 'next';
+import { env } from '@env';
 
 interface AboutProps {
   creator: string;
   email: string;
 }
+
+export const metadata: Metadata = {
+  title: 'About | Next Event Scheduler',
+  description:
+    'Learn about the Next Event Scheduler app, its creator, and the technologies used to build it.',
+  openGraph: {
+    title: 'About | Next Event Scheduler',
+    description:
+      'Learn about the Next Event Scheduler app, its creator, and the technologies used to build it.',
+    url: `${env.APP_URL}/about`,
+    siteName: 'Next Event Scheduler',
+    type: 'website',
+  },
+};
 
 export default async function AboutPage() {
   const aboutData: AboutProps = {
