@@ -3,7 +3,7 @@
   
   <!-- Home page -->
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://events.locnh.io.vn/</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,7 +11,7 @@
   
   <!-- About page -->
   <url>
-    <loc>https://yourdomain.com/about</loc>
+    <loc>https://events.locnh.io.vn/about</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -19,7 +19,7 @@
   
   <!-- Calendar page -->
   <url>
-    <loc>https://yourdomain.com/calendar</loc>
+    <loc>https://events.locnh.io.vn/calendar</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -27,7 +27,7 @@
   
   <!-- Events listing page -->
   <url>
-    <loc>https://yourdomain.com/events</loc>
+    <loc>https://events.locnh.io.vn/events</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -35,7 +35,7 @@
   
   <!-- All events page -->
   <url>
-    <loc>https://yourdomain.com/events/all</loc>
+    <loc>https://events.locnh.io.vn/events/all</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -43,7 +43,7 @@
   
   <!-- Login page (public but lower priority) -->
   <url>
-    <loc>https://yourdomain.com/login</loc>
+    <loc>https://events.locnh.io.vn/login</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -51,7 +51,7 @@
   
   <!-- Tools page -->
   <url>
-    <loc>https://yourdomain.com/tools</loc>
+    <loc>https://events.locnh.io.vn/tools</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

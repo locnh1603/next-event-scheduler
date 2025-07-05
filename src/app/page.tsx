@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+const Home = () => {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-4">
@@ -27,4 +27,6 @@ export default function Home() {
       </p>
     </main>
   );
-}
+};
+
+export default Home;

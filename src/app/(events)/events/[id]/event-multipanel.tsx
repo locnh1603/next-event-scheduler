@@ -1,12 +1,24 @@
 'use client';
 
 import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/shadcn-ui/card';
+import {
   Carousel,
   CarouselContent,
   CarouselNext,
   CarouselPrevious,
 } from '@/components/shadcn-ui/carousel';
 import Image from 'next/image';
+import { Event } from '@/models/event.model';
+import './event-multipanel.scss';
+
+export interface EventMultipanelProps {
+  event: Event;
+}
 
 const EventImages = () => {
   return (
@@ -26,11 +38,16 @@ const EventImages = () => {
   );
 };
 
-const EventMultipanel = () => {
+const EventMultipanel = (props: EventMultipanelProps) => {
   return (
-    <div className="flex flex-col h-full">
-      <EventImages />
-    </div>
+    <Card className="event-multipanel">
+      <CardHeader>
+        <CardTitle>Event Images</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <EventImages />
+      </CardContent>
+    </Card>
   );
 };
 

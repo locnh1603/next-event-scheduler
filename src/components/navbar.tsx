@@ -52,7 +52,7 @@ const NavBar = async () => {
               <div className="grid w-[300px] gap-3 p-4">
                 <NavigationMenuLink asChild>
                   <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none"
                     href="/profile"
                   >
                     <div className="mb-2 mt-4 text-lg font-medium">
@@ -77,10 +77,10 @@ const NavBar = async () => {
                     asChild
                     className="cursor-pointer hover:bg-slate-100 p-2 rounded"
                   >
-                    <div className="flex items-center">
+                    <Link href="/logout" className="flex items-center">
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
-                    </div>
+                    </Link>
                   </NavigationMenuLink>
                 </form>
               </div>

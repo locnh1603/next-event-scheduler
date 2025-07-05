@@ -27,7 +27,7 @@ const ChatBoxRoot = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex h-[600px] w-full flex-col rounded-xl border bg-card text-card-foreground shadow-sm',
+      'flex h-[600px] w-full flex-col rounded-xl border bg-card text-card-foreground',
       className
     )}
     {...props}

@@ -5,9 +5,9 @@ import NavBar from '@/components/navbar';
 export const metadata: Metadata = {
   title: 'Event Scheduler',
 };
-export default function EventsLayout({
+const EventsLayout = ({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: React.ReactNode }>) => {
   return (
     <div>
       <div className="main m-0">
@@ -16,4 +16,6 @@ export default function EventsLayout({
       </div>
     </div>
   );
-}
+};
+
+export default EventsLayout;

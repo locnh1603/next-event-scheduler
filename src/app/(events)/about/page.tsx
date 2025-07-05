@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function AboutPage() {
+const AboutPage = async () => {
   const aboutData: AboutProps = {
     creator: 'Loc Nguyen Huu',
     email: 'nghloc1603@gmail.com',
@@ -35,7 +35,7 @@ export default async function AboutPage() {
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-muted">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>About This App</CardTitle>
         </CardHeader>
@@ -81,4 +81,6 @@ export default async function AboutPage() {
       </Card>
     </main>
   );
-}
+};
+
+export default AboutPage;
