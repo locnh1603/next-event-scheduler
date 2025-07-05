@@ -26,6 +26,7 @@ const Logout = () => {
           router.replace('/login');
         }
       } catch (err) {
+        console.error('Logout error:', err);
         toast.error('Unexpected error during logout.');
       }
     };

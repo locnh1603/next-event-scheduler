@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import React, { Suspense } from 'react';
-import { Calendar, Map, SquareArrowOutUpRight, User } from 'lucide-react';
+import {
+  Calendar,
+  Map as MapIcon,
+  SquareArrowOutUpRight,
+  User,
+} from 'lucide-react';
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { redirect } from 'next/navigation';
@@ -90,7 +95,7 @@ const EventMainInfo = async (props: { event: Event }) => {
           </div>
 
           <div className="flex items-center gap-2 text-gray-600">
-            <Map size={20} />
+            <MapIcon size={20} />
             <span>{event.location || 'Location not specified'}</span>
           </div>
 

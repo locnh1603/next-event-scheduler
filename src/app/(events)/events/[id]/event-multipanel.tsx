@@ -16,11 +16,8 @@ import Image from 'next/image';
 import { Event } from '@/models/event.model';
 import './event-multipanel.scss';
 
-export interface EventMultipanelProps {
-  event: Event;
-}
-
-const EventImages = () => {
+const EventImages = ({ event }: { event: Event }) => {
+  console.log('Event Images:', event);
   return (
     <Carousel>
       <CarouselContent>
@@ -38,14 +35,14 @@ const EventImages = () => {
   );
 };
 
-const EventMultipanel = (props: EventMultipanelProps) => {
+const EventMultipanel = ({ event }: { event: Event }) => {
   return (
     <Card className="event-multipanel">
       <CardHeader>
         <CardTitle>Event Images</CardTitle>
       </CardHeader>
       <CardContent>
-        <EventImages />
+        <EventImages event={event} />
       </CardContent>
     </Card>
   );
