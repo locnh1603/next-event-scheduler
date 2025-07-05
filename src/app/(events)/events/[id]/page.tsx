@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import React, { Suspense } from 'react';
-import { Calendar, Map, SquareArrowOutUpRight } from 'lucide-react';
+import {
+  Calendar,
+  Map as MapIcon,
+  SquareArrowOutUpRight,
+  User,
+} from 'lucide-react';
 import { Badge } from '@/components/shadcn-ui/badge';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
 import { redirect } from 'next/navigation';
@@ -18,6 +23,7 @@ import { formatDate } from '@/utilities/date-util';
 import { createClient } from '@/lib/supabase/server';
 import InviteEventDialog from './invite-event-dialog';
 import { ChatBox } from '@/components/chatbox';
+import EventMultipanel from './event-multipanel';
 
 // New component for the header section
 const EventDetailHeader = () => (
@@ -37,7 +43,7 @@ const EventMainInfo = async (props: { event: Event }) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
+  const ownEvent = user && user.id === event.createdBy;
   if (!event) {
     redirect('/events');
   }
@@ -53,21 +59,23 @@ const EventMainInfo = async (props: { event: Event }) => {
               Active
             </Badge>
           </div>
-          <InviteEventDialog eventId={event.id}>
-            <Button variant="outline">Invite</Button>
-          </InviteEventDialog>
-          {user ? (
-            <form
-              action={async () => {
-                'use server';
-                redirect(`/events/update/${event.id}`);
-              }}
-            >
-              <Button variant="outline" className="ml-2">
-                Edit
-                <SquareArrowOutUpRight size={16} strokeWidth={1.5} />
-              </Button>
-            </form>
+          {ownEvent ? (
+            <>
+              <InviteEventDialog eventId={event.id}>
+                <Button variant="outline">Invite</Button>
+              </InviteEventDialog>
+              <form
+                action={async () => {
+                  'use server';
+                  redirect(`/events/update/${event.id}`);
+                }}
+              >
+                <Button variant="outline" className="ml-2">
+                  Edit
+                  <SquareArrowOutUpRight size={16} strokeWidth={1.5} />
+                </Button>
+              </form>
+            </>
           ) : (
             <></>
           )}
@@ -87,8 +95,13 @@ const EventMainInfo = async (props: { event: Event }) => {
           </div>
 
           <div className="flex items-center gap-2 text-gray-600">
-            <Map size={20} />
+            <MapIcon size={20} />
             <span>{event.location || 'Location not specified'}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-gray-600">
+            <User size={20} />
+            <span>{event.hostName || ''}</span>
           </div>
         </div>
       </CardContent>
@@ -134,7 +147,7 @@ const EventDetailBody = async ({ id }: { id: string }) => {
           </div>
         </div>
         <div className="col-span-8 flex items-center justify-center text-lg font-bold h-full">
-          <Skeleton className="w-full h-[915px]" />
+          <EventMultipanel event={event} />
         </div>
       </div>
     </div>
