@@ -2,6 +2,21 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/shadcn-ui/input';
 import { Button } from '@/components/shadcn-ui/button';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tools | Next Event Scheduler',
+  description:
+    'Useful tools and utilities for event organizers and participants.',
+  openGraph: {
+    title: 'Tools | Next Event Scheduler',
+    description:
+      'Useful tools and utilities for event organizers and participants.',
+    url: 'https://yourdomain.com/tools',
+    siteName: 'Next Event Scheduler',
+    type: 'website',
+  },
+};
 
 function optimizeProduction(
   A: number,

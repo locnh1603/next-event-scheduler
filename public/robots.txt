@@ -1,0 +1,30 @@
+# Robots.txt for Next Event Scheduler
+
+# Allow all web crawlers to access public content
+User-agent: *
+Allow: /
+
+# Block access to private/sensitive areas
+Disallow: /api/
+Disallow: /login
+Disallow: /unauthorized
+Disallow: /profile
+Disallow: /settings
+Disallow: /events/create
+Disallow: /events/update
+Disallow: /invitation/
+
+# Block access to Next.js internal files
+Disallow: /_next/
+Disallow: /favicon.ico
+
+# Allow access to public pages
+Allow: /about
+Allow: /calendar
+Allow: /events
+
+# Sitemap location (uncomment and update when you add a sitemap)
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1
