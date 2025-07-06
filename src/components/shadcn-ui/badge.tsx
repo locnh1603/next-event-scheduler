@@ -27,6 +27,11 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
+/**
+ * Renders a styled badge element with customizable variant and additional class names.
+ *
+ * Supports visual variants such as 'default', 'secondary', 'destructive', and 'outline'.
+ */
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props} />

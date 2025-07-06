@@ -3,6 +3,19 @@ import React, { useState } from 'react';
 import { Input } from '@/components/shadcn-ui/input';
 import { Button } from '@/components/shadcn-ui/button';
 
+/**
+ * Calculates the maximum number of final product batches that can be produced from given material quantities and batch requirements, optionally converting portions of materials A and B into material C to optimize output.
+ *
+ * Explores all combinations of converting A (in multiples of 100) and B (in multiples of 50) into C, then determines the optimal conversion strategy that yields the highest number of batches. Returns the optimal batch count, leftover materials, and amounts of A and B converted.
+ *
+ * @param A - Initial quantity of material A
+ * @param B - Initial quantity of material B
+ * @param C - Initial quantity of material C
+ * @param E - Amount of A required per batch
+ * @param F - Amount of B required per batch
+ * @param G - Amount of C required per batch
+ * @returns An object containing the maximum batches produced (`D`), leftover amounts of A, B, and C, and the amounts of A and B converted into C
+ */
 function optimizeProduction(
   A: number,
   B: number,
@@ -101,6 +114,11 @@ const MaterialCalculator = () => {
     G: number;
   } | null>(null);
 
+  /**
+   * Handles form submission for the material calculator, extracting input values, running the production optimization, and updating the result state.
+   *
+   * @param e - The form submission event
+   */
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
