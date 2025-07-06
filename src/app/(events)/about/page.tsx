@@ -5,13 +5,29 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import { Badge } from '@/components/shadcn-ui/badge';
+import { Metadata } from 'next';
+import { env } from '@env';
 
 interface AboutProps {
   creator: string;
   email: string;
 }
 
-export default async function AboutPage() {
+export const metadata: Metadata = {
+  title: 'About | Next Event Scheduler',
+  description:
+    'Learn about the Next Event Scheduler app, its creator, and the technologies used to build it.',
+  openGraph: {
+    title: 'About | Next Event Scheduler',
+    description:
+      'Learn about the Next Event Scheduler app, its creator, and the technologies used to build it.',
+    url: `${env.APP_URL}/about`,
+    siteName: 'Next Event Scheduler',
+    type: 'website',
+  },
+};
+
+const AboutPage = async () => {
   const aboutData: AboutProps = {
     creator: 'Loc Nguyen Huu',
     email: 'nghloc1603@gmail.com',
@@ -19,7 +35,7 @@ export default async function AboutPage() {
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-muted">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>About This App</CardTitle>
         </CardHeader>
@@ -65,4 +81,6 @@ export default async function AboutPage() {
       </Card>
     </main>
   );
-}
+};
+
+export default AboutPage;

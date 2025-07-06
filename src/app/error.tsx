@@ -9,7 +9,7 @@ interface ErrorPageProps {
   reset: () => void;
 }
 
-export default function ErrorPage({ error, reset }: ErrorPageProps) {
+const ErrorPage = ({ error, reset }: ErrorPageProps) => {
   useEffect(() => {
     errorHandler.error(error, {
       type: 'Global Error Handler',
@@ -46,4 +46,6 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
       </div>
     </div>
   );
-}
+};
+
+export default ErrorPage;

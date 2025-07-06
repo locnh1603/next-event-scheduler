@@ -7,6 +7,21 @@ import EventCard from '@/app/(events)/events/event-card';
 import { env } from '@env';
 import { Event } from '@/models/event.model';
 import { createClient } from '@/lib/supabase/server';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Events Dashboard | Next Event Scheduler',
+  description:
+    'Your personalized dashboard for managing, discovering, and joining events.',
+  openGraph: {
+    title: 'Events Dashboard | Next Event Scheduler',
+    description:
+      'Your personalized dashboard for managing, discovering, and joining events.',
+    url: `${env.APP_URL}/events`,
+    siteName: 'Next Event Scheduler',
+    type: 'website',
+  },
+};
 
 const DashboardSkeleton = () => {
   return (
