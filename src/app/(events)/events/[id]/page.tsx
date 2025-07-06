@@ -23,9 +23,8 @@ import { formatDate } from '@/utilities/date-util';
 import { createClient } from '@/lib/supabase/server';
 import InviteEventDialog from './invite-event-dialog';
 import { ChatBox } from '@/components/chatbox';
-import EventMultipanel from './event-multipanel';
 
-// New component for the header section
+import EventMultipanel from './event-multipanel';
 const EventDetailHeader = () => (
   <div className="max-w-7xl mx-auto mb-6">
     <h1 className="text-4xl font-bold mb-2">Event Detail</h1>
@@ -35,7 +34,6 @@ const EventDetailHeader = () => (
     </Button>
   </div>
 );
-
 // Existing component with minor modifications
 const EventMainInfo = async (props: { event: Event }) => {
   const { event } = props;
@@ -98,7 +96,6 @@ const EventMainInfo = async (props: { event: Event }) => {
             <MapIcon size={20} />
             <span>{event.location || 'Location not specified'}</span>
           </div>
-
           <div className="flex items-center gap-2 text-gray-600">
             <User size={20} />
             <span>{event.hostName || ''}</span>
