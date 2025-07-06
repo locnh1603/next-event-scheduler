@@ -44,6 +44,11 @@ function AlertDialogOverlay({
   );
 }
 
+/**
+ * Renders the alert dialog content centered on the screen with overlay and animation effects.
+ *
+ * Combines the dialog content with an overlay and portal, applying styling for positioning, sizing, border, padding, rounded corners, and open/close animations. Additional class names can be merged via the `className` prop.
+ */
 function AlertDialogContent({
   className,
   ...props
