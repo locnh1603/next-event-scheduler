@@ -126,9 +126,16 @@ const InviteEventDialog = (props: {
     }),
     columnHelper.display({
       id: 'action',
+      size: 10,
       cell: (info) => (
-        <Button onClick={() => removeEmailByIndex(info.row.index)} aria-label="Remove email">
-          <Minus color="#ffffff" />
+        <Button
+          onClick={() => removeEmailByIndex(info.row.index)}
+          aria-label="Remove email"
+          size="sm"
+          className="w-full"
+          variant="ghost"
+        >
+          <Minus color="black" />
         </Button>
       ),
     }),
@@ -165,7 +172,11 @@ const InviteEventDialog = (props: {
                         <TableRow key={headerGroup.id}>
                           {headerGroup.headers.map((header) => {
                             return (
-                              <TableHead key={header.id}>
+                              <TableHead
+                                key={header.id}
+                                style={{ width: `${header.getSize()}%` }}
+                                colSpan={header.colSpan}
+                              >
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
@@ -199,7 +210,7 @@ const InviteEventDialog = (props: {
                         <TableRow>
                           <TableCell
                             colSpan={columns.length}
-                            className="h-24 text-center"
+                            className="h-12 text-center"
                           >
                             No data.
                           </TableCell>

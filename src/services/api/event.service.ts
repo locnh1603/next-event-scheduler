@@ -1,9 +1,20 @@
 import type { EventDTO, FilterEventsDTO } from '@/models/event.model';
 import { createClient } from '@/lib/supabase/server';
+import { mailService } from './mail.service';
+import {
+  mapSupabaseEvent,
+  mapSupabaseEvents,
+  mapSupabaseInvitation,
+  mapSupabaseInvitations,
+} from '@/utilities/data-mapper';
+import { env } from '@env';
 
 class EventService {
   /**
-   * Get participants for an event
+   * Get all participants for a given event.
+   * @param eventId - The ID of the event for which to get the participants.
+   * @returns A list of participants with their user IDs, names, and emails.
+   * @throws An error if the request fails.
    */
   async getParticipants(eventId: string) {
     const supabase = await createClient();
@@ -12,13 +23,17 @@ class EventService {
       .select('user_id, users(name, email)')
       .eq('event_id', eventId);
     if (error) throw error;
-    // No event data in this payload, return as is
     return data;
   }
 
   /**
-   * Join an event as a participant
+   * Adds a user to the list of participants for the specified event.
+   * @param eventId - The ID of the event to join.
+   * @param userId - The ID of the user joining the event.
+   * @returns A promise resolving to the data of the newly added participant.
+   * @throws Will throw an error if the insertion fails.
    */
+
   async joinEvent(eventId: string, userId: string) {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -26,8 +41,7 @@ class EventService {
       .insert({ event_id: eventId, user_id: userId })
       .select();
     if (error) throw error;
-    // No event data in this payload, return as is
-    return data;
+    return data?.[0];
   }
 
   /**
@@ -45,9 +59,9 @@ class EventService {
       .insert(invitations)
       .select();
     if (error) throw error;
-    // No event data in this payload, return as is
     return data;
   }
+
   /**
    * Updates an event by id with the provided data (snake_case DTO)
    * @param id - Event id
@@ -62,7 +76,6 @@ class EventService {
       .eq('id', id)
       .select();
     if (error) throw error;
-    const { mapSupabaseEvent } = await import('@/utilities/data-mapper');
     return data?.[0] ? mapSupabaseEvent(data[0]) : null;
   }
   /**
@@ -87,7 +100,6 @@ class EventService {
           'id, title, description, start_time, end_time, location, host_name, created_by, created_at, allow_self_join, allow_anonymous_join, max_participants'
         );
     }
-    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
     return events.data ? mapSupabaseEvents(events.data) : [];
   }
 
@@ -123,7 +135,6 @@ class EventService {
         .filter('created_by', 'eq', createdBy),
     ]);
 
-    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
     return {
       events: events.data ? mapSupabaseEvents(events.data) : [],
       count: events.data?.length ?? 0,
@@ -148,7 +159,6 @@ class EventService {
         created_by: createdBy,
       })
       .select();
-    const { mapSupabaseEvent } = await import('@/utilities/data-mapper');
     return newEvent.data?.[0] ? mapSupabaseEvent(newEvent.data[0]) : null;
   }
 
@@ -180,12 +190,152 @@ class EventService {
       [],
     ]);
 
-    const { mapSupabaseEvents } = await import('@/utilities/data-mapper');
     return {
       newEvents: newEventsRes.data ? mapSupabaseEvents(newEventsRes.data) : [],
       myEvents: myEventsRes.data ? mapSupabaseEvents(myEventsRes.data) : [],
       hotEvents: [],
     };
+  }
+
+  /**
+   * Sends an email invitation to the provided emails and creates a new EventInvitation row
+   * in the database.
+   * @param eventId - ID of the event to invite to
+   * @param emails - Array of email addresses to invite
+   * @returns An object containing the IDs of the created invitations.
+   */
+  async inviteByEmails(eventId: string, userId: string, emails: string[]) {
+    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const invitationsToInsert = emails.map((email) => ({
+      event_id: eventId,
+      user_id: userId,
+      receiver_email: email,
+    }));
+
+    const { data: insertedInvitations, error: insertError } = await supabase
+      .from('event_invitations')
+      .insert(invitationsToInsert)
+      .select('id, receiver_email, token');
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    const invitationIds = insertedInvitations.map((inv) => inv.id);
+    const invitationEmails = insertedInvitations.map((inv) => {
+      return {
+        id: inv.id,
+        email: inv.receiver_email,
+        token: inv.token,
+      };
+    });
+
+    // Send emails using the inserted invitation data
+    await mailService.inviteEmails(invitationEmails, eventId);
+
+    return { invitationIds };
+  }
+
+  /**
+   * Retrieves a single event invitation by its ID.
+   * @param id - The ID of the event invitation to fetch.
+   * @returns A promise resolving to the event invitation data.
+   * @throws An error if the request fails or the invitation is not found.
+   */
+
+  async getEventInvitation(token: string) {
+    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const { data, error } = await supabase
+      .from('event_invitations')
+      .select('*')
+      .eq('token', token)
+      .single();
+    if (error) throw error;
+    return mapSupabaseInvitation(data);
+  }
+
+  /**
+   * Retrieves all invitations for a specified event by event ID.
+   * @param eventId - The ID of the event for which to fetch invitations.
+   * @returns A promise resolving to a list of invitations associated with the event.
+   * @throws An error if the request fails.
+   */
+
+  async getEventInvitationsByEventId(eventId: string) {
+    const supabase = await createClient();
+    const { data: invitations, error } = await supabase
+      .from('event_invitations')
+      .select('*')
+      .eq('event_id', eventId);
+
+    if (error) {
+      console.error('Error fetching invitations:', error);
+      throw new Error('Could not fetch invitations.');
+    }
+    return mapSupabaseInvitations(invitations);
+  }
+
+  /**
+   * Retrieves the event associated with a given invitation ID.
+   * @param invitationId - The ID of the invitation to fetch the related event.
+   * @returns A promise resolving to the event data associated with the invitation.
+   * @throws An error if the invitation or event is not found, or if the request fails.
+   */
+
+  async getEventByInvitationId(invitationId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('event_invitations')
+      .select('event_id')
+      .eq('id', invitationId)
+      .single();
+    if (error) throw error;
+    if (!data) throw new Error('Invitation not found');
+
+    const event = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', data.event_id)
+      .single();
+    if (event.error) throw event.error;
+
+    return mapSupabaseEvent(event.data);
+  }
+
+  /**
+   * Updates the status of the invitation to 'accepted'.
+   * @param invitationId - The ID of the invitation to accept.
+   * @returns A promise resolving to the updated invitation data.
+   * @throws An error if the invitation is not found, or if the request fails.
+   */
+  async acceptInvitation(token: string) {
+    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const { data, error } = await supabase
+      .from('event_invitations')
+      .update({ status: 'accepted' })
+      .eq('token', token)
+      .select()
+      .single();
+    if (error) throw error;
+    return mapSupabaseInvitation(data);
+  }
+
+  /**
+   * Updates the status of the invitation to 'declined'.
+   * @param invitationId - The ID of the invitation to decline.
+   * @returns A promise resolving to the updated invitation data.
+   * @throws An error if the invitation is not found, or if the request fails.
+   */
+  async declineInvitation(token: string) {
+    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const { data, error } = await supabase
+      .from('event_invitations')
+      .update({ status: 'declined' })
+      .eq('token', token)
+      .select()
+      .single();
+    if (error) throw error;
+    return mapSupabaseInvitation(data);
   }
 }
 

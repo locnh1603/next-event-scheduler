@@ -72,4 +72,39 @@ export const eventValidators = {
       emails: z.array(z.string()),
     }),
   }),
+
+  getInvitation: z.object({
+    command: z.literal('getInvitation'),
+    payload: z.object({
+      id: z.string().min(1),
+    }),
+  }),
+
+  getInvitationsByEventId: z.object({
+    command: z.literal('getInvitationsByEventId'),
+    payload: z.object({
+      eventId: z.string().min(1),
+    }),
+  }),
+
+  getEventByInvitationId: z.object({
+    command: z.literal('getEventByInvitationId'),
+    payload: z.object({
+      invitationId: z.string().min(1),
+    }),
+  }),
+
+  acceptInvitation: z.object({
+    command: z.literal('acceptInvitation'),
+    payload: z.object({
+      token: z.string().min(1),
+    }),
+  }),
+
+  declineInvitation: z.object({
+    command: z.literal('declineInvitation'),
+    payload: z.object({
+      token: z.string().min(1),
+    }),
+  }),
 };

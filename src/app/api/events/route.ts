@@ -10,6 +10,50 @@ import { eventService } from '@/services/api/event.service';
 import { createClient } from '@/lib/supabase/server';
 import { mapEventToDTO } from '@/utilities/data-mapper';
 
+const handleGetInvitation = async (reqData: IRequestBody) => {
+  const validatedData = eventValidators.getInvitation.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.getEventInvitation(
+    validatedData.data.payload.id
+  );
+  return { payload };
+};
+
+const handleGetEventByInvitationId = async (reqData: IRequestBody) => {
+  const validatedData =
+    eventValidators.getEventByInvitationId.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.getEventByInvitationId(
+    validatedData.data.payload.invitationId
+  );
+  return { payload };
+};
+
+const handleGetInvitationsByEventId = async (reqData: IRequestBody) => {
+  const validatedData =
+    eventValidators.getInvitationsByEventId.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.getEventInvitationsByEventId(
+    validatedData.data.payload.eventId
+  );
+  return { payload };
+};
+
 const handleGetEvents = async (reqData: IRequestBody) => {
   const validatedData = eventValidators.getEvents.safeParse(reqData);
   if (!validatedData.success) {
@@ -129,21 +173,49 @@ const handleInviteUsers = async (reqData: IRequestBody) => {
   return { payload };
 };
 
-// const handleInviteEmails = async (reqData: IRequestBody, userId: string) => {
-//   const validatedData = eventValidators.inviteEmails.safeParse(reqData);
-//   if (!validatedData.success) {
-//     return NextResponse.json(
-//       { message: 'Validation error', errors: validatedData.error.errors },
-//       { status: 400 }
-//     );
-//   }
-//   const payload = await mailService.inviteEmails(
-//     validatedData.data.payload.emails as string[],
-//     validatedData.data.payload.eventId as string,
-//     userId,
-//   );
-//   return { payload };
-// };
+const handleInviteEmails = async (reqData: IRequestBody, userId: string) => {
+  const validatedData = eventValidators.inviteEmails.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.inviteByEmails(
+    validatedData.data.payload.eventId as string,
+    userId,
+    validatedData.data.payload.emails as string[]
+  );
+  return { payload };
+};
+
+const handleAcceptInvitation = async (reqData: IRequestBody) => {
+  const validatedData = eventValidators.acceptInvitation.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.acceptInvitation(
+    validatedData.data.payload.token
+  );
+  return { payload };
+};
+
+const handleDeclineInvitation = async (reqData: IRequestBody) => {
+  const validatedData = eventValidators.declineInvitation.safeParse(reqData);
+  if (!validatedData.success) {
+    return NextResponse.json(
+      { message: 'Validation error', errors: validatedData.error.errors },
+      { status: 400 }
+    );
+  }
+  const payload = await eventService.declineInvitation(
+    validatedData.data.payload.token
+  );
+  return { payload };
+};
 
 export const GET = async (req: NextRequest) => {
   console.log('GET request received for events', req);
@@ -161,8 +233,10 @@ export const GET = async (req: NextRequest) => {
 export const POST = async (req: NextRequest) => {
   try {
     const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    const userId = data.user?.id;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const userId = user?.id;
     const reqData: IRequestBody = await req.json();
     const { command } = reqData;
     const response: IResponseBody = {
@@ -178,6 +252,7 @@ export const POST = async (req: NextRequest) => {
       EventCommands.joinEvent,
       EventCommands.inviteUsers,
       EventCommands.inviteEmails,
+      EventCommands.getEventByInvitationId,
     ];
 
     if (userRequiredCommands.includes(command as EventCommands) && !userId) {
@@ -210,9 +285,24 @@ export const POST = async (req: NextRequest) => {
       case EventCommands.inviteUsers:
         result = await handleInviteUsers(reqData);
         break;
-      // case EventCommands.inviteEmails:
-      //   result = await handleInviteEmails(reqData, userId as string);
-      //   break;
+      case EventCommands.getInvitation:
+        result = await handleGetInvitation(reqData);
+        break;
+      case EventCommands.inviteEmails:
+        result = await handleInviteEmails(reqData, userId as string);
+        break;
+      case EventCommands.getEventByInvitationId:
+        result = await handleGetEventByInvitationId(reqData);
+        break;
+      case EventCommands.getInvitationsByEventId:
+        result = await handleGetInvitationsByEventId(reqData);
+        break;
+      case EventCommands.acceptInvitation:
+        result = await handleAcceptInvitation(reqData);
+        break;
+      case EventCommands.declineInvitation:
+        result = await handleDeclineInvitation(reqData);
+        break;
       default:
         return NextResponse.json(
           { message: 'Invalid command' },

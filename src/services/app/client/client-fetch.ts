@@ -2,6 +2,14 @@
 import { AppError } from '@/utilities/error-handler';
 import { toast } from 'sonner';
 
+/**
+ * A custom fetch wrapper for client-side requests.
+ * It includes credentials and handles errors gracefully.
+ * @param url - The URL to fetch.
+ * @param options - The options for the fetch request.
+ * @returns A promise that resolves to the response.
+ * @throws An AppError if the request fails.
+ */
 const customFetch = async (url: string, options = {}) => {
   const response = await fetch(url, {
     credentials: 'include',
