@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/shadcn-ui/button';
+import { EventCommands } from '@/enums/event.enum';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
 import { toast } from 'sonner';
@@ -18,22 +19,33 @@ export const InvitationFooter = ({ token }: InvitationFooterProps) => {
           status,
         },
         command:
-          status === 'accepted' ? 'acceptInvitation' : 'declineInvitation',
+          status === 'accepted'
+            ? EventCommands.acceptInvitation
+            : EventCommands.declineInvitation,
       });
-      const response = await customFetch(`${env.API_URL}/invitations`, {
+      const response = await customFetch(`${env.NEXT_PUBLIC_API_URL}/events`, {
         method: 'POST',
         body,
       });
       if (response) {
-        toast.success(`Invitation ${status}!`);
+        toast.success(
+          `Invitation ${status}! You can click this message close this page.`,
+          {
+            onDismiss: () => {
+              window.close();
+            },
+            duration: 5000,
+          }
+        );
       }
-    } catch (err: any) {
-      toast.error(`Error: ${err.message}`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to ${status} invitation.`);
     }
   };
 
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex justify-center gap-2">
       <Button variant={'outline'} onClick={() => handleResponse('accepted')}>
         Accept
       </Button>

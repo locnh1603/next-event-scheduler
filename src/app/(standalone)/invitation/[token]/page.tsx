@@ -15,6 +15,7 @@ import { Event } from '@/models/event.model';
 import { InvitationFooter } from './invitation-footer';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/shadcn-ui/skeleton';
+import { EventCommands } from '@/enums/event.enum';
 
 export const generateMetadata = async ({
   params,
@@ -42,12 +43,14 @@ const EventInvitation = async ({
 }) => {
   const { token } = await params;
 
-  const eventResponse = await customFetch(
-    `${env.API_URL}/invitations/${token}`,
-    {
-      method: 'GET',
-    }
-  );
+  const body = {
+    payload: { token },
+    command: EventCommands.getEventByInvitationId,
+  };
+  const eventResponse = await customFetch(`${env.API_URL}/events`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 
   const eventData: IResponseBody<Event> = await eventResponse.json();
   const event = eventData.payload;

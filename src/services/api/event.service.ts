@@ -1,5 +1,5 @@
 import type { EventDTO, FilterEventsDTO } from '@/models/event.model';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { mailService } from './mail.service';
 import {
   mapSupabaseEvent,
@@ -7,7 +7,6 @@ import {
   mapSupabaseInvitation,
   mapSupabaseInvitations,
 } from '@/utilities/data-mapper';
-import { env } from '@env';
 
 class EventService {
   /**
@@ -45,8 +44,13 @@ class EventService {
   }
 
   /**
-   * Invite users to an event
+   * Invites users to an event by creating invitation records in the database.
+   * @param eventId - The ID of the event to invite users to.
+   * @param userIds - An array of user IDs to be invited to the event.
+   * @returns A promise resolving to the data of the newly created invitations.
+   * @throws An error if the insertion fails.
    */
+
   async inviteUsers(eventId: string, userIds: string[]) {
     const supabase = await createClient();
     const invitations = userIds.map((user_id) => ({
@@ -205,7 +209,8 @@ class EventService {
    * @returns An object containing the IDs of the created invitations.
    */
   async inviteByEmails(eventId: string, userId: string, emails: string[]) {
-    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    // This call uses the Supabase service role key to bypass RLS for invitation creation
+    const supabase = await createAdminClient();
     const invitationsToInsert = emails.map((email) => ({
       event_id: eventId,
       user_id: userId,
@@ -244,7 +249,7 @@ class EventService {
    */
 
   async getEventInvitation(token: string) {
-    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from('event_invitations')
       .select('*')
@@ -282,12 +287,12 @@ class EventService {
    * @throws An error if the invitation or event is not found, or if the request fails.
    */
 
-  async getEventByInvitationId(invitationId: string) {
-    const supabase = await createClient();
+  async getEventByInvitationId(token: string) {
+    const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from('event_invitations')
       .select('event_id')
-      .eq('id', invitationId)
+      .eq('token', token)
       .single();
     if (error) throw error;
     if (!data) throw new Error('Invitation not found');
@@ -309,7 +314,7 @@ class EventService {
    * @throws An error if the invitation is not found, or if the request fails.
    */
   async acceptInvitation(token: string) {
-    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from('event_invitations')
       .update({ status: 'accepted' })
@@ -327,7 +332,7 @@ class EventService {
    * @throws An error if the invitation is not found, or if the request fails.
    */
   async declineInvitation(token: string) {
-    const supabase = await createClient(env.SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from('event_invitations')
       .update({ status: 'declined' })

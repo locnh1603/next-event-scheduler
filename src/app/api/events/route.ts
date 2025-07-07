@@ -34,7 +34,7 @@ const handleGetEventByInvitationId = async (reqData: IRequestBody) => {
     );
   }
   const payload = await eventService.getEventByInvitationId(
-    validatedData.data.payload.invitationId
+    validatedData.data.payload.token
   );
   return { payload };
 };
