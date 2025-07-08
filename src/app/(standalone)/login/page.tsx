@@ -9,11 +9,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/shadcn-ui/card';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+
 export const metadata: Metadata = {
   title: 'Login',
 };
 import './login.scss';
-const LoginPage = () => {
+
+const LoginPage = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect('/events');
+  }
+
   return (
     <div className="flex justify-center items-center h-screen">
       <Card className="login-card">
@@ -42,4 +55,5 @@ const LoginPage = () => {
     </div>
   );
 };
+
 export default LoginPage;

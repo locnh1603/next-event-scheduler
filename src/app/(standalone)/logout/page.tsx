@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
+import { Spinner } from '@/components/shadcn-ui/spinner';
 
 const Logout = () => {
   const router = useRouter();
@@ -33,7 +34,11 @@ const Logout = () => {
     doLogout();
   }, [router]);
 
-  return null;
+  return (
+    <div className="flex items-center justify-center h-screen w-full">
+      <Spinner size="large" />
+    </div>
+  );
 };
 
 export default Logout;

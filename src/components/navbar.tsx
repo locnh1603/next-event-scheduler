@@ -160,9 +160,14 @@ const NavBar = async () => {
                       className="cursor-pointer hover:bg-slate-100 p-2 rounded"
                       asChild
                     >
+                      <Link href="/my-center">My Center</Link>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink
+                      className="cursor-pointer hover:bg-slate-100 p-2 rounded"
+                      asChild
+                    >
                       <Link href="/events">Event List</Link>
                     </NavigationMenuLink>
-
                     <NavigationMenuLink
                       className={`cursor-pointer hover:bg-slate-100 p-2 rounded ${user ? '' : ' disabled'}`}
                       asChild
