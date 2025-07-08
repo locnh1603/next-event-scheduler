@@ -1,5 +1,6 @@
 import { Message } from '@/models/message.model';
 import { UserProfile, UserProfileDTO } from '@/models/user-profile.model';
+import { Invite, InviteDTO } from '@/models/invitation.model';
 // Map DB row (snake_case) to app UserProfile (camelCase)
 export interface DbUserProfileRow {
   id: string;
@@ -25,6 +26,10 @@ export function mapDbUserProfile(row: DbUserProfileRow): UserProfile {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
+}
+
+export function mapDbUserProfiles(rows: DbUserProfileRow[]): UserProfile[] {
+  return rows.map(mapDbUserProfile);
 }
 
 // Map request body (camelCase) to UserProfileDTO (snake_case)
@@ -119,4 +124,30 @@ export function mapDbMessageToAppMessage(row: DbMessageRow): Message {
 
 export function mapDbMessagesToAppMessages(rows: DbMessageRow[]): Message[] {
   return rows.map(mapDbMessageToAppMessage);
+}
+
+export function mapSupabaseInvitation(row: InviteDTO): Invite {
+  return {
+    id: row.id,
+    receiverEmail: row.receiver_email,
+    eventId: row.event_id,
+    userId: row.user_id,
+    status: row.status,
+    createdAt: row.created_at,
+  };
+}
+
+export function mapSupabaseInvitations(rows: InviteDTO[]): Invite[] {
+  return rows.map(mapSupabaseInvitation);
+}
+
+export function mapInvitationToDTO(invite: Invite): InviteDTO {
+  return {
+    id: invite.id,
+    receiver_email: invite.receiverEmail,
+    event_id: invite.eventId,
+    user_id: invite.userId,
+    status: invite.status,
+    created_at: invite.createdAt,
+  };
 }

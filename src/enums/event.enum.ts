@@ -8,6 +8,11 @@ export enum EventCommands {
   joinEvent = 'joinEvent',
   inviteEmails = 'inviteEmail',
   inviteUsers = 'inviteUser',
+  getInvitation = 'getInvitation',
+  getEventByInvitationId = 'getEventByInvitationId',
+  getInvitationsByEventId = 'getInvitationsByEventId',
+  acceptInvitation = 'acceptInvitation',
+  declineInvitation = 'declineInvitation',
 }
 
 export enum UserCommands {

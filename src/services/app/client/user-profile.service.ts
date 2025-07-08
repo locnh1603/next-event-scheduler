@@ -5,6 +5,11 @@ import { UserProfile } from '@/models/user-profile.model';
 const USER_PROFILE_API_URL = '/api/user-profiles';
 
 class ClientUserProfileService {
+  /**
+   * Fetches a user profile from the server.
+   * @param userId - The ID of the user to fetch.
+   * @returns A promise that resolves to the user's profile, or null if not found.
+   */
   async getUserProfile(userId: string): Promise<UserProfile | null> {
     const response = await clientFetch(USER_PROFILE_API_URL, {
       method: 'POST',

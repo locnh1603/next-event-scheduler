@@ -13,6 +13,14 @@ export interface IResponseBody<T = unknown> {
 
 type CustomFetchOptions = RequestInit & { headers?: Record<string, string> };
 
+/**
+ * A custom fetch wrapper for server-side requests.
+ * It includes credentials from cookies and handles errors gracefully.
+ * @param url - The URL to fetch.
+ * @param options - The options for the fetch request.
+ * @returns A promise that resolves to the response.
+ * @throws An Error if the request fails.
+ */
 const customFetch = async (url: string, options: CustomFetchOptions = {}) => {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();

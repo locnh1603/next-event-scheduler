@@ -5,12 +5,9 @@ import {
   CardTitle,
 } from '@/components/shadcn-ui/card';
 import { env } from '@env';
-import { v1 } from 'uuid';
 
-const generateInvitationLink = (eventId: string) => {
-  const uuidString = v1();
-  const expiredTime = Date.now() + 7 * 24 * 60 * 60 * 1000;
-  return `${env.APP_URL}/events/invitation/${eventId}-${uuidString}-${expiredTime}`;
+const generateInvitationLink = (invitationToken: string) => {
+  return `${env.APP_URL}/invitation/${invitationToken}`;
 };
 
 interface EmailTemplateProps {
@@ -18,14 +15,14 @@ interface EmailTemplateProps {
   eventName: string;
   eventDate: string;
   eventLocation: string;
-  eventId: string;
+  invitationToken: string;
 }
 export const EmailTemplate = ({
   senderName,
   eventName,
   eventDate,
   eventLocation,
-  eventId,
+  invitationToken,
 }: EmailTemplateProps) => (
   <Card>
     <CardHeader>
@@ -39,7 +36,7 @@ export const EmailTemplate = ({
       </p>
       <p>
         Click here to accept the invitation:
-        <a href={generateInvitationLink(eventId)}>Accept</a>
+        <a href={generateInvitationLink(invitationToken)}>Accept</a>
       </p>
       <p className="text-sm text-muted-foreground">
         Please do not reply to this email. It is an automated invitation.

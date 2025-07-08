@@ -26,6 +26,7 @@ export interface Event {
   allowSelfJoin: boolean;
   allowAnonymousJoin: boolean;
   maxParticipants?: number;
+  invitationStatus?: 'accepted' | 'declined' | 'pending';
 }
 
 export interface GetEventsDTO {

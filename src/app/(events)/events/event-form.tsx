@@ -29,6 +29,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/shadcn-ui/radio-group';
 import { Button } from '@/components/shadcn-ui/button';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
+import { AppError } from '@/utilities/error-handler';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -127,7 +129,14 @@ const EventForm = ({ event }: CreateEventFormProps) => {
       router.push(`/events/${isEditMode ? event.id : payload.id}`);
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      let errorMessage = 'Unknown error';
+      if (error instanceof AppError) {
+        errorMessage = error.message || 'Unknown error';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error('Failed to send invitations: ' + errorMessage);
+      console.error(error);
     }
   };
 

@@ -40,6 +40,9 @@ import {
 } from '@/components/shadcn-ui/table';
 import { EventCommands } from '@/enums/event.enum';
 import { Minus, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { Spinner } from '@/components/shadcn-ui/spinner';
+import { AppError } from '@/utilities/error-handler';
 const eventInviteFormSchema = z.object({
   email: z.string().min(1, {
     message: 'Email is required.',
@@ -75,7 +78,6 @@ const InviteEventDialog = (props: {
       },
       command: EventCommands.inviteEmails,
     });
-    console.log(body);
     try {
       const url = `${env.NEXT_PUBLIC_API_URL}/events`;
       await customFetch(url, {
@@ -85,7 +87,14 @@ const InviteEventDialog = (props: {
       setLoading(false);
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      let errorMessage = 'Unknown error';
+      if (error instanceof AppError) {
+        errorMessage = error.message || 'Unknown error';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error('Failed to send invitations: ' + errorMessage);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -110,7 +119,9 @@ const InviteEventDialog = (props: {
       setData(emails);
       form.reset();
     } else {
-      // showError('Email already exists');
+      toast.error(
+        'This email is already in the invitation list. Please enter a different email.'
+      );
     }
   };
 
@@ -126,9 +137,16 @@ const InviteEventDialog = (props: {
     }),
     columnHelper.display({
       id: 'action',
+      size: 10,
       cell: (info) => (
-        <Button onClick={() => removeEmailByIndex(info.row.index)} aria-label="Remove email">
-          <Minus color="#ffffff" />
+        <Button
+          onClick={() => removeEmailByIndex(info.row.index)}
+          aria-label="Remove email"
+          size="sm"
+          className="w-full"
+          variant="ghost"
+        >
+          <Minus color="black" />
         </Button>
       ),
     }),
@@ -165,7 +183,11 @@ const InviteEventDialog = (props: {
                         <TableRow key={headerGroup.id}>
                           {headerGroup.headers.map((header) => {
                             return (
-                              <TableHead key={header.id}>
+                              <TableHead
+                                key={header.id}
+                                style={{ width: `${header.getSize()}%` }}
+                                colSpan={header.colSpan}
+                              >
                                 {header.isPlaceholder
                                   ? null
                                   : flexRender(
@@ -199,7 +221,7 @@ const InviteEventDialog = (props: {
                         <TableRow>
                           <TableCell
                             colSpan={columns.length}
-                            className="h-24 text-center"
+                            className="h-12 text-center"
                           >
                             No data.
                           </TableCell>
@@ -237,7 +259,13 @@ const InviteEventDialog = (props: {
           </form>
         </Form>
         <DialogFooter>
-          <Button onClick={onSendInvite}>Send Invite</Button>
+          <Button onClick={onSendInvite} disabled={loading}>
+            {loading ? (
+              <Spinner size="small" className="text-white" />
+            ) : (
+              'Send Invitations'
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
