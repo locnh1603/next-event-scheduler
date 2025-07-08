@@ -2,13 +2,18 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Enable Corepack and install dependencies
-RUN corepack enable
+## Enable Corepack & pin pnpm, then install deps deterministically
+RUN corepack enable \
+  && corepack prepare pnpm@10.11.0 --activate
+
+# Copy package files first
 COPY package*.json pnpm-workspace.yaml pnpm-lock.yaml ./
-RUN pnpm install
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY . /app
+COPY . .
 
 # Set development environment
 ENV NODE_ENV=development

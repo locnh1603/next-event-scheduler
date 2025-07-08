@@ -52,7 +52,14 @@ const EventInvitation = async ({
     body: JSON.stringify(body),
   });
 
+  if (!eventResponse.ok) {
+    throw new Error(`Failed to fetch event: ${eventResponse.status}`);
+  }
+
   const eventData: IResponseBody<Event> = await eventResponse.json();
+  if (!eventData.payload || !eventData.payload.invitationStatus) {
+    throw new Error('Invalid event data received');
+  }
   const event = eventData.payload;
 
   return (
@@ -95,7 +102,10 @@ const EventInvitation = async ({
         </CardContent>
         <CardFooter>
           <Suspense fallback={<Skeleton className="w-full h-10" />}>
-            <InvitationFooter token={token} />
+            <InvitationFooter
+              token={token}
+              status={event.invitationStatus ?? 'pending'}
+            />
           </Suspense>
         </CardFooter>
       </Card>

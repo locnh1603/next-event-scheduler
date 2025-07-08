@@ -17,6 +17,8 @@ import { formatDate } from '@/utilities/date-util';
 import React from 'react';
 import { customFetch } from '@/services/app/client/client-fetch';
 import { env } from '@env';
+import { AppError } from '@/utilities/error-handler';
+import { toast } from 'sonner';
 
 const JoinEventDialog = (props: { event: Event }) => {
   const { event } = props;
@@ -37,7 +39,14 @@ const JoinEventDialog = (props: { event: Event }) => {
         setDialogOpen(false);
       }
     } catch (error) {
-      console.log(error);
+      let errorMessage = 'Unknown error';
+      if (error instanceof AppError) {
+        errorMessage = error.message || 'Unknown error';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error('Failed to send invitations: ' + errorMessage);
+      console.error(error);
     }
   };
   return (

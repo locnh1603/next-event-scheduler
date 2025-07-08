@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 
 interface InvitationFooterProps {
   token: string;
+  status: 'accepted' | 'declined' | 'pending';
 }
 
-export const InvitationFooter = ({ token }: InvitationFooterProps) => {
+export const InvitationFooter = ({ token, status }: InvitationFooterProps) => {
   const handleResponse = async (status: 'accepted' | 'declined') => {
     try {
       const body = JSON.stringify({
@@ -28,15 +29,12 @@ export const InvitationFooter = ({ token }: InvitationFooterProps) => {
         body,
       });
       if (response) {
-        toast.success(
-          `Invitation ${status}! You can click this message close this page.`,
-          {
-            onDismiss: () => {
-              window.close();
-            },
-            duration: 5000,
-          }
-        );
+        toast.success(`Invitation ${status}! You can close this page.`, {
+          onDismiss: () => {
+            window.close();
+          },
+          duration: 5000,
+        });
       }
     } catch (err) {
       console.error(err);
@@ -45,17 +43,17 @@ export const InvitationFooter = ({ token }: InvitationFooterProps) => {
   };
 
   return (
-    <div className="flex justify-center gap-2">
-      <Button variant={'outline'} onClick={() => handleResponse('accepted')}>
-        Accept
-      </Button>
-      <Button
-        className="ml-2"
-        variant={'outline'}
-        onClick={() => handleResponse('declined')}
-      >
-        Decline
-      </Button>
+    <div className="flex justify-center gap-4">
+      {status !== 'accepted' && (
+        <Button variant={'outline'} onClick={() => handleResponse('accepted')}>
+          Accept
+        </Button>
+      )}
+      {status !== 'declined' && (
+        <Button variant={'outline'} onClick={() => handleResponse('declined')}>
+          Decline
+        </Button>
+      )}
     </div>
   );
 };

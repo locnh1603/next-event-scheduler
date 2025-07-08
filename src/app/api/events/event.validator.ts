@@ -76,7 +76,7 @@ export const eventValidators = {
   getInvitation: z.object({
     command: z.literal('getInvitation'),
     payload: z.object({
-      id: z.string().min(1),
+      token: z.string().min(1),
     }),
   }),
 

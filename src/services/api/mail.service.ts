@@ -34,7 +34,7 @@ class MailService {
       const { data: userProfile, error: userError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('email', user.email)
+        .eq('email', user.email!)
         .single();
       if (userError) {
         throw new Error(`Failed to fetch user profile: ${userError.message}`);
@@ -43,10 +43,10 @@ class MailService {
         throw new Error(`Event with ID ${eventId} not found.`);
       }
       const senderName =
-        `${userProfile?.firstname}${userProfile?.lastname}`.replaceAll(
-          ' ',
-          ''
-        ) || 'EventOrganizer';
+        [userProfile?.firstname, userProfile?.lastname]
+          .filter(Boolean)
+          .join('')
+          .trim() || 'EventOrganizer';
       const from = `${senderName} <events@mail.locnh.io.vn>`;
       const eventDate = formatDate(new Date(event.start_time));
 

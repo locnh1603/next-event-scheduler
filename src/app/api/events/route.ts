@@ -19,7 +19,7 @@ const handleGetInvitation = async (reqData: IRequestBody) => {
     );
   }
   const payload = await eventService.getEventInvitation(
-    validatedData.data.payload.id
+    validatedData.data.payload.token
   );
   return { payload };
 };
@@ -74,12 +74,10 @@ const handleCreateEvent = async (reqData: IRequestBody, userId: string) => {
       { status: 400 }
     );
   }
-  console.log('received data', validatedData.data.payload, userId);
   const dto = mapEventToDTO({
     ...validatedData.data.payload,
     createdBy: userId,
   });
-  console.log('DTO:', dto);
   const payload = await eventService.createEvent(dto, userId);
   return { payload };
 };

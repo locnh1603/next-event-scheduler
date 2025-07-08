@@ -209,9 +209,31 @@ class EventService {
    * @returns An object containing the IDs of the created invitations.
    */
   async inviteByEmails(eventId: string, userId: string, emails: string[]) {
-    // This call uses the Supabase service role key to bypass RLS for invitation creation
     const supabase = await createAdminClient();
-    const invitationsToInsert = emails.map((email) => ({
+
+    const { data: existingInvitations, error: fetchError } = await supabase
+      .from('event_invitations')
+      .select('receiver_email')
+      .eq('event_id', eventId)
+      .in('receiver_email', emails);
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    const existingEmails = new Set(
+      existingInvitations?.map((inv) => inv.receiver_email)
+    );
+
+    const newEmailsToInvite = emails.filter(
+      (email) => !existingEmails.has(email)
+    );
+
+    if (newEmailsToInvite.length === 0) {
+      throw new Error('All provided emails are already invited to this event.');
+    }
+
+    const invitationsToInsert = newEmailsToInvite.map((email) => ({
       event_id: eventId,
       user_id: userId,
       receiver_email: email,
@@ -226,6 +248,10 @@ class EventService {
       throw insertError;
     }
 
+    if (!insertedInvitations) {
+      throw new Error('Failed to create invitations.');
+    }
+
     const invitationIds = insertedInvitations.map((inv) => inv.id);
     const invitationEmails = insertedInvitations.map((inv) => {
       return {
@@ -235,7 +261,6 @@ class EventService {
       };
     });
 
-    // Send emails using the inserted invitation data
     await mailService.inviteEmails(invitationEmails, eventId);
 
     return { invitationIds };
@@ -291,7 +316,7 @@ class EventService {
     const supabase = await createAdminClient();
     const { data, error } = await supabase
       .from('event_invitations')
-      .select('event_id')
+      .select('*')
       .eq('token', token)
       .single();
     if (error) throw error;
@@ -304,7 +329,7 @@ class EventService {
       .single();
     if (event.error) throw event.error;
 
-    return mapSupabaseEvent(event.data);
+    return { ...mapSupabaseEvent(event.data), invitationStatus: data.status };
   }
 
   /**
@@ -315,6 +340,19 @@ class EventService {
    */
   async acceptInvitation(token: string) {
     const supabase = await createAdminClient();
+    const { data: currentInvitation, error: fetchError } = await supabase
+      .from('event_invitations')
+      .select('*')
+      .eq('token', token)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!currentInvitation) throw new Error('Invitation not found');
+
+    if (currentInvitation.status === 'accepted') {
+      return mapSupabaseInvitation(currentInvitation);
+    }
+
     const { data, error } = await supabase
       .from('event_invitations')
       .update({ status: 'accepted' })
@@ -333,6 +371,19 @@ class EventService {
    */
   async declineInvitation(token: string) {
     const supabase = await createAdminClient();
+    const { data: currentInvitation, error: fetchError } = await supabase
+      .from('event_invitations')
+      .select('*')
+      .eq('token', token)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!currentInvitation) throw new Error('Invitation not found');
+
+    if (currentInvitation.status === 'declined') {
+      return mapSupabaseInvitation(currentInvitation);
+    }
+
     const { data, error } = await supabase
       .from('event_invitations')
       .update({ status: 'declined' })

@@ -25,7 +25,8 @@ const customFetch = async (url: string, options = {}) => {
       'Unauthorized: You dont have permission for this action'
     );
   } else {
-    throw new AppError(response.status);
+    const errorData = await response.json();
+    throw new AppError(response.status, errorData, errorData.error || errorData.message || 'Unknown error');
   }
 };
 
